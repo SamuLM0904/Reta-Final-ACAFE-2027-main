@@ -43,16 +43,6 @@ const vazio = () => ({ respostas: {}, simulado: { atual: null, tentativas: [] },
 
 /**
  * Lê o objeto raiz do storage.
- * @returns {{ respostas: Object, simulado: Object }}
- */
-function lerTudo() {
-  try {
-    const raw   = localStorage.getItem(chave);
-    const dados = raw ? JSON.parse(raw) : {};
-    return { ...vazio(), ...dados };
-  } catch {
-    return vazio();
-  }
 }
 
 /**
