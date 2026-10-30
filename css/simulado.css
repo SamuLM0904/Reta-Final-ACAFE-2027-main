@@ -1,0 +1,320 @@
+/* ============================================================
+   simulado.css — Simulados com as provas anteriores
+   (reaproveita os estilos de questoes.css para questões,
+   navegador numerado e tela de resultado)
+   ============================================================ */
+
+/* ---- Tela de simulados (montar / continuar / histórico) ---- */
+.simulados-titulo {
+  font-size: var(--tamanho-xl);
+  color: var(--cor-texto);
+  margin-top: var(--espaco-sm);
+}
+
+.simulados-descricao {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.6;
+  max-width: 70ch;
+}
+
+.simulados-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+
+.simulado-card {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--espaco-md);
+  padding: clamp(var(--espaco-md), 3vw, var(--espaco-lg));
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.simulado-card--destaque {
+  border-color: var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+}
+
+.simulado-card__icone {
+  display: inline-flex;
+  color: var(--cor-primaria);
+  padding-top: 2px;
+}
+
+.simulado-card__corpo {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  min-width: 0;
+}
+
+.simulado-card__titulo {
+  font-size: var(--tamanho-lg, 1.15rem);
+  color: var(--cor-texto);
+}
+
+.simulado-card__info {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+.simulado-card__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  align-self: center;
+}
+
+.btn-pequeno {
+  min-height: 36px;
+  padding: var(--espaco-xs) var(--espaco-md);
+  font-size: var(--tamanho-sm);
+}
+
+/* Escolha do idioma */
+.simulado-idioma {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.simulado-idioma legend {
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-xs);
+}
+
+.simulado-idioma__opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  padding: var(--espaco-xs) var(--espaco-md);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-pill);
+  cursor: pointer;
+  font-size: var(--tamanho-sm);
+  transition: border-color var(--transicao), background-color var(--transicao);
+}
+
+.simulado-idioma__opcao:has(input:checked) {
+  border-color: var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  font-weight: var(--peso-medio);
+}
+
+.simulado-idioma__opcao input { accent-color: var(--cor-primaria); }
+
+/* Tabela de composição */
+.simulado-tabela {
+  width: 100%;
+  max-width: 480px;
+  border-collapse: collapse;
+  font-size: var(--tamanho-sm);
+}
+
+.simulado-tabela caption {
+  text-align: left;
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+  padding-bottom: var(--espaco-xs);
+}
+
+.simulado-tabela th,
+.simulado-tabela td {
+  padding: 6px var(--espaco-sm);
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.simulado-tabela th { color: var(--cor-texto); font-weight: var(--peso-medio); }
+.simulado-tabela__num { text-align: right !important; font-variant-numeric: tabular-nums; }
+.simulado-tabela__falta { color: var(--cor-errada) !important; }
+
+/* Histórico */
+.simulado-historico {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+}
+
+.simulado-historico li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+
+/* ---- Fazendo o simulado ---- */
+.simulado-cronometro-caixa {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  padding: var(--espaco-xs) var(--espaco-md);
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  font-weight: var(--peso-negrito);
+  font-variant-numeric: tabular-nums;
+}
+
+.simulado-cronometro--alerta { color: var(--cor-errada); }
+
+.simulado-questao-meta { margin-bottom: var(--espaco-sm); }
+
+.simulado-dica {
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-fraco);
+  margin-bottom: var(--espaco-md);
+}
+
+/* Navegador separado por matéria */
+.simulado-navegador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-sm);
+}
+
+.simulado-navegador__grupo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-xs) var(--espaco-sm);
+}
+
+.simulado-navegador__materia {
+  flex: 0 0 11rem;
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+}
+
+.simulado-navegador .navegador-questoes__lista { margin-top: 0; }
+
+.navegador-questoes__btn--respondida {
+  background-color: var(--cor-primaria-suave);
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+.navegador-questoes__btn--branco {
+  color: var(--cor-texto-fraco);
+  border-style: dashed;
+}
+
+/* ---- Resultado ---- */
+.simulado-resultado-prova {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+
+.simulado-materias {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.simulado-materia {
+  display: grid;
+  grid-template-columns: minmax(9rem, 14rem) 1fr 3.5rem;
+  align-items: center;
+  gap: var(--espaco-md);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto);
+}
+
+.simulado-materia__barra {
+  height: 10px;
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-borda);
+  overflow: hidden;
+}
+
+.simulado-materia__barra span {
+  display: block;
+  height: 100%;
+  background-color: var(--cor-primaria);
+  border-radius: inherit;
+}
+
+.simulado-materia__nota {
+  text-align: right;
+  font-weight: var(--peso-medio);
+  font-variant-numeric: tabular-nums;
+}
+
+.simulado-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-sm);
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+}
+
+.simulado-legenda__item::before {
+  content: '';
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 6px;
+  vertical-align: -1px;
+  border-radius: 3px;
+  border: 1px dashed var(--cor-texto-fraco);
+}
+
+.simulado-legenda__item--certa::before  { background: var(--cor-certa-fundo);  border: 1px solid var(--cor-certa-borda); }
+.simulado-legenda__item--errada::before { background: var(--cor-errada-fundo); border: 1px solid var(--cor-errada-borda); }
+
+/* ---- Texto com linhas numeradas (como na prova; questões citam "linha N") ---- */
+.texto-numerado {
+  list-style: none;
+  counter-reset: linha;
+  margin: var(--espaco-sm) 0;
+  padding: 0;
+}
+
+.texto-numerado li {
+  counter-increment: linha;
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.texto-numerado li::before {
+  content: counter(linha);
+  position: absolute;
+  left: 0;
+  width: 1.8rem;
+  text-align: right;
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-fraco);
+  font-variant-numeric: tabular-nums;
+  line-height: inherit;
+}
+
+@media (max-width: 600px) {
+  .simulado-navegador__materia { flex-basis: 100%; }
+  .simulado-materia { grid-template-columns: 1fr 3.5rem; }
+  .simulado-materia__barra { grid-column: 1 / -1; grid-row: 2; }
+}

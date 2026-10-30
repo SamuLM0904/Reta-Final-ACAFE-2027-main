@@ -1,0 +1,597 @@
+/* ============================================================
+   questoes.css — Estilos do motor de questões
+   ============================================================ */
+
+/* --- Wrapper principal da tela de questões --- */
+.tela-questoes {
+  padding-block: var(--espaco-lg) var(--espaco-2xl);
+}
+
+/* ---- Cabeçalho da sessão de questões ---- */
+.questoes-cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  margin-bottom: var(--espaco-lg);
+}
+
+.questoes-nav-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+  flex-wrap: wrap;
+}
+
+.questoes-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  flex-wrap: wrap;
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+}
+
+.questoes-meta__separador {
+  color: var(--cor-borda);
+  user-select: none;
+}
+
+.questoes-meta__disciplina {
+  font-weight: var(--peso-negrito);
+  color: var(--cor-primaria);
+}
+
+.questoes-contador {
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+}
+
+/* Botão voltar (pequeno, no cabeçalho) */
+.btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-suave);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--espaco-xs) var(--espaco-sm);
+  border-radius: var(--raio-sm);
+  min-height: 44px;
+  transition: color var(--transicao), background-color var(--transicao);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-voltar:hover {
+  color: var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+  text-decoration: none;
+}
+
+.btn-voltar:active { transform: scale(0.97); }
+
+/* ---- Card da questão ---- */
+.questao-card {
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-sm);
+  padding: clamp(var(--espaco-lg), 4vw, var(--espaco-xl));
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+
+/* ---- Enunciado ---- */
+.questao-enunciado {
+  font-size: var(--tamanho-lg);
+  line-height: 1.7;
+  color: var(--cor-texto);
+}
+
+/* Imagens da questão: lado a lado quando há mais de uma (ex.: Figura 1 e 2),
+   empilhando em telas estreitas. */
+.questao-imagens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-md);
+  padding-block: var(--espaco-sm);
+  margin-bottom: var(--espaco-md);
+}
+
+.questao-imagem {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-xs);
+  margin: 0;
+  min-width: 0;
+}
+
+/* Prints em alta resolução: ocupam até a largura disponível, sem passar
+   de 720px de largura nem de 520px de altura (figuras altas não dominam a tela). */
+.questao-imagem a {
+  display: block;
+  max-width: min(100%, 720px);
+  margin-inline: auto;
+  cursor: zoom-in;
+}
+
+.questao-imagem img,
+.questao-imagem svg {
+  display: block;
+  max-width: min(100%, 720px);
+  max-height: min(60vh, 520px);
+  width: auto;
+  height: auto;
+  margin-inline: auto;
+  border-radius: var(--raio-md);
+  border: 1px solid var(--cor-borda);
+  background-color: #fff;
+}
+
+/* Legenda (rótulo da figura e fonte), em texto abaixo da imagem */
+.questao-imagem__legenda {
+  max-width: min(100%, 720px);
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+  text-align: center;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Legenda acima da imagem (ex.: "FIGURA 1", "Tipo I: ..."), como na prova:
+   um pouco maior e mais legível que a fonte/rodapé */
+.questao-imagem__legenda--acima {
+  flex: 1;                 /* ocupa a sobra: imagens lado a lado ficam alinhadas */
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto);
+  margin: 0;
+}
+
+/* Legenda única do conjunto (ex.: "FIGURA 7 — Fonte: ..."), ocupando a linha toda */
+.questao-imagens__legenda-geral {
+  flex-basis: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* ---- Texto de apoio compartilhado (ex.: crônica do Texto 1) ---- */
+.questao-texto-apoio {
+  padding: var(--espaco-md);
+  margin-bottom: var(--espaco-md);
+  background-color: var(--cor-fundo);
+  border-left: 3px solid var(--cor-primaria);
+  border-radius: var(--raio-sm);
+  line-height: 1.7;
+}
+
+/* ---- Lista de alternativas ---- */
+.alternativas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  list-style: none;
+}
+
+/* Botão de alternativa */
+.alternativa-btn {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: start;
+  gap: var(--espaco-sm);
+  width: 100%;
+  padding: clamp(var(--espaco-sm), 2vw, var(--espaco-md));
+  background-color: var(--cor-fundo);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--fonte-base);
+  font-size: var(--tamanho-base);
+  color: var(--cor-texto);
+  min-height: 52px;
+  transition:
+    border-color var(--transicao),
+    background-color var(--transicao),
+    box-shadow var(--transicao),
+    transform var(--transicao);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.alternativa-btn:hover:not(:disabled) {
+  border-color: var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+  box-shadow: var(--sombra-sm);
+}
+
+.alternativa-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+/* Letra da alternativa */
+.alternativa-letra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--cor-borda);
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto-suave);
+  flex-shrink: 0;
+  transition: background-color var(--transicao), color var(--transicao);
+  line-height: 1;
+}
+
+/* Texto + explicação no lado direito */
+.alternativa-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  padding-top: 4px;  /* alinha visualmente com o círculo */
+}
+
+.alternativa-texto {
+  line-height: 1.5;
+}
+
+/* Explicação (visível só após conferir) */
+.alternativa-explicacao {
+  display: none;
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  font-style: italic;
+  line-height: 1.5;
+  padding-top: var(--espaco-xs);
+  border-top: 1px solid var(--cor-borda);
+  margin-top: var(--espaco-xs);
+}
+
+/* ---- Estados selecionado / conferido ---- */
+
+/* Alternativa selecionada (antes de conferir) */
+.alternativa-btn--selecionada {
+  border-color: var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+}
+
+.alternativa-btn--selecionada .alternativa-letra {
+  background-color: var(--cor-primaria);
+  color: #fff;
+}
+
+/* Alternativa correta (após conferir) */
+.alternativa-btn--certa {
+  border-color: var(--cor-certa-borda);
+  background-color: var(--cor-certa-fundo);
+  cursor: default;
+}
+
+.alternativa-btn--certa .alternativa-letra {
+  background-color: var(--cor-certa);
+  color: #fff;
+}
+
+.alternativa-btn--certa .alternativa-explicacao { display: block; }
+
+/* Alternativa errada (escolha incorreta do usuário) */
+.alternativa-btn--errada {
+  border-color: var(--cor-errada-borda);
+  background-color: var(--cor-errada-fundo);
+  cursor: default;
+}
+
+.alternativa-btn--errada .alternativa-letra {
+  background-color: var(--cor-errada);
+  color: #fff;
+}
+
+.alternativa-btn--errada .alternativa-explicacao { display: block; }
+
+/* Demais alternativas após conferir (neutras) */
+.alternativa-btn--neutra {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.alternativa-btn--neutra .alternativa-explicacao { display: block; }
+
+/* Ícone certo/errado ao lado da letra */
+.alternativa-icone-resultado {
+  display: none;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.alternativa-btn--certa .alternativa-icone-resultado,
+.alternativa-btn--errada .alternativa-icone-resultado {
+  display: flex;
+  align-items: center;
+}
+
+/* Ajuste do grid quando o ícone de resultado aparece */
+.alternativa-btn.com-resultado {
+  grid-template-columns: 36px 1fr 24px;
+}
+
+/* ---- Área de feedback (mensagem acerto/erro) ---- */
+.feedback-area {
+  display: none;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio-md);
+  font-weight: var(--peso-medio);
+  font-size: var(--tamanho-sm);
+}
+
+.feedback-area--acerto {
+  display: flex;
+  background-color: var(--cor-certa-fundo);
+  border: 1px solid var(--cor-certa-borda);
+  color: var(--cor-certa);
+}
+
+.feedback-area--erro {
+  display: flex;
+  background-color: var(--cor-errada-fundo);
+  border: 1px solid var(--cor-errada-borda);
+  color: var(--cor-errada);
+}
+
+/* ---- Ações da questão (Conferir / Avançar / Recomeçar) ---- */
+.questao-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-md);
+  flex-wrap: wrap;
+}
+
+.questao-acoes__direita {
+  display: flex;
+  gap: var(--espaco-sm);
+  flex-wrap: wrap;
+}
+
+/* ---- Tela de resultado final ---- */
+.resultado-tela {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+
+.resultado-resumo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--espaco-md);
+  padding: var(--espaco-xl);
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-sm);
+}
+
+.resultado-pontuacao {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-primaria);
+  line-height: 1;
+}
+
+.resultado-pontuacao span {
+  font-size: 0.45em;
+  color: var(--cor-texto-suave);
+  font-weight: var(--peso-normal);
+}
+
+.resultado-descricao {
+  font-size: var(--tamanho-lg);
+  color: var(--cor-texto);
+}
+
+.resultado-percentual {
+  font-size: var(--tamanho-base);
+  color: var(--cor-texto-suave);
+}
+
+/* Lista das questões erradas */
+.resultado-erradas-titulo {
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-sm);
+}
+
+.resultado-erradas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  list-style: none;
+}
+
+.resultado-errada-item {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background-color: var(--cor-errada-fundo);
+  border: 1px solid var(--cor-errada-borda);
+  border-radius: var(--raio-md);
+  line-height: 1.5;
+}
+
+.resultado-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  justify-content: center;
+}
+
+
+/* ---- Contador: quantas já foram respondidas ---- */
+.questoes-contador__respondidas {
+  color: var(--cor-texto-fraco);
+}
+
+/* ---- Navegador de questões numeradas ---- */
+.navegador-questoes summary {
+  cursor: pointer;
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-suave);
+  padding-block: var(--espaco-xs);
+  user-select: none;
+}
+
+.navegador-questoes__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-xs);
+  list-style: none;
+  margin-top: var(--espaco-sm);
+}
+
+.navegador-questoes__btn {
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding-inline: var(--espaco-xs);
+  border-radius: var(--raio-sm);
+  border: 1px solid var(--cor-borda);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto-suave);
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.15s ease;
+}
+
+.navegador-questoes__btn:hover { border-color: var(--cor-primaria); }
+.navegador-questoes__btn:active { transform: scale(0.95); }
+
+.navegador-questoes__btn--certa {
+  background-color: var(--cor-certa-fundo);
+  border-color: var(--cor-certa-borda);
+  color: var(--cor-certa);
+}
+
+.navegador-questoes__btn--errada {
+  background-color: var(--cor-errada-fundo);
+  border-color: var(--cor-errada-borda);
+  color: var(--cor-errada);
+}
+
+.navegador-questoes__btn--atual {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 1px;
+  font-weight: var(--peso-negrito);
+}
+
+/* ---- Item da lista de erradas clicável (revisar) ---- */
+.resultado-errada-link {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.resultado-errada-link:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+/* ---- Visualizador de imagem ampliada (abre na própria página) ---- */
+.visualizador-imagem {
+  /* O <dialog> ocupa a tela toda; a imagem fica centralizada */
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.visualizador-imagem:not([open]) { display: none; }
+
+.visualizador-imagem::backdrop {
+  background-color: rgba(10, 20, 18, 0.72);
+  backdrop-filter: blur(3px);
+  animation: visualizador-fundo var(--transicao-md);
+}
+
+.visualizador-imagem__img {
+  display: block;
+  max-width: 80vw;
+  max-height: 80vh;
+  object-fit: contain;
+  background-color: #fff;
+  border: 4px solid var(--cor-fundo-card);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-hover), 0 0 0 1px var(--cor-borda);
+  cursor: default;
+  animation: visualizador-entrada var(--transicao-md);
+}
+
+.visualizador-imagem__fechar {
+  position: fixed;
+  top: var(--espaco-md);
+  right: var(--espaco-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--raio-pill);
+  border: 1px solid var(--cor-borda);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  box-shadow: var(--sombra-md);
+  cursor: pointer;
+  transition: transform var(--transicao), color var(--transicao);
+}
+
+.visualizador-imagem__fechar:hover {
+  color: var(--cor-primaria);
+  transform: scale(1.06);
+}
+
+.visualizador-imagem__fechar:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}
+
+@keyframes visualizador-entrada {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes visualizador-fundo {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visualizador-imagem__img,
+  .visualizador-imagem::backdrop { animation: none; }
+}

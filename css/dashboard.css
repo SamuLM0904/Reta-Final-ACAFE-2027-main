@@ -1,0 +1,247 @@
+/* ============================================================
+   dashboard.css — Estilos da tela inicial (grid de cards)
+   ============================================================ */
+
+/* --- Área principal do dashboard --- */
+.dashboard {
+  padding-block: var(--espaco-xl) var(--espaco-2xl);
+}
+
+/* --- Saudação / introdução acima do grid --- */
+.dashboard__intro {
+  margin-bottom: var(--espaco-xl);
+}
+
+.dashboard__saudacao {
+  font-size: var(--tamanho-xs);
+  font-weight: var(--peso-medio);
+  color: var(--cor-primaria);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--espaco-xs);
+}
+
+.dashboard__titulo-secao {
+  font-size: var(--tamanho-xl);
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-sm);
+}
+
+.dashboard__subtitulo-secao {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+
+/* --- Grid de cards ---
+   Mobile: 2 colunas
+   Tablet (≥ 600px): 3 colunas
+   Desktop (≥ 900px): 4 colunas
+   ---------------------------------------- */
+.grid-modulos {
+  display: grid;
+  gap: clamp(var(--espaco-sm), 2vw, var(--espaco-lg));
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 600px) {
+  .grid-modulos { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 900px) {
+  .grid-modulos { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* --- Card individual --- */
+.card-modulo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-sm);
+  padding: clamp(var(--espaco-md), 3vw, var(--espaco-lg));
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-sm);
+  text-decoration: none;
+  color: var(--cor-texto);
+  min-height: 44px;          /* alvo de toque mínimo */
+  cursor: pointer;
+  transition:
+    transform var(--transicao),
+    box-shadow var(--transicao),
+    border-color var(--transicao),
+    background-color var(--transicao);
+  /* Garante que o texto não vaze */
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Hover: leve elevação */
+.card-modulo:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-hover);
+  border-color: var(--cor-primaria);
+  text-decoration: none;
+  color: var(--cor-texto);
+}
+
+/* Toque / clique: pequena redução de escala */
+.card-modulo:active {
+  transform: scale(0.97);
+  box-shadow: var(--sombra-sm);
+}
+
+/* Foco via teclado */
+.card-modulo:focus-visible {
+  outline: 3px solid var(--cor-primaria);
+  outline-offset: 3px;
+}
+
+/* Estado "em breve": opacidade reduzida, cursor padrão */
+.card-modulo--em-breve {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.card-modulo--em-breve:hover {
+  transform: none;
+  box-shadow: var(--sombra-sm);
+  border-color: var(--cor-borda);
+}
+
+/* --- Ícone do card --- */
+.card-modulo__icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--raio-md);
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  flex-shrink: 0;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+.card-modulo:hover .card-modulo__icone {
+  background-color: var(--cor-primaria);
+  color: #fff;
+}
+
+.card-modulo--em-breve:hover .card-modulo__icone {
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+}
+
+/* --- Textos do card --- */
+.card-modulo__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  width: 100%;
+}
+
+.card-modulo__titulo {
+  font-size: clamp(0.82rem, 2vw, 0.95rem);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto);
+  line-height: 1.3;
+}
+
+.card-modulo__info {
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+  line-height: 1.4;
+}
+
+/* Mini barra de progresso dentro do card */
+.card-progresso {
+  width: 100%;
+  margin-top: var(--espaco-xs);
+}
+
+.card-progresso__barra {
+  width: 100%;
+  height: 4px;
+  background-color: var(--cor-borda);
+  border-radius: var(--raio-pill);
+  overflow: hidden;
+}
+
+.card-progresso__preenchimento {
+  height: 100%;
+  background-color: var(--cor-progresso);
+  border-radius: var(--raio-pill);
+  transition: width var(--transicao-md);
+}
+
+
+/* --- Box de contagem regressiva para a prova --- */
+.contagem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espaco-md);
+  padding: clamp(var(--espaco-md), 3vw, var(--espaco-lg));
+  margin-bottom: var(--espaco-xl);
+  background-color: var(--cor-primaria-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+}
+
+.contagem__cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.contagem__icone {
+  display: inline-flex;
+  color: var(--cor-primaria);
+}
+
+.contagem__titulo {
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto);
+}
+
+.contagem__data {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+
+.contagem__numeros {
+  display: flex;
+  gap: var(--espaco-sm);
+}
+
+.contagem__unidade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3.75rem;
+  padding: var(--espaco-sm);
+  background-color: var(--cor-fundo-card);
+  border-radius: var(--raio-md);
+}
+
+.contagem__valor {
+  font-size: var(--tamanho-xl);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-primaria);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.contagem__rotulo {
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.contagem__fim {
+  font-weight: var(--peso-negrito);
+  color: var(--cor-primaria);
+}

@@ -1,0 +1,149 @@
+/* ============================================================
+   login.css — Tela de entrada e área do aluno no cabeçalho
+   (só aparecem com o banco de dados Firebase ativo)
+   ============================================================ */
+
+.tela-login {
+  min-height: calc(100dvh - var(--altura-cabecalho));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espaco-lg) var(--espaco-md);
+}
+
+.login-card {
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-md);
+  padding: clamp(var(--espaco-lg), 5vw, var(--espaco-xl));
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-md);
+}
+
+.login-card__titulo {
+  font-size: var(--tamanho-xl);
+  color: var(--cor-texto);
+}
+
+.login-card__texto {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+.login-abas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espaco-xs);
+  padding: var(--espaco-xs);
+  background-color: var(--cor-fundo);
+  border-radius: var(--raio-md);
+}
+
+.login-aba {
+  min-height: 38px;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font: inherit;
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+.login-aba--ativa {
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-primaria);
+  box-shadow: var(--sombra-sm);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-md);
+}
+
+.login-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+}
+
+.login-campo input {
+  min-height: 44px;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font: inherit;
+  font-weight: normal;
+  transition: border-color var(--transicao);
+}
+
+.login-campo input:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+}
+
+.login-campo__dica {
+  font-size: var(--tamanho-xs);
+  font-weight: normal;
+  color: var(--cor-texto-suave);
+}
+
+.login-erro {
+  min-height: 1.2em;
+  font-size: var(--tamanho-sm);
+  color: var(--cor-errada);
+}
+
+.login-enviar { width: 100%; }
+
+.login-link {
+  align-self: center;
+  border: none;
+  background: none;
+  color: var(--cor-primaria);
+  font: inherit;
+  font-size: var(--tamanho-sm);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.login-carregando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-md);
+  color: var(--cor-texto-suave);
+}
+
+/* Área do aluno no cabeçalho */
+.cabecalho-usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  min-width: 0;
+}
+
+.cabecalho-usuario__nome {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 14rem;
+}
+
+@media (max-width: 600px) {
+  .cabecalho-usuario__nome { display: none; }
+}

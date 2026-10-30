@@ -1,0 +1,111 @@
+/* ============================================================
+   variaveis.css — Tokens de design do Reta Final ACAFE 2027
+   Edite aqui para mudar cores, raios e sombras globalmente.
+   ============================================================ */
+
+:root {
+  /* --- Paleta principal --- */
+  --cor-primaria:       #1a6b5a;   /* verde-azulado sóbrio */
+  --cor-primaria-hover: #155449;
+  --cor-primaria-suave: #e8f4f1;   /* fundo de destaque */
+
+  --cor-acento:         #2a9d8f;   /* verde-água para detalhes */
+  --cor-acento-hover:   #21887a;
+
+  /* --- Neutros (modo claro) --- */
+  --cor-fundo:          #f4f6f8;
+  --cor-fundo-card:     #ffffff;
+  --cor-borda:          #d9e2e8;
+  --cor-texto:          #1c2b30;
+  --cor-texto-suave:    #546e7a;
+  --cor-texto-fraco:    #90a4ae;
+
+  /* --- Feedback --- */
+  --cor-certa:          #2d7a47;
+  --cor-certa-fundo:    #e8f5e9;
+  --cor-certa-borda:    #a5d6a7;
+  --cor-errada:         #b0202c;
+  --cor-errada-fundo:   #fce8e9;
+  --cor-errada-borda:   #ef9a9a;
+
+  /* --- Progresso / acento laranja --- */
+  --cor-progresso:      #f4a261;
+
+  /* --- Tipografia --- */
+  --fonte-base:         'Segoe UI', system-ui, -apple-system, sans-serif;
+  --tamanho-base:       1rem;           /* 16px */
+  --tamanho-sm:         0.875rem;       /* 14px */
+  --tamanho-xs:         0.75rem;        /* 12px */
+  --tamanho-lg:         clamp(1.1rem, 2.5vw, 1.35rem);
+  --tamanho-xl:         clamp(1.25rem, 3vw, 1.6rem);
+  --tamanho-titulo:     clamp(1.4rem, 4vw, 2rem);
+  --peso-normal:        400;
+  --peso-medio:         500;
+  --peso-negrito:       700;
+  --altura-linha:       1.6;
+
+  /* --- Espaçamentos --- */
+  --espaco-xs:  0.25rem;   /*  4px */
+  --espaco-sm:  0.5rem;    /*  8px */
+  --espaco-md:  1rem;      /* 16px */
+  --espaco-lg:  1.5rem;    /* 24px */
+  --espaco-xl:  2rem;      /* 32px */
+  --espaco-2xl: 3rem;      /* 48px */
+
+  /* --- Raios de borda --- */
+  --raio-sm:   6px;
+  --raio-md:   12px;
+  --raio-lg:   18px;
+  --raio-pill: 9999px;
+
+  /* --- Sombras --- */
+  --sombra-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --sombra-md:  0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+  --sombra-lg:  0 8px 24px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+  --sombra-hover: 0 12px 32px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.08);
+
+  /* --- Transições --- */
+  --transicao:    200ms ease;
+  --transicao-md: 300ms ease;
+
+  /* --- Layout --- */
+  --max-conteudo: 1200px;
+  --padding-lateral: clamp(var(--espaco-md), 4vw, var(--espaco-xl));
+
+  /* --- Cabeçalho --- */
+  --altura-cabecalho: 64px;
+}
+
+/* ---- Tema escuro (segue preferência do sistema) ---- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-primaria:       #2ab89e;
+    --cor-primaria-hover: #33ccb0;
+    --cor-primaria-suave: #0d2e28;
+
+    --cor-acento:         #3dcbbf;
+    --cor-acento-hover:   #55d6cb;
+
+    --cor-fundo:          #0f1c1a;
+    --cor-fundo-card:     #182421;
+    --cor-borda:          #1e3530;
+    --cor-texto:          #e4efed;
+    --cor-texto-suave:    #8db5ad;
+    --cor-texto-fraco:    #4a7a72;
+
+    --cor-certa:          #4caf50;
+    --cor-certa-fundo:    #0d2e14;
+    --cor-certa-borda:    #2e7d32;
+    --cor-errada:         #ef5350;
+    --cor-errada-fundo:   #2e1010;
+    --cor-errada-borda:   #b71c1c;
+
+    --cor-progresso:      #e76f51;
+
+    --sombra-sm:  0 1px 3px rgba(0,0,0,.35);
+    --sombra-md:  0 4px 12px rgba(0,0,0,.4);
+    --sombra-lg:  0 8px 24px rgba(0,0,0,.45);
+    --sombra-hover: 0 12px 32px rgba(0,0,0,.5);
+  }
+}
+

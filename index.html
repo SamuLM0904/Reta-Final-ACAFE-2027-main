@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plataforma de estudos para o vestibular de Medicina da ACAFE 2027. Questões reais das provas anteriores de Biologia, Química, Física, Matemática, Português, Literatura, História, Geografia e Espanhol.">
+  <meta name="theme-color" content="#1a6b5a" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1c1a" media="(prefers-color-scheme: dark)">
+
+  <title>Reta Final ACAFE 2027</title>
+
+  <!-- Estilos — ordem importa: variáveis → base → telas -->
+  <link rel="stylesheet" href="css/variaveis.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/questoes.css">
+  <link rel="stylesheet" href="css/simulado.css">
+  <link rel="stylesheet" href="css/login.css">
+
+  <!--
+    Os dados são scripts clássicos (sem type="module"), carregados antes do app:
+      dados/questoes.js          → window.QUESTOES        (questões de estudo por matéria)
+      dados/provas-anteriores.js → window.QUESTOES_PROVAS (provas antigas — só simulados)
+  -->
+  <script src="dados/questoes.js?v=124"></script>
+  <script src="dados/provas-anteriores.js?v=124"></script>
+</head>
+
+<body>
+
+  <!-- Cabeçalho: preenchido pelo JS -->
+  <div id="cabecalho"></div>
+
+  <!-- Conteúdo principal: trocado pelo roteador -->
+  <main id="app" role="main">
+    <!-- Tela de carregamento inicial enquanto o JS não inicializa -->
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100dvh - 64px);
+      "
+      aria-busy="true"
+      aria-label="Carregando..."
+    >
+      <div class="spinner"></div>
+    </div>
+  </main>
+
+  <!--
+    app.js é o ponto de entrada dos módulos ES.
+    type="module" garante que os imports funcionem e que o script
+    rode após o DOM estar disponível (defer implícito).
+  -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
+
