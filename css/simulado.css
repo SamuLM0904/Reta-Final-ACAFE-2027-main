@@ -460,3 +460,38 @@
   color: var(--cor-texto-suave);
   line-height: 1.5;
 }
+
+/* ---- Questões feitas nos simulados aleatórios, por prova ---- */
+.simulado-historico__topo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.simulado-feitas__prova { display: block; }
+
+.simulado-feitas__resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-xs) var(--espaco-md);
+  margin-bottom: var(--espaco-sm);
+  cursor: pointer;
+}
+
+.simulado-feitas__prova:not([open]) .simulado-feitas__resumo { margin-bottom: 0; }
+
+/* "ainda não feita": bem apagada, sem borda (o "em branco" tem borda tracejada) */
+.navegador-questoes__btn--nao-feita {
+  border-color: transparent;
+  background: none;
+  color: var(--cor-texto-fraco);
+  opacity: 0.45;
+  cursor: default;
+}
+
+.simulado-legenda__item--nao-feita { opacity: 0.6; }
+.simulado-legenda__item--nao-feita::before { border: 1px solid transparent; background: var(--cor-borda); }
+

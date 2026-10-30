@@ -11,8 +11,8 @@
  *   - Chat: o aluno escreve (ou fala) o que quer mudar ("vou viajar sexta"); o guia
  *     mostra se a mudança faz sentido e as consequências até a prova, e só aplica
  *     depois da confirmação.
- *   - Desempenho (memória de erros e acertos) e, para o administrador, o reset da
- *     memória de qualquer aluno (com confirmação dupla).
+ *   - Desempenho (memória de erros e acertos). O reset da memória de um aluno fica no
+ *     painel de configurações (engrenagem no cabeçalho), só para administradores.
  *
  * Cálculos: guia-plano.js. Interpretação do chat: guia-chat.js. Dados: armazenamento.js (guia).
  */
@@ -21,8 +21,7 @@ import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
 import { PROVA } from './contagem.js';
-import { lerGuia, salvarGuia, lerMemoria, lerSimulado, resetarMemoriaLocal } from './armazenamento.js';
-import { nuvemAtiva, eAdmin, listarAlunos, resetarMemoriaDoAluno, usuarioAtual, usuarioExibido } from './nuvem.js';
+import { lerGuia, salvarGuia, lerMemoria, lerSimulado } from './armazenamento.js';
 import {
   MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, diasEntre,
   inicioDaSemana, minutosDoDia, simuladoDoDia, indexarQuestoes, analisarMemoria, calcularPrioridades,
@@ -296,18 +295,18 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
             <a href="#/" class="btn-voltar">${icone('arrow-left', 18)} Voltar ao início</a>
             <button type="button" class="btn btn-secundario btn-pequeno" id="guia-editar">Editar minhas respostas</button>
           </div>
-          <h2 class="simulados-titulo">Guia de Estudos</h2>
-          <p class="simulados-descricao">${diasParaProva > 0
-            ? `Faltam <strong>${diasParaProva} dia${diasParaProva > 1 ? 's' : ''}</strong> para a prova (${PROVA.dataExtenso}).`
-            : diasParaProva === 0 ? '<strong>Hoje é o dia da prova.</strong> Boa prova! 🍀' : 'A prova já aconteceu.'}</p>
         </header>
         <div class="simulados-conteudo">
-          ${htmlHoje(ctx, plano)}
+          <p class="agenda-dica">${icone('alert-circle', 22)}
+            <span>Este é o seu cronograma até a prova. Ele se ajusta sozinho conforme você acerta e erra as questões
+            dos simulados e dos módulos. Precisa mudar algo (viagem, simulado do cursinho)? Use a conversa abaixo.</span></p>
+          <h2 class="agenda-faixa">Cronograma até a prova<span>${diasParaProva > 0
+            ? `faltam ${diasParaProva} dia${diasParaProva > 1 ? 's' : ''} • ${PROVA.dataExtenso}`
+            : diasParaProva === 0 ? 'hoje é o dia da prova • boa prova! 🍀' : 'a prova já aconteceu'}</span></h2>
           ${htmlChat()}
           ${htmlMudancasAtivas(ctx)}
-          ${htmlProximosDias(ctx, plano)}
+          ${htmlLinhaDoTempo(ctx, plano)}
           ${htmlDesempenho(ctx)}
-          <div id="guia-admin"></div>
         </div>
       </div>
     </div>`;
@@ -346,9 +345,13 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
   container.querySelectorAll('[data-desfazer]').forEach(btn => btn.addEventListener('click', () => {
     const g = lerGuia();
     const [tipo, chave] = btn.dataset.desfazer.split(':');
-    if (tipo === 'dia') { delete g.fixos[chave]; delete g.ajustes[chave]; }
+    if (tipo === 'dias') chave.split(',').forEach(d => { delete g.fixos[d]; delete g.ajustes[d]; });
     if (tipo === 'externo') delete g.simuladosExternos[chave];
     if (tipo === 'movido') delete g.simuladoNoDia[chave];
+    if (tipo === 'edicoes') {
+      delete g.edicoes?.[chave];
+      if (chave === hoje && g.planos) delete g.planos[hoje];   // hoje é refeito sem as edições
+    }
     salvarGuia(g);
     redesenhar();
   }));
@@ -368,10 +371,9 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
 
   vincularChat(container, ctx, redesenhar);
   atualizarResumoFeitos(container);
-  renderizarAdmin(container.querySelector('#guia-admin'));
 }
 
-/* ---------------- Hoje ---------------- */
+/* ---------------- Blocos do dia de hoje ---------------- */
 
 function htmlBloco(bloco, i, ctx, feito) {
   const materia = MATERIAS.find(m => m.id === bloco.materia);
@@ -394,52 +396,12 @@ function htmlBloco(bloco, i, ctx, feito) {
         <input type="checkbox" data-bloco-feito="${i}"${feito ? ' checked' : ''} aria-label="Bloco ${i + 1} feito">
       </label>
       <div class="guia-bloco__corpo">
-        <p class="guia-bloco__titulo"><span class="guia-bloco__tempo">${formatarHoras(bloco.minutos)}</span> ${titulo}</p>
+        <p class="guia-bloco__titulo"><span class="guia-bloco__tempo">${formatarHoras(bloco.minutos)}</span> ${titulo}${bloco.editado ? ' <span class="guia-selo">alterado por você</span>' : ''}</p>
         ${bloco.foco?.length ? `<p class="guia-bloco__foco">Foco: ${bloco.foco.map(f => `<span class="guia-chip">${escaparHtml(f)}</span>`).join(' ')}</p>` : ''}
         <p class="guia-bloco__atividade">${bloco.atividade}</p>
         ${acao}
       </div>
     </li>`;
-}
-
-function htmlHoje(ctx, plano) {
-  const { guia, hoje } = ctx;
-  const minutos = minutosDoDia(guia, hoje, DIA_PROVA);
-  const pausa = guia.perfil.bloco.pausa;
-  const mudado = guia.fixos?.[hoje] !== undefined || guia.ajustes?.[hoje];
-  const feitos = new Set(plano.feitos || []);
-
-  let corpo;
-  if (hoje >= DIA_PROVA) {
-    corpo = `<p class="simulado-card__info">${hoje === DIA_PROVA
-      ? 'Dia da prova: nada de estudar. Chegue cedo (os portões fecham às 13h), leve documento e caneta preta. Você se preparou para isso!'
-      : 'A prova já aconteceu. Parabéns pela dedicação!'}</p>`;
-  } else if (!plano.blocos.length) {
-    corpo = `<p class="simulado-card__info">${minutos === 0 ? 'Hoje está livre no seu cronograma.' : 'O tempo de hoje é curto demais para um bloco (mínimo de 15 minutos).'}</p>`;
-  } else {
-    corpo = `<ol class="guia-blocos">${plano.blocos.map((b, i) =>
-      htmlBloco(b, i, ctx, feitos.has(i)) + (i < plano.blocos.length - 1 && pausa ? `<li class="guia-pausa">pausa de ${pausa} min</li>` : '')).join('')}</ol>`;
-  }
-
-  return `
-    <section class="simulado-card simulado-card--destaque guia-hoje" aria-label="Plano de hoje">
-      <div class="simulado-card__corpo">
-        <div class="guia-hoje__topo">
-          <h3 class="simulado-card__titulo">Hoje, ${dataCurta(hoje)} · ${formatarHoras(minutos)} de estudo${mudado ? ' <span class="guia-selo">ajustado</span>' : ''}</h3>
-          <span class="guia-hoje__progresso" id="guia-progresso" aria-live="polite"></span>
-        </div>
-        ${hoje < DIA_PROVA ? `
-        <div class="guia-ajuste" role="group" aria-label="Ajustar o tempo de hoje">
-          <span>Hoje vou estudar:</span>
-          <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="-${PASSO_AJUSTE}" data-dia="${hoje}">− ${PASSO_AJUSTE} min</button>
-          <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="${PASSO_AJUSTE}" data-dia="${hoje}">+ ${PASSO_AJUSTE} min</button>
-          ${mudado ? `<button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="0" data-dia="${hoje}">Tempo normal</button>` : ''}
-        </div>` : ''}
-        ${corpo}
-        ${plano.blocos.length ? `<p class="guia-dica">O plano de hoje fica fixo durante o dia; o de amanhã já leva em conta o que você acertou e errou hoje.
-          <button type="button" class="guia-link" id="guia-refazer-hoje">Refazer o plano de hoje com meu desempenho atual</button></p>` : ''}
-      </div>
-    </section>`;
 }
 
 function atualizarResumoFeitos(container) {
@@ -450,37 +412,190 @@ function atualizarResumoFeitos(container) {
   el.textContent = feitos === caixas.length ? `Tudo feito! 🎉` : `${feitos} de ${caixas.length} blocos feitos`;
 }
 
-/* ---------------- Próximos dias ---------------- */
+/* ---------------- Linha do tempo (modelo da agenda da UFSC) ---------------- */
 
-function htmlProximosDias(ctx, planoHoje) {
+const MESES_NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto',
+  'setembro', 'outubro', 'novembro', 'dezembro'];
+const DIAS_NOMES = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+
+/** "30 de outubro de 2026 · sexta-feira" */
+function dataLonga(chave) {
+  const [ano, mes, dia] = chave.split('-').map(Number);
+  return `${String(dia).padStart(2, '0')} de ${MESES_NOMES[mes - 1]} de ${ano} · ${DIAS_NOMES[new Date(`${chave}T12:00:00-03:00`).getUTCDay()]}`;
+}
+
+/** Tipo visual do dia: cor do marcador e da borda do cartão. */
+function tipoDoDia(plano, chave, hoje) {
+  if (chave === DIA_PROVA) return 'prova';
+  if (chave > DIA_PROVA) return 'gabarito';
+  if (chave < hoje) return 'passado';
+  if (plano.blocos.some(b => b.tipo === 'simulado')) return 'simulado';
+  if (plano.blocos.some(b => b.tipo === 'externo')) return 'externo';
+  if (!plano.blocos.length) return 'livre';
+  if (somarDias(chave, 1) === DIA_PROVA) return 'vespera';
+  return 'estudo';
+}
+
+/** Título do cartão de um dia de estudo. */
+function tituloDoDia(plano, chave, hoje) {
+  const prefixo = chave === hoje ? 'Hoje · ' : '';
+  if (somarDias(chave, 1) === DIA_PROVA) return `${prefixo}Véspera: revisão leve`;
+  if (!plano.blocos.length) return `${prefixo}Dia livre`;
+  const sim = plano.blocos.find(b => b.tipo === 'simulado' || b.tipo === 'externo');
+  const materias = plano.blocos.filter(b => b.tipo === 'materia').length;
+  const blocos = n => `${n} bloco${n > 1 ? 's' : ''}`;
+  if (sim) {
+    const nome = sim.tipo === 'externo' ? 'Simulado externo' : sim.minutos < 300 ? 'Simulado (parte)' : 'Simulado completo';
+    return `${prefixo}${nome}${materias ? ` + ${blocos(materias)}` : ''}`;
+  }
+  return `${prefixo}${formatarHoras(plano.minutos)} de estudo · ${blocos(materias)}`;
+}
+
+/** Linha compacta de um bloco (dias futuros e passados). */
+function htmlBlocoCompacto(b, guia, feito) {
+  const nome = b.tipo === 'simulado' ? 'Simulado completo (site)' : b.tipo === 'externo' ? 'Simulado externo'
+    : nomeMateria(MATERIAS.find(m => m.id === b.materia), guia.perfil);
+  return `
+    <li class="agenda-bloco${feito ? ' agenda-bloco--feito' : ''}">
+      <span class="agenda-bloco__tempo">${formatarHoras(b.minutos)}${b.editado ? ' ✏️' : ''}</span>
+      <span><strong>${nome}</strong>${b.foco?.length ? ` <span class="agenda-bloco__foco">— ${b.foco.map(escaparHtml).join(', ')}</span>` : ''}</span>
+    </li>`;
+}
+
+function htmlAjusteDoDia(guia, chave, ehHoje) {
+  const mudado = guia.fixos?.[chave] !== undefined || guia.ajustes?.[chave];
+  return `
+    <div class="guia-ajuste" role="group" aria-label="Ajustar o tempo de ${dataCurta(chave)}">
+      <span>${ehHoje ? 'Hoje vou estudar' : 'Neste dia'}:</span>
+      <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="-${PASSO_AJUSTE}" data-dia="${chave}" aria-label="${PASSO_AJUSTE} minutos a menos em ${dataCurta(chave)}">− ${PASSO_AJUSTE} min</button>
+      <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="${PASSO_AJUSTE}" data-dia="${chave}" aria-label="${PASSO_AJUSTE} minutos a mais em ${dataCurta(chave)}">+ ${PASSO_AJUSTE} min</button>
+      ${mudado ? `<button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="0" data-dia="${chave}">Tempo normal</button>` : ''}
+    </div>`;
+}
+
+/** Conteúdo do cartão de um dia. */
+function htmlCartaoDia(ctx, plano, tipo) {
+  const { guia, hoje } = ctx;
+  const chave = plano.chave;
+  const ehHoje = chave === hoje;
+  const mudado = guia.fixos?.[chave] !== undefined || guia.ajustes?.[chave];
+  const selo = mudado ? ' <span class="guia-selo">ajustado</span>' : '';
+
+  if (tipo === 'prova') {
+    const idioma = guia.perfil.idioma || 'Espanhol';
+    return `
+      <p class="agenda-cartao__data">${dataLonga(chave)}</p>
+      <h3 class="agenda-cartao__titulo">PROVA · ${PROVA.nome}</h3>
+      <p>🚪 Portões fecham às <mark>13h00</mark> (chegue 30 minutos antes).</p>
+      <p>📝 Prova das <mark>13h20 às 18h20</mark> (horário de Brasília): redação e 63 questões objetivas.</p>
+      <ul class="agenda-lista">
+        <li><strong>Língua Portuguesa</strong>: 10 questões</li>
+        <li><strong>Literatura</strong>: 4 questões</li>
+        <li><strong>Língua Estrangeira (${idioma})</strong>: 7 questões</li>
+        <li><strong>Matemática, Física, Química, Biologia, História e Geografia</strong>: 7 questões cada</li>
+      </ul>
+      <p>🍀 Nada de estudar neste dia. Leve documento com foto e caneta preta. Você se preparou para isso!</p>`;
+  }
+  if (tipo === 'gabarito') {
+    return `
+      <p class="agenda-cartao__data">${dataLonga(chave)}</p>
+      <h3 class="agenda-cartao__titulo">Gabarito preliminar</h3>
+      <p>✅ ${PROVA.gabarito}</p>`;
+  }
+
+  if (tipo === 'passado') {
+    const feitos = new Set(plano.feitos || []);
+    return `
+      <p class="agenda-cartao__data agenda-cartao__data--passado">${dataLonga(chave)}</p>
+      <h3 class="agenda-cartao__titulo">${tituloDoDia(plano, chave, hoje)}</h3>
+      ${plano.blocos.length ? `<p class="agenda-cartao__resumo">${icone('check', 14)} ${feitos.size} de ${plano.blocos.length} blocos feitos</p>
+      <ul class="agenda-blocos">${plano.blocos.map((b, i) => htmlBlocoCompacto(b, guia, feitos.has(i))).join('')}</ul>` : ''}`;
+  }
+
+  if (ehHoje) {
+    const pausa = guia.perfil.bloco.pausa;
+    const feitos = new Set(plano.feitos || []);
+    const corpo = plano.blocos.length
+      ? `<ol class="guia-blocos">${plano.blocos.map((b, i) =>
+          htmlBloco(b, i, ctx, feitos.has(i)) + (i < plano.blocos.length - 1 && pausa ? `<li class="guia-pausa">pausa de ${pausa} min</li>` : '')).join('')}</ol>`
+      : `<p>${plano.minutos === 0 ? 'Hoje está livre no seu cronograma. Descanse!' : 'O tempo de hoje é curto demais para um bloco (mínimo de 15 minutos).'}</p>`;
+    return `
+      <div class="guia-hoje__topo">
+        <p class="agenda-cartao__data">${dataLonga(chave)}</p>
+        <span class="guia-hoje__progresso" id="guia-progresso" aria-live="polite"></span>
+      </div>
+      <h3 class="agenda-cartao__titulo">${tituloDoDia(plano, chave, hoje)}${selo}</h3>
+      ${htmlAjusteDoDia(guia, chave, true)}
+      ${corpo}
+      ${plano.blocos.length ? `<p class="guia-dica">O plano de hoje fica fixo durante o dia; o de amanhã já leva em conta o que você acertou e errou hoje.
+        <button type="button" class="guia-link" id="guia-refazer-hoje">Refazer o plano de hoje com meu desempenho atual</button></p>` : ''}`;
+  }
+
+  // Dia futuro (prévia)
+  return `
+    <p class="agenda-cartao__data">${dataLonga(chave)}</p>
+    <h3 class="agenda-cartao__titulo">${tituloDoDia(plano, chave, hoje)}${selo}</h3>
+    ${plano.blocos.length ? `<ul class="agenda-blocos">${plano.blocos.map(b => htmlBlocoCompacto(b, guia, false)).join('')}</ul>` : ''}
+    ${tipo === 'vespera' ? '<p class="agenda-cartao__resumo">Releia resumos e anotações, sem conteúdo novo. Separe documento e caneta e durma cedo.</p>' : ''}
+    ${htmlAjusteDoDia(guia, chave, false)}`;
+}
+
+/**
+ * Linha do tempo do cronograma: dias recentes (cinza, riscados), hoje (destaque, interativo),
+ * os próximos dias até a véspera (prévia), a prova e o gabarito. Um cabeçalho por mês.
+ */
+function htmlLinhaDoTempo(ctx, planoHoje) {
   const { guia, hoje } = ctx;
   const vespera = somarDias(DIA_PROVA, -1);
-  const ate = [somarDias(hoje, 7), vespera].sort()[0];
-  if (ate <= hoje) return '';
-  const planos = planejarPeriodo(guia, { ...ctx, planosFixos: { ...ctx.planosFixos, [hoje]: planoHoje }, de: hoje, ate }).slice(1);
-  const abreviar = b => b.tipo === 'simulado' ? '<span class="guia-chip guia-chip--simulado">Simulado</span>'
-    : b.tipo === 'externo' ? '<span class="guia-chip guia-chip--simulado">Simulado externo</span>'
-    : `<span class="guia-chip">${nomeMateria(MATERIAS.find(m => m.id === b.materia), guia.perfil).replace('Língua Estrangeira', 'L.E.')}</span>`;
-  const linhas = planos.map(p => {
-    const mudado = guia.fixos?.[p.chave] !== undefined || guia.ajustes?.[p.chave];
-    return `
-      <li class="guia-dia">
-        <span class="guia-dia__data">${dataCurta(p.chave)}</span>
-        <span class="guia-dia__tempo">${formatarHoras(p.minutos)}${mudado ? ' *' : ''}</span>
-        <span class="guia-dia__materias">${p.blocos.length ? p.blocos.map(abreviar).join(' ') : '<em>livre</em>'}</span>
-        <span class="guia-dia__acoes">
-          <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="-${PASSO_AJUSTE}" data-dia="${p.chave}" aria-label="${PASSO_AJUSTE} minutos a menos em ${dataCurta(p.chave)}">−</button>
-          <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="${PASSO_AJUSTE}" data-dia="${p.chave}" aria-label="${PASSO_AJUSTE} minutos a mais em ${dataCurta(p.chave)}">+</button>
-        </span>
+  const passados = Object.keys(ctx.planosFixos).filter(d => d >= somarDias(hoje, -3)).sort()
+    .map(d => ({ ...ctx.planosFixos[d], chave: d }));
+  const futuros = hoje < vespera
+    ? planejarPeriodo(guia, { ...ctx, planosFixos: { ...ctx.planosFixos, [hoje]: planoHoje }, de: hoje, ate: vespera }).slice(1)
+    : [];
+  const dias = [
+    ...passados,
+    ...(hoje < DIA_PROVA ? [planoHoje] : []),
+    ...futuros,
+    ...(hoje <= DIA_PROVA ? [{ chave: DIA_PROVA, blocos: [] }] : []),
+    { chave: somarDias(DIA_PROVA, 1), blocos: [] },
+  ];
+
+  let mesAtual = '';
+  let lado = 0;
+  const itens = dias.map(plano => {
+    const mes = plano.chave.slice(0, 7);
+    let cabecalho = '';
+    if (mes !== mesAtual) {
+      mesAtual = mes;
+      const [ano, m] = mes.split('-').map(Number);
+      cabecalho = `
+        <li class="agenda-item agenda-item--mes agenda-item--${lado++ % 2 ? 'esquerda' : 'direita'}">
+          <span class="agenda-marcador agenda-marcador--mes" aria-hidden="true">${icone('clock', 16)}</span>
+          <h3 class="agenda-mes">${MESES_NOMES[m - 1]} ${ano}</h3>
+        </li>`;
+    }
+    const tipo = tipoDoDia(plano, plano.chave, hoje);
+    const ehHoje = plano.chave === hoje;
+    return cabecalho + `
+      <li class="agenda-item agenda-item--${lado++ % 2 ? 'esquerda' : 'direita'}${ehHoje ? ' agenda-item--hoje' : ''}"${ehHoje ? ' id="agenda-hoje"' : ''}>
+        <span class="agenda-marcador agenda-marcador--${tipo}" aria-hidden="true">${icone(tipo === 'passado' ? 'check' : 'clock', 16)}</span>
+        <article class="agenda-cartao agenda-cartao--${tipo}${ehHoje ? ' agenda-cartao--hoje' : ''}" aria-label="${dataLonga(plano.chave)}">
+          ${htmlCartaoDia(ctx, plano, tipo)}
+        </article>
       </li>`;
   }).join('');
+
   return `
-    <section class="simulado-card" aria-label="Próximos dias">
-      <div class="simulado-card__corpo">
-        <h3 class="simulado-card__titulo">Próximos dias</h3>
-        <ul class="guia-dias">${linhas}</ul>
-        <p class="guia-dica">Prévia: as matérias de cada dia são definidas na manhã do próprio dia, com o seu desempenho mais recente. * = tempo ajustado.</p>
-      </div>
+    <section aria-label="Cronograma dia a dia">
+      <ol class="agenda">${itens}</ol>
+      <p class="guia-dica agenda-legenda">
+        <span class="agenda-cor agenda-cor--estudo"></span> estudo
+        <span class="agenda-cor agenda-cor--simulado"></span> simulado
+        <span class="agenda-cor agenda-cor--externo"></span> simulado externo
+        <span class="agenda-cor agenda-cor--livre"></span> dia livre
+        <span class="agenda-cor agenda-cor--prova"></span> prova
+        — os dias seguintes são uma prévia: as matérias de cada dia são definidas no próprio dia, com o seu desempenho mais recente.
+      </p>
     </section>`;
 }
 
@@ -489,16 +604,33 @@ function htmlProximosDias(ctx, planoHoje) {
 function htmlMudancasAtivas(ctx) {
   const { guia, hoje } = ctx;
   const itens = [];
+  // Dias com tempo mudado; dias seguidos com a mesma mudança viram uma linha só
   const dias = new Set([...Object.keys(guia.fixos || {}), ...Object.keys(guia.ajustes || {})]);
+  const grupos = [];
   [...dias].filter(d => d >= hoje && d < DIA_PROVA).sort().forEach(d => {
+    if (guia.fixos?.[d] === undefined && !guia.ajustes?.[d]) return;
     const texto = guia.fixos?.[d] !== undefined
       ? (guia.fixos[d] === 0 ? 'sem estudo' : `só ${formatarHoras(guia.fixos[d])}`)
       : `${guia.ajustes[d] > 0 ? '+' : '−'}${formatarHoras(guia.ajustes[d])}`;
-    if (guia.fixos?.[d] === undefined && !guia.ajustes?.[d]) return;
-    itens.push({ texto: `${dataCurta(d)}: ${texto}`, chave: `dia:${d}` });
+    const ultimo = grupos[grupos.length - 1];
+    if (ultimo && ultimo.texto === texto && somarDias(ultimo.dias[ultimo.dias.length - 1], 1) === d) ultimo.dias.push(d);
+    else grupos.push({ texto, dias: [d] });
   });
+  grupos.forEach(({ texto, dias: ds }) => itens.push({
+    texto: `${dataCurta(ds[0])}${ds.length > 1 ? ` a ${dataCurta(ds[ds.length - 1])}` : ''}: ${texto}`,
+    chave: `dias:${ds.join(',')}`,
+  }));
   Object.entries(guia.simuladosExternos || {}).filter(([d]) => d >= hoje).forEach(([d, min]) =>
     itens.push({ texto: `${dataCurta(d)}: simulado externo (${formatarHoras(min)})`, chave: `externo:${d}` }));
+  const nomeM = id => nomeMateria(MATERIAS.find(m => m.id === id), guia.perfil);
+  Object.entries(guia.edicoes || {}).filter(([d, ops]) => d >= hoje && d < DIA_PROVA && ops.length).sort().forEach(([d, ops]) => {
+    const partes = ops.map(e =>
+      e.op === 'tempo' ? `${nomeM(e.materia)} com ${formatarHoras(e.minutos)}`
+      : e.op === 'delta' ? `${nomeM(e.materia)} ${e.minutos > 0 ? '+' : '−'}${formatarHoras(e.minutos)}`
+      : e.op === 'remover' ? `sem ${nomeM(e.materia)}`
+      : `+${nomeM(e.materia)} (${formatarHoras(e.minutos)})`);
+    itens.push({ texto: `${dataCurta(d)}: ${partes.join('; ')}`, chave: `edicoes:${d}` });
+  });
   Object.entries(guia.simuladoNoDia || {}).filter(([, d]) => d >= hoje).forEach(([semana, d]) =>
     itens.push({ texto: `Simulado da semana em ${dataCurta(d)}`, chave: `movido:${semana}` }));
   if (!itens.length) return '';
@@ -552,15 +684,33 @@ function htmlAvaliacao(interpretacao, avaliacao, idx) {
     ${consequencias.length ? `<p class="guia-msg__sub">O que muda no seu plano:</p><ul class="guia-lista">${consequencias.map(e => `<li>${e}</li>`).join('')}</ul>` : ''}
     ${veredito !== 'invalida' ? `
       <div class="guia-msg__acoes" data-pedido="${idx}">
-        <button type="button" class="btn btn-primario btn-pequeno" data-aplicar="simples">Aplicar</button>
-        ${compensacao ? '<button type="button" class="btn btn-secundario btn-pequeno" data-aplicar="compensar">Aplicar e compensar</button>' : ''}
+        ${compensacao
+          ? `<button type="button" class="btn btn-primario btn-pequeno" data-aplicar="compensar">Aplicar e compensar</button>
+             <button type="button" class="btn btn-secundario btn-pequeno" data-aplicar="simples">Aplicar sem compensar</button>`
+          : '<button type="button" class="btn btn-primario btn-pequeno" data-aplicar="simples">Aplicar</button>'}
         <button type="button" class="btn btn-secundario btn-pequeno" data-aplicar="cancelar">Cancelar</button>
       </div>` : ''}`;
 }
 
 const pedidos = [];   // pedidos avaliados nesta visita (índice usado nos botões)
 
+/**
+ * Plano de hoje depois de uma mudança: mantém marcados como feitos os blocos que
+ * continuam no plano (mesma matéria/tipo, na ordem).
+ */
+function manterFeitos(antes, depois) {
+  const feitosAntes = (antes?.feitos || []).map(i => antes.blocos[i]).filter(Boolean);
+  const feitos = [];
+  depois.blocos.forEach((b, j) => {
+    const k = feitosAntes.findIndex(f => f.tipo === b.tipo && f.materia === b.materia);
+    if (k >= 0) { feitos.push(j); feitosAntes.splice(k, 1); }
+  });
+  return feitos;
+}
+
 function vincularChat(container, ctx, redesenhar) {
+  // avaliação sempre com o guia e o plano de hoje atuais (o aluno pode ter mudado algo antes)
+  const contextoAtual = () => ({ ...ctx, planoHoje: lerGuia()?.planos?.[ctx.hoje] || null });
   const form = container.querySelector('#guia-chat-form');
   const texto = container.querySelector('#guia-chat-texto');
   const caixa = container.querySelector('#guia-chat-mensagens');
@@ -581,7 +731,7 @@ function vincularChat(container, ctx, redesenhar) {
     adicionar('aluno', escaparHtml(pedido));
     const interpretacao = interpretarPedido(pedido, ctx.hoje);
     if (interpretacao.duvida) { adicionar('guia', interpretacao.duvida); return; }
-    const avaliacao = avaliarMudancas(lerGuia(), interpretacao.mudancas, ctx);
+    const avaliacao = avaliarMudancas(lerGuia(), interpretacao.mudancas, contextoAtual());
     pedidos.push({ texto: pedido, interpretacao, avaliacao });
     adicionar('guia', htmlAvaliacao(interpretacao, avaliacao, pedidos.length - 1));
   });
@@ -599,12 +749,21 @@ function vincularChat(container, ctx, redesenhar) {
     const i = conversa.findIndex(m => m.html.includes(`data-pedido="${acoes.dataset.pedido}"`));
     if (i >= 0) conversa[i].html = conversa[i].html.replace(/<div class="guia-msg__acoes"[\s\S]*?<\/div>/, '');
     if (!p || btn.dataset.aplicar === 'cancelar') { adicionar('guia', 'Tudo bem, nada foi alterado.'); return; }
-    const mudancas = btn.dataset.aplicar === 'compensar'
-      ? [...p.interpretacao.mudancas, ...p.avaliacao.compensacao] : p.interpretacao.mudancas;
-    const g = aplicarMudancas(lerGuia(), mudancas);
+    // reavalia agora, com o estado atual, e aplica as mudanças já conferidas
+    const atual = lerGuia();
+    const av = avaliarMudancas(atual, p.interpretacao.mudancas, contextoAtual());
+    if (av.veredito === 'invalida') { adicionar('guia', `Não deu para aplicar: ${av.erros.join(' ')}`); return; }
+    const compensar = btn.dataset.aplicar === 'compensar' && av.compensacao;
+    const mudancas = compensar ? [...av.mudancas, ...av.compensacao] : av.mudancas;
+    const g = aplicarMudancas(atual, mudancas);
+    // plano de hoje: recebe as edições pedidas (sem refazer o resto); se o tempo do dia mudou, é refeito
+    const hojeAntes = atual.planos?.[ctx.hoje];
+    if (hojeAntes && av.planoHojeDepois && !av.tempoDeHojeMuda) {
+      g.planos[ctx.hoje] = { ...av.planoHojeDepois, base: hojeAntes.base, feitos: manterFeitos(hojeAntes, av.planoHojeDepois) };
+    } else if (av.tempoDeHojeMuda && g.planos) delete g.planos[ctx.hoje];
     g.historico = [...(g.historico || []).slice(-29), { em: Date.now(), pedido: p.texto, mudancas }];
     salvarGuia(g);
-    conversa.push({ autor: 'guia', html: `Pronto! Cronograma atualizado${btn.dataset.aplicar === 'compensar' ? ', com a compensação' : ''}.` });
+    conversa.push({ autor: 'guia', html: `Pronto! Cronograma atualizado${compensar ? ', com a compensação' : ''}.` });
     redesenhar();
   });
 
@@ -692,55 +851,4 @@ function htmlDesempenho(ctx) {
         ${dicaDiagnostico}
       </div>
     </section>`;
-}
-
-/* ---------------- Administração ---------------- */
-
-async function renderizarAdmin(el) {
-  if (!el || !nuvemAtiva() || !(await eAdmin())) return;
-  el.innerHTML = `
-    <section class="simulado-card guia-admin" aria-label="Administração">
-      <div class="simulado-card__corpo">
-        <h3 class="simulado-card__titulo">Administração: resetar a memória de um aluno</h3>
-        <p class="simulado-card__info">Apaga a memória de erros e acertos do aluno escolhido (simulados e questões de estudo).
-          O histórico de simulados e as respostas dos módulos não são apagados. Não dá para desfazer.</p>
-        <div class="guia-linha">
-          <input type="text" id="guia-admin-usuario" class="guia-texto" list="guia-admin-lista" placeholder="usuário do aluno (ex.: joao_silva)" autocomplete="off">
-          <datalist id="guia-admin-lista"></datalist>
-          <button type="button" class="btn btn-primario btn-perigo" id="guia-admin-resetar">Resetar memória</button>
-        </div>
-        <p class="simulado-card__info" id="guia-admin-status" role="status"></p>
-      </div>
-    </section>`;
-  const status = el.querySelector('#guia-admin-status');
-  try {
-    const alunos = await listarAlunos();
-    el.querySelector('#guia-admin-lista').innerHTML = alunos.map(a =>
-      `<option value="${escaparHtml(a.usuario)}">${escaparHtml(a.nome || a.usuario)} — ${a.respostas} respostas</option>`).join('');
-  } catch (e) {
-    status.textContent = 'Não foi possível listar os alunos (publique as regras novas do firestore.rules no Console do Firebase).';
-  }
-  el.querySelector('#guia-admin-resetar').addEventListener('click', async () => {
-    const usuario = el.querySelector('#guia-admin-usuario').value.trim();
-    if (!usuario) { status.textContent = 'Digite o usuário do aluno.'; return; }
-    const nome = escaparHtml(usuario);
-    if (!(await confirmar({
-      titulo: `Resetar a memória de ${nome}?`,
-      mensagem: 'Todos os erros e acertos registrados desse aluno serão apagados. O guia dele volta a começar do zero.',
-      textoConfirmar: 'Continuar', perigo: true,
-    }))) return;
-    if (!(await confirmar({
-      titulo: 'Tem certeza? Não dá para desfazer.',
-      mensagem: `Confirme para apagar <strong>definitivamente</strong> a memória de erros e acertos de <strong>${nome}</strong>.`,
-      textoConfirmar: 'Apagar a memória', perigo: true,
-    }))) return;
-    status.textContent = 'Apagando...';
-    try {
-      const r = await resetarMemoriaDoAluno(usuario);
-      if (r.usuario === usuarioExibido(usuarioAtual())) resetarMemoriaLocal(r.resetEm);   // o admin resetou a própria conta
-      status.textContent = `Memória de ${r.usuario} apagada (${r.apagadas} registros). Se o aluno estiver com o site aberto, ele precisa recarregar a página.`;
-    } catch (e) {
-      status.textContent = 'Erro: ' + e.message;
-    }
-  });
 }

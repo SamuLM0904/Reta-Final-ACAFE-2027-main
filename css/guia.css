@@ -4,6 +4,18 @@
    tabelas de simulado.css.
    ============================================================ */
 
+/* Cor de "atenção" (avisos do chat), legível nos dois temas */
+:root {
+  --guia-atencao: #8a5300;
+  --guia-atencao-fundo: #fff4e5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --guia-atencao: #f4b860;
+    --guia-atencao-fundo: rgba(244, 162, 97, 0.15);
+  }
+}
+
 /* ---- Questionário ---- */
 .guia-form {
   flex-direction: column;
@@ -97,7 +109,7 @@
 
 .guia-selo--ok      { color: var(--cor-certa);  background-color: var(--cor-certa-fundo);  border-color: var(--cor-certa-borda); }
 .guia-selo--erro    { color: var(--cor-errada); background-color: var(--cor-errada-fundo); border-color: var(--cor-errada-borda); }
-.guia-selo--atencao { color: #8a5300; background-color: #fff4e5; border-color: var(--cor-progresso); }
+.guia-selo--atencao { color: var(--guia-atencao); background-color: var(--guia-atencao-fundo); border-color: var(--cor-progresso); }
 
 .guia-chip {
   display: inline-block;
@@ -109,7 +121,7 @@
   font-size: var(--tamanho-xs);
 }
 
-.guia-chip--simulado { background-color: #fff4e5; color: #8a5300; }
+.guia-chip--simulado { background-color: var(--guia-atencao-fundo); color: var(--guia-atencao); }
 
 /* ---- Plano de hoje ---- */
 .guia-hoje__topo {
@@ -297,7 +309,7 @@
 }
 
 .guia-lista--erro    { color: var(--cor-errada); }
-.guia-lista--atencao { color: #8a5300; }
+.guia-lista--atencao { color: var(--guia-atencao); }
 
 .guia-chat__envio {
   display: flex;
@@ -336,4 +348,256 @@
   font-size: var(--tamanho-sm);
   color: var(--cor-texto);
   line-height: 1.6;
+}
+
+/* ============================================================
+   Linha do tempo (modelo da agenda do vestibular da UFSC):
+   linha central, cabeçalho por mês e cartões alternados.
+   No celular: uma coluna, com a linha à esquerda.
+   ============================================================ */
+:root {
+  --agenda-estudo:   var(--cor-primaria);
+  --agenda-simulado: #7c4dcc;
+  --agenda-externo:  #d69e1a;
+  --agenda-livre:    #9aa8b1;
+  --agenda-prova:    #d14a3c;
+  --agenda-mes:      #5b63e6;
+}
+
+.agenda-dica {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-md);
+  border-left: 4px solid #3b82f6;
+  border-radius: var(--raio-sm);
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  font-size: var(--tamanho-sm);
+  line-height: 1.5;
+}
+.agenda-dica svg { flex-shrink: 0; }
+
+.agenda-faixa {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--espaco-md) var(--espaco-xl);
+  border-radius: var(--raio-md);
+  background: linear-gradient(90deg, #2563eb, var(--cor-acento), #22c55e);
+  color: #fff;
+  font-size: var(--tamanho-xl);
+  font-weight: 800;
+  text-align: center;
+  box-shadow: var(--sombra-md);
+}
+.agenda-faixa span { font-size: var(--tamanho-sm); font-weight: var(--peso-medio); opacity: 0.95; }
+
+@media (prefers-color-scheme: dark) {
+  .agenda-dica { color: #93c5fd; }
+}
+
+.agenda {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: var(--espaco-md) 0;
+}
+
+/* linha central */
+.agenda::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  margin-left: -2px;
+  background-color: var(--cor-borda);
+}
+
+.agenda-item {
+  position: relative;
+  display: flex;
+  margin-bottom: var(--espaco-xl);
+}
+
+.agenda-item--esquerda { justify-content: flex-start; }
+.agenda-item--direita  { justify-content: flex-end; }
+
+.agenda-marcador {
+  position: absolute;
+  top: var(--espaco-md);
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid var(--cor-fundo);
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--cor-borda);
+  z-index: 1;
+}
+
+.agenda-marcador--estudo,   .agenda-marcador--vespera { background-color: var(--agenda-estudo); }
+.agenda-marcador--simulado { background-color: var(--agenda-simulado); }
+.agenda-marcador--externo  { background-color: var(--agenda-externo); }
+.agenda-marcador--livre,   .agenda-marcador--passado  { background-color: var(--agenda-livre); }
+.agenda-marcador--prova    { background-color: var(--agenda-prova); }
+.agenda-marcador--gabarito { background-color: #22a06b; }
+.agenda-marcador--mes      { background-color: var(--agenda-mes); }
+
+.agenda-cartao,
+.agenda-mes {
+  width: calc(50% - 44px);
+}
+
+.agenda-mes {
+  margin: var(--espaco-sm) 0 0;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio-sm);
+  background-color: var(--agenda-mes);
+  color: #fff;
+  font-size: var(--tamanho-xl);
+  font-weight: 800;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.agenda-cartao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-md) var(--espaco-lg) var(--espaco-lg);
+  background-color: var(--cor-fundo-card);
+  border-top: 5px solid var(--agenda-estudo);
+  border-radius: var(--raio-sm);
+  box-shadow: var(--sombra-md);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto);
+  line-height: 1.55;
+}
+
+/* setinha apontando para a linha */
+.agenda-cartao::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--espaco-md) + 12px);
+  border: 8px solid transparent;
+}
+.agenda-item--esquerda .agenda-cartao::before { right: -16px; border-left-color: var(--cor-fundo-card); }
+.agenda-item--direita  .agenda-cartao::before { left: -16px;  border-right-color: var(--cor-fundo-card); }
+
+.agenda-cartao--simulado { border-top-color: var(--agenda-simulado); }
+.agenda-cartao--externo  { border-top-color: var(--agenda-externo); }
+.agenda-cartao--livre,
+.agenda-cartao--passado  { border-top-color: var(--agenda-livre); }
+.agenda-cartao--prova    { border-top-color: var(--agenda-prova); }
+.agenda-cartao--gabarito { border-top-color: #22a06b; }
+
+.agenda-cartao--hoje {
+  outline: 2px solid var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+}
+.agenda-item--hoje .agenda-cartao::before { border-left-color: transparent; border-right-color: transparent; }
+.agenda-item--hoje.agenda-item--esquerda .agenda-cartao::before { border-left-color: var(--cor-primaria); }
+.agenda-item--hoje.agenda-item--direita  .agenda-cartao::before { border-right-color: var(--cor-primaria); }
+.agenda-item--hoje .agenda-marcador { box-shadow: 0 0 0 4px var(--cor-primaria); }
+
+.agenda-cartao--passado { opacity: 0.8; }
+
+.agenda-cartao__data {
+  font-size: var(--tamanho-lg);
+  color: var(--cor-texto-suave);
+}
+.agenda-cartao__data--passado { text-decoration: line-through; }
+
+.agenda-cartao__titulo {
+  font-size: var(--tamanho-lg);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto);
+  line-height: 1.3;
+}
+
+.agenda-cartao__resumo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--cor-texto-suave);
+}
+
+.agenda-cartao mark {
+  padding: 0 3px;
+  border-radius: 3px;
+  background-color: var(--cor-certa-fundo);
+  color: var(--cor-certa);
+  font-weight: var(--peso-medio);
+}
+
+.agenda-lista {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.agenda-blocos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agenda-bloco {
+  display: flex;
+  gap: var(--espaco-sm);
+}
+
+.agenda-bloco__tempo {
+  flex-shrink: 0;
+  min-width: 3.4rem;
+  color: var(--cor-primaria);
+  font-weight: var(--peso-medio);
+  font-variant-numeric: tabular-nums;
+}
+
+.agenda-bloco__foco { color: var(--cor-texto-suave); }
+.agenda-bloco--feito strong { text-decoration: line-through; }
+
+.agenda-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--espaco-sm);
+}
+
+.agenda-cor {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.agenda-cor--estudo   { background-color: var(--agenda-estudo); }
+.agenda-cor--simulado { background-color: var(--agenda-simulado); }
+.agenda-cor--externo  { background-color: var(--agenda-externo); }
+.agenda-cor--livre    { background-color: var(--agenda-livre); }
+.agenda-cor--prova    { background-color: var(--agenda-prova); }
+
+/* Celular: uma coluna, linha à esquerda */
+@media (max-width: 760px) {
+  .agenda::before { left: 20px; }
+  .agenda-marcador { left: 20px; }
+  .agenda-item--esquerda,
+  .agenda-item--direita { justify-content: flex-end; }
+  .agenda-cartao,
+  .agenda-mes { width: calc(100% - 56px); }
+  .agenda-item--esquerda .agenda-cartao::before { right: auto; left: -16px; border-left-color: transparent; border-right-color: var(--cor-fundo-card); }
+  .agenda-item--hoje.agenda-item--esquerda .agenda-cartao::before { border-right-color: var(--cor-primaria); }
+  .agenda-faixa { padding: var(--espaco-md); }
 }

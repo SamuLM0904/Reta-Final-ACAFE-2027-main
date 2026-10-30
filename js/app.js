@@ -7,6 +7,7 @@
  *   #/simulados     → Simulados com as provas anteriores (montar/continuar/histórico)
  *   #/simulado      → Simulado em andamento
  *   #/simulado/resultado/<n> → Resultado e revisão da tentativa n
+ *   #/simulados/feitas → Questões feitas nos simulados aleatórios, por prova de origem
  *   #/guia          → Guia de Estudos (cronograma diário + chat de mudanças)
  *   #/em-breve/<id> → Tela "Em breve"
  *   #/admin         → Enviar as questões dos arquivos para o banco (só administradores)
@@ -24,15 +25,15 @@
 
 import { renderizarDashboard }    from './dashboard.js';
 import { iniciarSessaoQuestoes }  from './questoes.js';
-import { renderizarTelaSimulados, iniciarSimulado, renderizarResultadoSimulado } from './simulado.js';
+import { renderizarTelaSimulados, iniciarSimulado, renderizarResultadoSimulado, renderizarQuestoesFeitas } from './simulado.js';
 import { renderizarGuia }         from './guia.js';
 import { MODULOS }                from './modulos.js';
 import { icone }                  from './icones.js';
-import { confirmar } from './confirmar.js';
+import { abrirConfiguracoes }     from './configuracoes.js';
 import { definirAluno }           from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
-  nuvemAtiva, iniciarNuvem, usuarioAtual, usuarioExibido, sair,
+  nuvemAtiva, iniciarNuvem, usuarioAtual, usuarioExibido,
   lerDadosAluno, agendarGravacaoAluno, eAdmin, enviarQuestoes,
 } from './nuvem.js';
 
@@ -60,19 +61,13 @@ function renderizarCabecalho() {
             <span class="cabecalho-usuario__nome" title="Usuário: ${usuarioExibido(user)}">
               ${user.displayName || usuarioExibido(user)}
             </span>
-            <button type="button" class="btn btn-secundario btn-pequeno" id="btn-sair">Sair</button>
+            <button type="button" class="btn btn-secundario btn-pequeno cabecalho-config" id="btn-config"
+              aria-label="Configurações" title="Configurações">${icone('settings', 20)}</button>
           </div>` : ''}
       </div>
     </header>
   `;
-  elCabecalho.querySelector('#btn-sair')?.addEventListener('click', async () => {
-    if (!(await confirmar({
-      titulo: 'Sair da sua conta?',
-      mensagem: 'Seu progresso fica salvo. Para voltar, é só entrar de novo com seu usuário e senha.',
-      textoConfirmar: 'Sair',
-    }))) return;
-    await sair();
-  });
+  elCabecalho.querySelector('#btn-config')?.addEventListener('click', abrirConfiguracoes);
 }
 
 /* ================================================================
@@ -133,6 +128,11 @@ function roteador() {
   if (hash === '#/simulados') {
     document.title = 'Simulados — Reta Final ACAFE 2027';
     renderizarTelaSimulados(elApp, questoesProvas);
+    return;
+  }
+  if (hash === '#/simulados/feitas') {
+    document.title = 'Questões feitas nos simulados — Reta Final ACAFE 2027';
+    renderizarQuestoesFeitas(elApp, questoesProvas);
     return;
   }
   if (hash === '#/simulado') {

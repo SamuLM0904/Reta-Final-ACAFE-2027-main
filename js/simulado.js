@@ -274,9 +274,13 @@ export function renderizarTelaSimulados(container, questoesProvas) {
       </section>`;
   })() : '';
 
+  const temAleatorio = tentativas.some(t => (t.modo || 'aleatorio') === 'aleatorio');
   const historico = tentativas.length ? `
     <section aria-label="Histórico de simulados">
-      <h3 class="resultado-erradas-titulo">Simulados realizados</h3>
+      <div class="simulado-historico__topo">
+        <h3 class="resultado-erradas-titulo">Simulados realizados</h3>
+        ${temAleatorio ? `<a href="#/simulados/feitas" class="btn btn-secundario btn-pequeno">${icone('clipboard-list', 16)} Questões feitas, por prova</a>` : ''}
+      </div>
       <ul class="simulado-historico">
         ${tentativas.map((t, i) => ({ t, i })).reverse().map(({ t, i }) => `
           <li>
@@ -613,7 +617,7 @@ function irPara(container, indice) {
  * Navegador numerado, separado por matéria.
  * `situacao(i)` devolve: respondida | pendente | certa | errada | branco.
  */
-function htmlNavegador(questoes, atual, situacao, idioma) {
+function htmlNavegador(questoes, atual, situacao, idioma, numeroOriginal = false) {
   const grupos = [];
   questoes.forEach((q, i) => {
     const nome = nomeBloco(blocoDa(q), idioma);
@@ -633,7 +637,7 @@ function htmlNavegador(questoes, atual, situacao, idioma) {
                   <button type="button"
                     class="navegador-questoes__btn navegador-questoes__btn--${situacao(i)}${i === atual ? ' navegador-questoes__btn--atual' : ''}"
                     data-indice="${i}" ${i === atual ? 'aria-current="true"' : ''}
-                    aria-label="Questão ${i + 1}">${i + 1}</button>
+                    aria-label="Questão ${numeroOriginal ? questoes[i].numeroOriginal : i + 1}">${numeroOriginal ? questoes[i].numeroOriginal : i + 1}</button>
                 </li>`).join('')}
             </ol>
           </div>`).join('')}
@@ -778,7 +782,8 @@ export function renderizarResultadoSimulado(container, questoesProvas, n) {
  * Revisão de uma questão finalizada: resposta marcada, gabarito, explicações
  * e de qual prova a questão veio.
  */
-function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResultado) {
+function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResultado, opcoes = {}) {
+  const { textoVoltar = 'Voltar ao resultado', numeroOriginal = false } = opcoes;
   const r = tentativa.respostas;
   const questao = questoes[indice];
   const situacao = i => {
@@ -791,7 +796,7 @@ function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResul
       <div class="container">
         <header class="questoes-cabecalho">
           <div class="questoes-nav-linha">
-            <button type="button" class="btn-voltar" id="btn-voltar-resultado">${icone('arrow-left', 18)} Voltar ao resultado</button>
+            <button type="button" class="btn-voltar" id="btn-voltar-resultado">${icone('arrow-left', 18)} ${textoVoltar}</button>
             <span class="questoes-contador">Revisão • Questão <strong>${indice + 1}</strong> de <strong>${questoes.length}</strong></span>
           </div>
           <div class="questoes-meta">
@@ -801,7 +806,7 @@ function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResul
             <span class="questoes-meta__separador" aria-hidden="true">•</span>
             <span>${questao.prova} — questão ${questao.numeroOriginal}</span>
           </div>
-          ${htmlNavegador(questoes, indice, situacao, tentativa.idioma)}
+          ${htmlNavegador(questoes, indice, situacao, tentativa.idioma, numeroOriginal)}
         </header>
 
         <article class="questao-card">
@@ -833,7 +838,7 @@ function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResul
   vincularImagens(container);
 
   const ir = i => {
-    renderizarRevisao(container, questoes, tentativa, i, voltarAoResultado);
+    renderizarRevisao(container, questoes, tentativa, i, voltarAoResultado, opcoes);
     container.querySelector('.questoes-cabecalho')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   container.querySelector('#btn-voltar-resultado').addEventListener('click', voltarAoResultado);
@@ -842,6 +847,129 @@ function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResul
   container.querySelector('#navegador-questoes').addEventListener('click', (e) => {
     const btn = e.target.closest('.navegador-questoes__btn');
     if (btn) ir(Number(btn.dataset.indice));
+  });
+}
+
+/* ================================================================
+   Tela: questões feitas nos simulados aleatórios, por prova de origem
+   ================================================================ */
+
+/**
+ * Questões das provas anteriores que o aluno já fez em simulados ALEATÓRIOS finalizados.
+ * Se fez a mesma questão mais de uma vez, vale a última resposta.
+ * @returns {Map<string, { letra: string|null, data: string, vezes: number }>} id da questão → última resposta
+ */
+function questoesFeitasNosAleatorios() {
+  const feitas = new Map();
+  lerSimulado().tentativas
+    .filter(t => (t.modo || 'aleatorio') === 'aleatorio')
+    .forEach(t => t.ids.forEach(id => {
+      const antes = feitas.get(id);
+      feitas.set(id, { letra: t.respostas[id] || null, data: t.data, vezes: (antes?.vezes || 0) + 1 });
+    }));
+  return feitas;
+}
+
+/**
+ * Mostra, para cada prova anterior, quais questões o aluno já fez nos simulados aleatórios
+ * (acerto, erro, em branco ou ainda não feita). Clicar numa questão feita abre a revisão.
+ */
+export function renderizarQuestoesFeitas(container, questoesProvas) {
+  const feitas = questoesFeitasNosAleatorios();
+  const situacaoDe = q => {
+    const f = feitas.get(q.id);
+    return !f ? 'nao-feita' : !f.letra ? 'branco' : f.letra === q.gabarito ? 'certa' : 'errada';
+  };
+  const ordem = q => q.numeroOriginal + (q.disciplina === 'Inglês' ? 0.5 : 0);   // Inglês logo após o Espanhol de mesmo número
+
+  const provas = provasNoBanco(questoesProvas).map(prova => {
+    const qs = questoesProvas.filter(q => q.prova === prova).sort((a, b) => ordem(a) - ordem(b));
+    const feitasDaProva = qs.filter(q => feitas.has(q.id));
+    return {
+      prova, qs, feitas: feitasDaProva,
+      acertos: feitasDaProva.filter(q => situacaoDe(q) === 'certa').length,
+    };
+  });
+  const totalFeitas = provas.reduce((s, p) => s + p.feitas.length, 0);
+
+  const htmlProva = (p, indiceProva) => {
+    const grupos = [];
+    p.qs.forEach(q => {
+      const nome = q.disciplina === 'Inglês' ? 'Língua Estrangeira (Inglês)'
+        : q.disciplina === 'Espanhol' ? 'Língua Estrangeira (Espanhol)' : nomeBloco(blocoDa(q), 'Espanhol');
+      let g = grupos.find(x => x.nome === nome);
+      if (!g) { g = { nome, qs: [] }; grupos.push(g); }
+      g.qs.push(q);
+    });
+    return `
+      <details class="simulado-card simulado-feitas__prova" ${p.feitas.length ? 'open' : ''}>
+        <summary class="simulado-feitas__resumo">
+          <span class="simulado-card__titulo">${p.prova}</span>
+          <span class="simulado-card__info">${p.feitas.length
+            ? `${plural(p.feitas.length, 'questão feita', 'questões feitas')} de ${p.qs.length} • ${plural(p.acertos, 'acerto', 'acertos')} (${Math.round(p.acertos / p.feitas.length * 100)}%)`
+            : `nenhuma das ${p.qs.length} questões feita ainda`}</span>
+        </summary>
+        <div class="simulado-navegador">
+          ${grupos.map(g => `
+            <div class="simulado-navegador__grupo">
+              <span class="simulado-navegador__materia">${g.nome}</span>
+              <ol class="navegador-questoes__lista">
+                ${g.qs.map(q => {
+                  const s = situacaoDe(q);
+                  const f = feitas.get(q.id);
+                  const rotulo = s === 'nao-feita' ? 'ainda não feita'
+                    : `${s === 'certa' ? 'acerto' : s === 'errada' ? 'erro' : 'em branco'}${f.vezes > 1 ? `, feita ${f.vezes} vezes` : ''}`;
+                  return `
+                  <li>
+                    <button type="button" class="navegador-questoes__btn navegador-questoes__btn--${s}"
+                      data-prova="${indiceProva}" data-id="${q.id}" ${s === 'nao-feita' ? 'disabled' : ''}
+                      title="Questão ${q.numeroOriginal}: ${rotulo}" aria-label="Questão ${q.numeroOriginal}: ${rotulo}">${q.numeroOriginal}</button>
+                  </li>`;
+                }).join('')}
+              </ol>
+            </div>`).join('')}
+        </div>
+      </details>`;
+  };
+
+  container.innerHTML = `
+    <div class="tela-questoes">
+      <div class="container">
+        <header class="questoes-cabecalho">
+          <div class="questoes-nav-linha">
+            <a href="#/simulados" class="btn-voltar">${icone('arrow-left', 18)} Voltar aos simulados</a>
+          </div>
+          <h2 class="simulados-titulo">Questões feitas nos simulados aleatórios</h2>
+          <p class="simulados-descricao">
+            Cada prova anterior com os números originais das questões: veja quais você já fez nos simulados
+            aleatórios e como foi. Clique numa questão feita para revisar com o gabarito e as explicações.
+            ${totalFeitas ? `Ao todo: <strong>${plural(totalFeitas, 'questão feita', 'questões feitas')}</strong>.` : ''}
+          </p>
+          <p class="simulado-legenda">
+            <span class="simulado-legenda__item simulado-legenda__item--certa">Acerto</span>
+            <span class="simulado-legenda__item simulado-legenda__item--errada">Erro</span>
+            <span class="simulado-legenda__item">Em branco</span>
+            <span class="simulado-legenda__item simulado-legenda__item--nao-feita">Ainda não feita</span>
+          </p>
+        </header>
+        <div class="simulados-conteudo">
+          ${totalFeitas ? '' : '<p class="simulado-aviso">Você ainda não finalizou nenhum simulado aleatório. Quando finalizar, as questões aparecem aqui.</p>'}
+          ${provas.map(htmlProva).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  container.querySelector('.simulados-conteudo').addEventListener('click', (e) => {
+    const btn = e.target.closest('.navegador-questoes__btn[data-id]');
+    if (!btn || btn.disabled) return;
+    const p = provas[Number(btn.dataset.prova)];
+    // revisão das questões feitas dessa prova, com a última resposta de cada uma
+    const respostas = Object.fromEntries(p.feitas.map(q => [q.id, feitas.get(q.id).letra]).filter(([, l]) => l));
+    const revisao = { respostas, idioma: p.feitas.some(q => q.disciplina === 'Inglês') && !p.feitas.some(q => q.disciplina === 'Espanhol') ? 'Inglês' : 'Espanhol' };
+    renderizarRevisao(container, p.feitas, revisao, p.feitas.findIndex(q => q.id === btn.dataset.id),
+      () => renderizarQuestoesFeitas(container, questoesProvas),
+      { textoVoltar: 'Voltar às questões feitas', numeroOriginal: true });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 

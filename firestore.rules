@@ -3,33 +3,71 @@
   // Regras de segurança do banco de dados (Firestore).
   // Publique pelo Console do Firebase (Firestore → Regras) ou com: firebase deploy --only firestore:rules
   //
-  // Os documentos de alunos e administradores usam o NOME DE USUÁRIO como ID:
-  //   - quem se cadastrou com nome e sobrenome → "joao_silva"
-  //     (o e-mail interno da conta é "joao_silva@alunos.retafinal.app")
-  //   - quem se cadastrou com e-mail → o próprio e-mail, ex.: "maria@email.com"
+  // O aluno entra com USUÁRIO e SENHA (o e-mail é opcional, só para recuperar a senha).
+  //   usuarios/{usuario} → { uid, email, temEmail } liga o usuário (ex.: "joao_silva") à conta
+  //   contas/{uid}       → { usuario } liga a conta ao usuário
+  //   emails/{email}     → { usuario, uid } índice para "Esqueci meu usuário"
+  //   alunos/{usuario}   → dados do aluno (ID = nome de usuário, para achar fácil no Console)
+  //   admins/{uid}       → administradores (ID = UID da conta), criados só pelo Console
   service cloud.firestore {
     match /databases/{banco}/documents {
 
       function logado() { return request.auth != null; }
 
+      function caminho(colecao, id) { return /databases/$(banco)/documents/$(colecao)/$(id); }
+
+      // Contas antigas (antes da coleção usuarios): o identificador da conta era o próprio usuário
+      function donoAntigo(usuario) {
+        return request.auth.token.email == usuario ||
+          request.auth.token.email == usuario + '@alunos.retafinal.app';
+      }
+
       // O usuário logado é o dono do nome de usuário `usuario`?
       function eDono(usuario) {
         return logado() && (
-          request.auth.token.email == usuario ||
-          request.auth.token.email == usuario + '@alunos.retafinal.app'
+          (exists(caminho('usuarios', usuario)) && get(caminho('usuarios', usuario)).data.uid == request.auth.uid) ||
+          donoAntigo(usuario)
         );
       }
 
+      // Administrador = existe admins/{UID da conta}. O UID é gerado pelo Firebase (ninguém
+      // escolhe) e a coleção admins só é alterada pelo Console: ninguém vira admin pelo site.
       function admin() {
-        return logado() && (
-          exists(/databases/$(banco)/documents/admins/$(request.auth.token.email)) ||
-          (request.auth.token.email.matches('.*@alunos[.]retafinal[.]app') &&
-          exists(/databases/$(banco)/documents/admins/$(request.auth.token.email.split('@')[0])))
-        );
+        return logado() && exists(caminho('admins', request.auth.uid));
+      }
+
+      // Registro usuário → conta. É lido ANTES do login (para entrar pelo usuário), mas só
+      // por nome exato (não dá para listar todos). Cada um cria o seu; ninguém toma um
+      // usuário que já tem dados (alunos/{usuario}) e não é dele.
+      match /usuarios/{usuario} {
+        allow get: if true;
+        allow list: if false;
+        allow create: if logado() &&
+          request.resource.data.uid == request.auth.uid &&
+          (!exists(caminho('alunos', usuario)) || donoAntigo(usuario));
+        allow update: if logado() &&
+          resource.data.uid == request.auth.uid &&
+          request.resource.data.uid == request.auth.uid;
+        allow delete: if admin() || (logado() && resource.data.uid == request.auth.uid);   // trocar de usuário
+      }
+
+      // Índice e-mail de recuperação → usuário ("Esqueci meu usuário"). Lido por e-mail exato
+      // (não dá para listar); cada um só grava o índice do próprio e-mail.
+      match /emails/{email} {
+        allow get: if true;
+        allow list: if false;
+        allow create, update: if logado() &&
+          request.resource.data.uid == request.auth.uid && request.auth.token.email == email;
+        allow delete: if admin() || (logado() && resource.data.uid == request.auth.uid);
+      }
+
+      // Conta → usuário: só o dono
+      match /contas/{uid} {
+        allow read, write: if logado() && request.auth.uid == uid;
       }
 
       // Dados de cada aluno: só o próprio aluno lê e grava.
-      // O administrador lê (lista de alunos) e atualiza (resetar a memória de erros e acertos pelo Guia).
+      // O administrador lê (lista de alunos) e atualiza (resetar a memória de erros e acertos, em Configurações).
       match /alunos/{usuario} {
         allow read, write: if eDono(usuario);
         allow read, update: if admin();
@@ -41,9 +79,9 @@
         allow write: if admin();
       }
 
-      // Lista de administradores: criada só pelo Console do Firebase
-      match /admins/{usuario} {
-        allow read: if eDono(usuario);
+      // Lista de administradores (ID = UID da conta): criada só pelo Console do Firebase
+      match /admins/{uid} {
+        allow read: if logado() && request.auth.uid == uid;
         allow write: if false;
       }
     }

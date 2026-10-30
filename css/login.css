@@ -108,6 +108,31 @@
 
 .login-enviar { width: 100%; }
 
+.login-opcional {
+  font-style: normal;
+  font-weight: normal;
+  color: var(--cor-texto-suave);
+}
+
+.login-aviso {
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-left: 3px solid var(--cor-errada);
+  border-radius: var(--raio-sm);
+  background-color: var(--cor-errada-fundo);
+  color: var(--cor-texto);
+  font-size: var(--tamanho-xs);
+  line-height: 1.5;
+}
+
+.login-aviso[hidden] { display: none; }
+
+.login-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-xs) var(--espaco-lg);
+}
+
 .login-link {
   align-self: center;
   border: none;
@@ -136,8 +161,13 @@
 }
 
 .cabecalho-usuario__nome {
-  font-size: var(--tamanho-sm);
-  color: var(--cor-texto-suave);
+  padding: var(--espaco-xs) var(--espaco-md);
+  border: 1.5px solid var(--cor-primaria);
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-negrito);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

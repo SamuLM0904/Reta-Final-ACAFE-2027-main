@@ -345,3 +345,175 @@ img, svg { max-width: 100%; display: block; }
 @media (prefers-reduced-motion: reduce) {
   .confirmacao { animation: none; }
 }
+
+/* ---- Painel de configurações (engrenagem do cabeçalho; ver js/configuracoes.js) ---- */
+.cabecalho-config {
+  min-width: 40px;
+  padding: 0 var(--espaco-sm);
+}
+
+.configuracoes { width: min(94vw, 680px); }
+
+.configuracoes__caixa {
+  align-items: stretch;
+  gap: var(--espaco-md);
+}
+
+.configuracoes__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.configuracoes__topo .confirmacao__titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.configuracoes__fechar {
+  display: inline-flex;
+  padding: var(--espaco-xs);
+  border: none;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+
+.configuracoes__fechar:hover { background-color: var(--cor-fundo); }
+
+.configuracoes__secao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-sm);
+  padding-top: var(--espaco-md);
+  border-top: 1px solid var(--cor-borda);
+}
+
+.configuracoes__secao--admin { align-items: stretch; }
+
+.configuracoes__subtitulo {
+  font-size: var(--tamanho-xs);
+  font-weight: var(--peso-negrito);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.configuracoes__info {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto);
+  line-height: 1.5;
+}
+
+.configuracoes__info span { color: var(--cor-texto-suave); }
+
+.configuracoes__dados {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--espaco-xs) var(--espaco-md);
+  margin: 0;
+  font-size: var(--tamanho-sm);
+}
+
+.configuracoes__dados dt { color: var(--cor-texto-suave); }
+.configuracoes__dados dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-xs);
+}
+
+.configuracoes__editar {
+  display: inline-flex;
+  padding: 4px;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+
+.configuracoes__editar:hover,
+.configuracoes__editar[aria-expanded="true"] { color: var(--cor-primaria); background-color: var(--cor-fundo); }
+.configuracoes__editar[hidden] { display: none; }
+
+.configuracoes__inline {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-xs);
+}
+
+.configuracoes__inline .guia-texto { flex: 1 1 12rem; min-height: 36px; }
+.configuracoes__inline small,
+.configuracoes__inline .login-erro { flex-basis: 100%; }
+
+.configuracoes__sem-email { color: var(--cor-errada); font-weight: var(--peso-medio); }
+
+.configuracoes__senha {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-md);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+}
+
+.configuracoes__senha[hidden] { display: none; }
+
+.configuracoes__senha .configuracoes__esqueci {
+  align-self: flex-start;
+  margin-top: calc(var(--espaco-xs) * -1);
+}
+
+.btn-perigo-contorno {
+  border: 1.5px solid var(--cor-errada);
+  background-color: var(--cor-errada-fundo);
+  color: var(--cor-errada);
+}
+
+.btn-perigo-contorno:hover {
+  background-color: var(--cor-errada);
+  color: #fff;
+}
+
+/* Campo de senha com o olho dentro */
+.campo-senha {
+  position: relative;
+  display: flex;
+}
+
+.campo-senha input {
+  flex: 1;
+  padding-right: 3rem;
+}
+
+.campo-senha__olho {
+  position: absolute;
+  top: 50%;
+  right: var(--espaco-xs);
+  transform: translateY(-50%);
+  display: inline-flex;
+  padding: var(--espaco-xs);
+  border: none;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+
+.campo-senha__olho:hover,
+.campo-senha__olho[aria-pressed="true"] { color: var(--cor-primaria); }
+.configuracoes__dados dd { margin: 0; font-weight: var(--peso-medio); color: var(--cor-texto); word-break: break-all; }
+
+.configuracoes__linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+}
+

@@ -26,7 +26,8 @@ Reta Final ACAFE 2027/
 │   ├── base.css            ← Reset, tipografia e componentes globais
 │   ├── dashboard.css       ← Estilos da tela inicial (grid de cards)
 │   ├── questoes.css        ← Estilos do motor de questões
-│   └── simulado.css        ← Estilos dos simulados
+│   ├── simulado.css        ← Estilos dos simulados
+│   └── guia.css            ← Estilos do Guia de Estudos
 │
 ├── js/
 │   ├── app.js              ← Roteador por hash (#/) — ponto de entrada JS
@@ -34,6 +35,10 @@ Reta Final ACAFE 2027/
 │   ├── dashboard.js        ← Renderiza o grid de cards
 │   ├── questoes.js         ← Módulos de estudo por matéria (UI + lógica)
 │   ├── simulado.js         ← Simulados: sorteio no formato ACAFE, prova, resultado e revisão
+│   ├── guia.js             ← Guia de Estudos: questionário, plano do dia, chat, desempenho, reset (admin)
+│   ├── guia-plano.js       ← Cálculos do guia (prioridades, blocos, simulado semanal, impacto das mudanças)
+│   ├── guia-chat.js        ← Entende os pedidos do chat ("vou viajar sexta") e os transforma em mudanças
+│   ├── confirmar.js        ← Janela de confirmação no visual do site (no lugar do confirm do navegador)
 │   ├── render-questao.js   ← Peças de exibição de questão (imagens, alternativas, feedback)
 │   ├── contagem.js         ← Contagem regressiva para a prova
 │   ├── firebase-config.js  ← Chaves do projeto Firebase (null = modo local)
@@ -67,7 +72,8 @@ Reta Final ACAFE 2027/
 
 Com o Firebase ligado, cada aluno entra com **usuário e senha** e todo o progresso (respostas, simulados, histórico) fica salvo na nuvem — o aluno continua de onde parou em qualquer computador ou celular. O banco de questões também passa a ficar no Firestore. **Enquanto `js/firebase-config.js` estiver com `null`, o site funciona no modo local**, sem login (dados só neste navegador).
 
-**Usuário:** o aluno digita um e-mail **ou** nome e sobrenome. Com nome, o usuário vira `primeironome_sobrenome` (ex.: "João da Silva" → `joao_silva`).
+**Login:** o aluno se cadastra com **usuário e senha** (ex.: "João da Silva" → usuário `joao_silva`) e entra com o **usuário ou com o e-mail de recuperação**. O **e-mail é opcional** e serve para **recuperar a senha** ("Esqueci minha senha") e o **usuário** ("Esqueci meu usuário", que mostra o usuário ligado ao e-mail). Em ⚙️ Configurações, o lápis ✏️ ao lado de cada dado altera o nome completo, o usuário (os dados do aluno passam para o novo nome) e o e-mail de recuperação. Quem não cadastra e-mail é avisado, no cadastro e em Configurações, de que **não conseguirá recuperar a senha sozinho**; pode cadastrar o e-mail depois em ⚙️ Configurações (com confirmação por link).
+Por dentro, o Firebase exige que toda conta tenha um identificador no formato de e-mail: com e-mail de recuperação, é o próprio e-mail do aluno; sem ele, é um identificador interno (`usuario@alunos.retafinal.app`) que fica invisível e nunca recebe mensagens.
 
 ### Passo a passo (uma vez só)
 
@@ -77,23 +83,47 @@ Com o Firebase ligado, cada aluno entra com **usuário e senha** e todo o progre
 4. Firestore → aba **Regras** → apague o conteúdo, cole o do arquivo `firestore.rules` deste projeto → **Publicar**.
 5. ⚙️ **Configurações do projeto** → *Seus apps* → ícone **Web `</>`** → registre o app → copie o objeto `firebaseConfig` e cole em `js/firebase-config.js` (no lugar de `null`, como no exemplo do próprio arquivo).
 6. Rode `node servidor.js`, abra http://localhost:3000 e **crie a sua conta**.
-7. Torne-se administrador: **Firestore → Iniciar coleção** → ID da coleção `admins` → ID do documento = **o seu nome de usuário** (ex.: `admin_acafe`, ou o seu e-mail se você se cadastrou com e-mail) → adicione um campo qualquer (ex.: `nome` = seu nome) → Salvar.
+7. Torne-se administrador (veja **Administradores** abaixo).
 8. (Opcional) http://localhost:3000/#/admin → **Enviar questões para o banco** guarda uma cópia das questões no Firestore. O site não depende dela: as questões sempre vêm dos arquivos de `dados/`.
+
+### Administradores
+
+Administradores veem, no botão de **engrenagem** (⚙️ Configurações, no canto superior direito), a opção **Resetar a memória de um aluno**. Alunos comuns veem ali só **Sair da conta**.
+
+**Para tornar alguém administrador** (vale para você e para quantos quiser):
+
+1. A pessoa **cria a conta normalmente** no site (com nome e sobrenome ou e-mail). Faça sempre nesta ordem: primeiro a conta, depois o admin.
+2. No Console do Firebase → **Authentication → Usuários**: ache a conta e copie o **UID do usuário** (código como `aB3dE5...`). Dica: o UID de cada usuário também está em **Firestore → `usuarios` → documento com o nome de usuário → campo `uid`**.
+3. **Firestore Database → coleção `admins`** → *Adicionar documento*:
+   - **ID do documento** = o **UID** copiado no passo 2;
+   - campos para organizar (recomendado): `usuario` (ex.: "maria_souza"), `nome` (ex.: "Maria Souza"), `funcao` (ex.: "professora"), `adicionadoEm` (data).
+4. A pessoa recarrega o site: a opção de administração aparece na engrenagem.
+
+**Para tirar o acesso:** apague o documento dela na coleção `admins`. **Para ver quem é admin:** a coleção `admins` lista todos.
+
+**Por que ninguém consegue se tornar admin sozinho:**
+- A coleção `admins` **não pode ser alterada pelo site** (regra `allow write: if false`): só pelo Console do Firebase, que só quem tem acesso ao projeto abre. Mantenha o Console restrito à sua conta Google (⚙️ Configurações do projeto → **Usuários e permissões**: não adicione outras pessoas, ou dê só "Leitor").
+- O documento do admin usa o **UID** da conta, que é gerado pelo Firebase e não se repete: mesmo que alguém crie uma conta com o mesmo nome de um admin, essa conta tem outro UID e **não** vira admin.
+- Se apagar e recriar a conta de um admin, crie de novo o documento em `admins` com o UID novo (e apague o antigo).
 
 ### Como os dados ficam no banco
 
 | Coleção | Conteúdo | Quem acessa |
 |---|---|---|
-| `alunos/{usuario}` | perfil, respostas, simulados e histórico de cada aluno (ex.: `alunos/joao_silva`) | só o próprio aluno |
+| `alunos/{usuario}` | perfil, respostas, simulados, memória de erros e acertos, guia de estudos (ex.: `alunos/joao_silva`) | o próprio aluno • administradores leem e podem resetar a memória |
 | `questoes/{id}` | banco de questões (`banco: 'provas'` ou `'estudo'`) | leitura: alunos logados • escrita: administradores |
-| `admins/{usuario}` | quem pode enviar questões (ex.: `admins/admin_acafe`) | criado só pelo Console |
+| `usuarios/{usuario}` | liga o usuário à conta: `{ uid, email, temEmail }` (usado para entrar pelo usuário) | lido por nome exato antes do login; cada um cria o seu |
+| `contas/{uid}` | liga a conta ao usuário: `{ usuario }` | só o dono |
+| `emails/{email}` | índice para "Esqueci meu usuário": `{ usuario, uid }` (só e-mails de recuperação) | lido por e-mail exato; cada um grava o seu |
+| `admins/{uid}` | administradores (ID = UID da conta): `{ usuario, nome, funcao }` | criado só pelo Console |
 
 - O navegador mantém uma cópia local: o site continua funcionando sem internet e sincroniza quando a conexão volta (gravações agrupadas a cada 2 s).
 - Na primeira vez que um aluno entra num navegador onde já estudava sem login, esse progresso é levado para a conta dele.
 - **As questões vêm sempre dos arquivos de `dados/`.** A coleção `questoes` no Firestore é só uma cópia opcional (enviada pelo `#/admin`) e não é lida pelo site.
 - **Senhas não podem ser vistas** — nem pelo administrador: o Firebase guarda só uma versão embaralhada (por segurança).
-- **Esqueci a senha:** quem se cadastrou com e-mail usa "Esqueci minha senha" na tela de login. Para contas `nome_sobrenome`: no Console, **Authentication → Usuários** → menu ⋮ da conta → **Excluir conta**; o aluno cria a conta de novo com o **mesmo nome** e uma senha nova — o progresso continua, porque fica em `alunos/nome_sobrenome`.
+- **Esqueci a senha:** quem tem e-mail de recuperação usa "Esqueci minha senha" (na tela de entrada ou em Configurações) e recebe um link. **Sem e-mail de recuperação** não há como recuperar sozinho: o administrador, no Console, apaga a conta em **Authentication → Usuários** (menu ⋮ → Excluir conta) e o documento em **Firestore → `usuarios` → nome de usuário**; o aluno cria a conta de novo com o **mesmo usuário** e uma senha nova — o progresso continua, porque fica em `alunos/nome_de_usuario`.
 - O plano gratuito (Spark) do Firebase é suficiente para uma turma.
+- **Depois de atualizar o `firestore.rules`** (ex.: a regra que deixa o administrador resetar a memória de um aluno no Guia), cole o arquivo de novo no Console → Firestore → **Regras** → **Publicar**.
 
 ---
 
@@ -192,7 +222,9 @@ Para ver os ícones disponíveis, abra `js/icones.js` e consulte as chaves do ob
 
 ## Funcionalidades
 
-- ✅ **Simulados das provas anteriores**: sorteia 63 questões misturando as edições, no formato da ACAFE (Português 10, Literatura 4, Língua Estrangeira 7 e 7 de cada uma das demais matérias), escolha de Espanhol ou Inglês, cronômetro de 5h, gabarito só ao finalizar, desempenho por matéria, revisão com explicações e histórico. Questões ainda não vistas têm prioridade
+- ✅ **Guia de Estudos** (`#/guia`): 8 perguntas na primeira vez (tempo por dia e no fim de semana, tamanho do bloco, matérias difíceis, idioma, meta de acertos, provas anteriores, cursinho) e um **cronograma diário em blocos com pausas**. Cada bloco recebe uma matéria pela prioridade: peso na prova × dificuldade marcada × taxa de erro recente (memória de erros e acertos dos simulados e das questões de estudo) × tempo sem praticar, com o **foco nos conteúdos com mais erros**. Um simulado completo por semana no fim de semana. O plano do dia fica fixo durante o dia; botões de "hoje vou estudar mais/menos" em cada dia; blocos marcados como feitos. **Chat** (texto ou voz, pelo reconhecimento de voz do navegador): o aluno pede mudanças ("vou viajar de sexta a domingo", "simulado do cursinho no sábado") e o guia mostra se faz sentido e as consequências até a prova (tempo perdido, matérias afetadas, simulados, sugestão de compensação) antes de aplicar. O reset da memória de erros e acertos de um aluno fica na engrenagem (⚙️ Configurações), só para administradores, com confirmação dupla
+
+- ✅ **Simulados das provas anteriores**: sorteia 63 questões misturando as edições, no formato da ACAFE (Português 10, Literatura 4, Língua Estrangeira 7 e 7 de cada uma das demais matérias), escolha de Espanhol ou Inglês, cronômetro de 5h, gabarito só ao finalizar, desempenho por matéria, revisão com explicações e histórico. Questões ainda não vistas têm prioridade. **Questões feitas, por prova** (`#/simulados/feitas`): cada prova anterior com os números originais, mostrando o que o aluno já fez nos simulados aleatórios (acerto, erro, em branco, não feita) e abrindo a revisão de cada questão
 - ✅ **Dashboard** com 12 cards, progresso salvo automaticamente
 - ✅ **Motor de questões** com feedback visual (acerto/erro + explicações)
 - ✅ **Resultado final** com lista das questões erradas

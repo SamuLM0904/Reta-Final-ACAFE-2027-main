@@ -338,9 +338,13 @@ export function montarDia({ perfil, chave, minutos, simulado = null,
 /** Blocos de cada matéria em uma lista de planos de dias. */
 export function contarBlocos(planos) {
   const contagem = {};
-  planos.forEach(p => p?.blocos?.forEach(b => {
-    if (b.tipo === 'materia') contagem[b.materia] = (contagem[b.materia] || 0) + 1;
-  }));
+  planos.forEach(p => {
+    // blocos incluídos pelo aluno não entram no rodízio: os outros dias não mudam por causa deles
+    p?.blocos?.forEach(b => { if (b.tipo === 'materia' && !b.incluido) contagem[b.materia] = (contagem[b.materia] || 0) + 1; });
+    // matérias que o aluno tirou ou passou para outro dia contam como feitas: o plano
+    // dos dias seguintes não "compensa" por conta própria o que ele decidiu mudar
+    p?.removidos?.forEach(m => { contagem[m] = (contagem[m] || 0) + 1; });
+  });
   return contagem;
 }
 
@@ -400,6 +404,7 @@ export function planejarPeriodo(guia, ctx) {
         materiasComQuestoes: ctx.materiasComQuestoes,
         diaProva,
       });
+      plano = aplicarEdicoes(plano, guia.edicoes?.[dia], guia.perfil);
     }
     planos[dia] = plano;
     resultado.push(plano);
@@ -416,7 +421,52 @@ export function planejarPeriodo(guia, ctx) {
      { tipo: 'restaurar',        dias: [dia...] }            volta ao tempo normal
      { tipo: 'simulado-externo', dia, minutos }              simulado fora do site (ex.: cursinho)
      { tipo: 'mover-simulado',   para }                      simulado da semana de `para` vai para esse dia
+     { tipo: 'materia', dia, op, materia, minutos }          edição de uma matéria num dia:
+          op 'tempo' (fica com `minutos` no dia), 'delta' (± `minutos`), 'remover', 'adicionar' (`minutos`)
+     { tipo: 'mover-materia', materia, de, para }            tira a matéria de um dia e põe no outro, com o mesmo tempo
+                                                              (avaliarMudancas transforma em 'remover' + 'adicionar')
+   As edições de matérias ficam em guia.edicoes[dia] e são aplicadas sobre o plano gerado do dia
+   (aplicarEdicoes). Só muda o que foi pedido: o resto do dia fica igual.
 */
+
+/** Minutos de uma matéria num plano (soma dos blocos dela). */
+export const minutosDaMateria = (plano, materia) =>
+  (plano?.blocos || []).filter(b => b.tipo === 'materia' && b.materia === materia).reduce((s, b) => s + b.minutos, 0);
+
+/**
+ * Aplica as edições de matérias de um dia sobre o plano (não altera o original).
+ * A matéria editada fica num bloco só, com o tempo pedido (sem pausa no meio).
+ */
+export function aplicarEdicoes(plano, edicoes, perfil) {
+  if (!edicoes?.length) return plano;
+  const novo = { ...plano, blocos: plano.blocos.map(b => ({ ...b })) };
+  const daMateria = (b, materia) => b.tipo === 'materia' && b.materia === materia;
+  novo.removidos = [...(plano.removidos || [])];   // matérias tiradas pelo aluno: o rodízio conta como estudadas
+  const novoBloco = (materia, minutos) => {
+    const m = MATERIAS.find(x => x.id === materia);
+    novo.blocos.push({ tipo: 'materia', materia, minutos, nome: nomeMateria(m, perfil), foco: [],
+      atividade: 'Bloco incluído por você.', editado: true, incluido: true });
+  };
+  const definir = (materia, minutos) => {
+    const primeiro = novo.blocos.find(b => daMateria(b, materia));
+    novo.blocos = novo.blocos.filter(b => !daMateria(b, materia) || (b === primeiro && minutos > 0));
+    if (minutos <= 0) return;
+    if (primeiro) {
+      primeiro.minutos = minutos;
+      primeiro.editado = true;
+    } else novoBloco(materia, minutos);
+  };
+  for (const e of edicoes) {
+    const atual = minutosDaMateria(novo, e.materia);
+    if (e.op === 'tempo') definir(e.materia, e.minutos);
+    if (e.op === 'delta') definir(e.materia, atual + e.minutos);
+    if (e.op === 'remover') { if (atual) novo.removidos.push(e.materia); definir(e.materia, 0); }
+    if (e.op === 'adicionar') novoBloco(e.materia, e.minutos);   // bloco a mais (com pausa entre eles)
+  }
+  const estudo = novo.blocos.reduce((s, b) => s + b.minutos, 0);
+  novo.minutos = estudo + Math.max(0, novo.blocos.length - 1) * (perfil?.bloco?.pausa || 0);
+  return novo;
+}
 
 const clonar = o => JSON.parse(JSON.stringify(o));
 
@@ -435,13 +485,17 @@ export function aplicarMudancas(guia, mudancas) {
       delete novo.simuladoNoDia[semana];
     }
     if (m.tipo === 'mover-simulado') novo.simuladoNoDia[inicioDaSemana(m.para)] = m.para;
+    if (m.tipo === 'materia') {
+      novo.edicoes ||= {};
+      (novo.edicoes[m.dia] ||= []).push({ op: m.op, materia: m.materia, minutos: m.minutos ?? null });
+    }
   }
   return novo;
 }
 
 /** Dias citados por uma lista de mudanças. */
 export const diasDasMudancas = mudancas =>
-  [...new Set(mudancas.flatMap(m => m.dias || [m.dia || m.para]).filter(Boolean))].sort();
+  [...new Set(mudancas.flatMap(m => m.dias || [m.dia, m.para, m.de]).filter(Boolean))].sort();
 
 /** "2h30" / "45min" */
 export function formatarHoras(min) {
@@ -467,6 +521,7 @@ const simuladosNoPeriodo = planos => {
  * @param {Object}   guia     - guia atual
  * @param {Object[]} mudancas
  * @param {Object}   ctx      - o mesmo de planejarPeriodo, com `hoje` (o período vai de hoje à véspera)
+ *                              e `planoHoje` (o plano fixado de hoje, que o aluno está vendo)
  * @returns {{ veredito: 'ok'|'atencao'|'invalida', erros: string[], avisos: string[],
  *             consequencias: string[], compensacao: Object[]|null, guiaNovo: Object }}
  */
@@ -489,12 +544,77 @@ export function avaliarMudancas(guia, mudancas, ctx) {
       erros.push('Na véspera da prova o guia não marca simulado: o ideal é descansar e revisar de leve.');
   });
 
-  const guiaNovo = aplicarMudancas(guia, mudancas);
-  if (erros.length) return { veredito: 'invalida', erros, avisos, consequencias, compensacao: null, guiaNovo };
+  if (erros.length) return { veredito: 'invalida', erros, avisos, consequencias, compensacao: null, guiaNovo: guia, mudancas };
 
-  const periodo = { ...ctx, de: hoje, ate: vespera };
+  // Plano de hoje: o que o aluno está vendo (fixado), não um novo
+  const fixosAntes = { ...(ctx.planosFixos || {}) };
+  if (ctx.planoHoje) fixosAntes[hoje] = ctx.planoHoje;
+  const periodo = { ...ctx, planosFixos: fixosAntes, de: hoje, ate: vespera };
   const antes = planejarPeriodo(guia, periodo);
-  const depois = planejarPeriodo(guiaNovo, periodo);
+  const planoDe = d => antes.find(p => p.chave === d);
+  const nomeDe = id => nomeMateria(MATERIAS.find(m => m.id === id), guia.perfil);
+
+  // Edições de matérias: confere uma a uma sobre uma cópia dos planos e transforma
+  // "mover" em "tirar de um dia" + "pôr no outro" com o mesmo tempo
+  const resolvidas = [];
+  const trabalho = {};
+  const planoTrab = d => (trabalho[d] ||= planoDe(d) || { chave: d, blocos: [], minutos: 0 });
+  const aplicar = (d, op) => { trabalho[d] = aplicarEdicoes(planoTrab(d), [op], guia.perfil); };
+  for (const m of mudancas) {
+    if (m.tipo === 'mover-materia') {
+      const min = minutosDaMateria(planoTrab(m.de), m.materia);
+      if (!min) { erros.push(`${nomeDe(m.materia)} não está no plano de ${dataCurta(m.de)}.`); continue; }
+      if (m.de === m.para) { erros.push('O dia de origem e o de destino são o mesmo.'); continue; }
+      const tirar = { tipo: 'materia', dia: m.de, op: 'remover', materia: m.materia };
+      const por = { tipo: 'materia', dia: m.para, op: 'adicionar', materia: m.materia, minutos: min };
+      aplicar(m.de, tirar); aplicar(m.para, por);
+      resolvidas.push(tirar, por);
+      consequencias.push(`${nomeDe(m.materia)} sai de ${dataCurta(m.de)} e vai para ${dataCurta(m.para)} (${h(min)}).`);
+      continue;
+    }
+    if (m.tipo === 'materia') {
+      const op = { ...m };
+      const atual = minutosDaMateria(planoTrab(m.dia), m.materia);
+      const nome = nomeDe(m.materia);
+      if (['delta', 'remover'].includes(m.op) && !atual) {
+        erros.push(`${nome} não está no plano de ${dataCurta(m.dia)}.${m.op === 'remover' ? '' : ' Para incluir, peça para "colocar" a matéria nesse dia.'}`);
+        continue;
+      }
+      if (m.op === 'tempo' && !atual) op.op = 'adicionar';   // "quero 1h de física hoje" sem física no dia: entra
+      if (m.op === 'adicionar' && !op.minutos) op.minutos = guia.perfil.bloco.estudo;
+      const final = op.op === 'tempo' ? op.minutos : op.op === 'remover' ? 0 : atual + op.minutos;
+      if (op.op !== 'remover' && final > 0 && final < 10) { erros.push(`${nome} ficaria com só ${h(final)} em ${dataCurta(m.dia)}; o mínimo é 10 minutos.`); continue; }
+      if (final > 300) { erros.push(`${nome} ficaria com ${h(final)} seguidas em ${dataCurta(m.dia)}; o máximo por matéria é 5h.`); continue; }
+      aplicar(m.dia, op);
+      resolvidas.push(op);
+      const aviso = `Você marcou ${nome} como difícil, e ela perde tempo de estudo.`;
+      if (final < atual && (guia.perfil.dificeis || []).includes(m.materia) && !avisos.includes(aviso)) avisos.push(aviso);
+      if (final <= 0) consequencias.push(`${nome} sai de ${dataCurta(m.dia)}${atual ? ` (${h(atual)})` : ''}.`);
+      else if (!atual) consequencias.push(`Entra ${nome} em ${dataCurta(m.dia)}: ${h(final)}.`);
+      else if (op.op === 'adicionar') consequencias.push(`Mais um bloco de ${nome} em ${dataCurta(m.dia)}: +${h(op.minutos)} (total ${h(final)}).`);
+      else consequencias.push(`${nome} em ${dataCurta(m.dia)}: ${h(atual)} → ${h(final)}${final > guia.perfil.bloco.estudo ? ' (num bloco só, sem pausa)' : ''}.`);
+      continue;
+    }
+    resolvidas.push(m);
+  }
+  Object.entries(trabalho).forEach(([d, p]) => {
+    const total = p.blocos.reduce((s, b) => s + b.minutos, 0);
+    if (total > 16 * 60) erros.push(`${dataCurta(d)} ficaria com ${h(total)} de estudo; mais de 16 horas não é realista.`);
+  });
+  const guiaNovo = aplicarMudancas(guia, resolvidas);
+  if (erros.length) return { veredito: 'invalida', erros, avisos, consequencias: [], compensacao: null, guiaNovo, mudancas: resolvidas };
+
+  // Depois: hoje continua o plano fixado (com as edições pedidas), a não ser que o tempo do dia mude
+  const fixosDepois = { ...(ctx.planosFixos || {}) };
+  const tempoDeHojeMuda = resolvidas.some(m => ['minutos', 'ajuste', 'restaurar'].includes(m.tipo) && m.dias.includes(hoje))
+    || resolvidas.some(m => m.tipo === 'simulado-externo' && m.dia === hoje);
+  let planoHojeDepois = null;
+  if (ctx.planoHoje && !tempoDeHojeMuda) {
+    const opsHoje = resolvidas.filter(m => m.tipo === 'materia' && m.dia === hoje);
+    planoHojeDepois = aplicarEdicoes(ctx.planoHoje, opsHoje, guia.perfil);
+    fixosDepois[hoje] = planoHojeDepois;
+  }
+  const depois = planejarPeriodo(guiaNovo, { ...periodo, planosFixos: fixosDepois });
   const minAntes = minutosDeEstudo(antes), minDepois = minutosDeEstudo(depois);
   const diferenca = minDepois - minAntes;
   const diasRestantes = diasEntre(hoje, diaProva);
@@ -517,8 +637,9 @@ export function avaliarMudancas(guia, mudancas, ctx) {
   const variacoes = MATERIAS.map(m => ({ m, d: (contDepois[m.id] || 0) - (contAntes[m.id] || 0) })).filter(v => v.d);
   const perdem = variacoes.filter(v => v.d < 0).sort((a, b) => a.d - b.d);
   const ganham = variacoes.filter(v => v.d > 0).sort((a, b) => b.d - a.d);
-  if (perdem.length) consequencias.push(`Menos blocos de: ${perdem.map(v => `${nome(v.m)} (−${-v.d})`).join(', ')}.`);
-  if (ganham.length) consequencias.push(`Mais blocos de: ${ganham.map(v => `${nome(v.m)} (+${v.d})`).join(', ')}.`);
+  const soEdicoesDeMateria = resolvidas.every(m => m.tipo === 'materia');   // já descritas uma a uma acima
+  if (perdem.length && !soEdicoesDeMateria) consequencias.push(`Menos blocos de: ${perdem.map(v => `${nome(v.m)} (−${-v.d})`).join(', ')}.`);
+  if (ganham.length && !soEdicoesDeMateria) consequencias.push(`Mais blocos de: ${ganham.map(v => `${nome(v.m)} (+${v.d})`).join(', ')}.`);
   const dificeisPerdendo = perdem.filter(v => (guia.perfil.dificeis || []).includes(v.m.id));
   if (dificeisPerdendo.length)
     avisos.push(`Você marcou ${dificeisPerdendo.map(v => nome(v.m)).join(' e ')} como difícil, e ${dificeisPerdendo.length > 1 ? 'elas perdem' : 'ela perde'} tempo de estudo.`);
@@ -562,5 +683,7 @@ export function avaliarMudancas(guia, mudancas, ctx) {
     }
   }
 
-  return { veredito: avisos.length ? 'atencao' : 'ok', erros, avisos, consequencias, compensacao, guiaNovo };
+  const avisosUnicos = [...new Set(avisos)];
+  return { veredito: avisosUnicos.length ? 'atencao' : 'ok', erros, avisos: avisosUnicos, consequencias, compensacao, guiaNovo,
+    mudancas: resolvidas, planoHojeDepois, tempoDeHojeMuda };
 }
