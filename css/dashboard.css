@@ -66,6 +66,7 @@
   color: var(--cor-texto);
   min-height: 44px;          /* alvo de toque mínimo */
   cursor: pointer;
+  position: relative;
   transition:
     transform var(--transicao),
     box-shadow var(--transicao),
@@ -76,13 +77,14 @@
   word-break: break-word;
 }
 
-/* Hover: leve elevação */
+/* Hover: leve elevação com brilho dourado sutil e fundo militar */
 .card-modulo:hover {
   transform: translateY(-4px);
   box-shadow: var(--sombra-hover);
-  border-color: var(--cor-primaria);
+  border-color: var(--cor-dourado-fosco);
+  background-color: #152432;
   text-decoration: none;
-  color: var(--cor-texto);
+  color: #ffffff;
 }
 
 /* Toque / clique: pequena redução de escala */
@@ -93,7 +95,7 @@
 
 /* Foco via teclado */
 .card-modulo:focus-visible {
-  outline: 3px solid var(--cor-primaria);
+  outline: 3px solid var(--cor-dourado-fosco);
   outline-offset: 3px;
 }
 
@@ -107,6 +109,7 @@
   transform: none;
   box-shadow: var(--sombra-sm);
   border-color: var(--cor-borda);
+  background-color: var(--cor-fundo-card);
 }
 
 /* --- Ícone do card --- */
@@ -117,20 +120,24 @@
   width: 44px;
   height: 44px;
   border-radius: var(--raio-md);
-  background-color: var(--cor-primaria-suave);
-  color: var(--cor-primaria);
+  background-color: var(--cor-verde-militar);
+  color: var(--cor-dourado-fosco);
+  border: 1px solid var(--cor-verde-militar-borda);
   flex-shrink: 0;
-  transition: background-color var(--transicao), color var(--transicao);
+  transition: background-color var(--transicao), color var(--transicao), border-color var(--transicao), transform var(--transicao);
 }
 
 .card-modulo:hover .card-modulo__icone {
-  background-color: var(--cor-primaria);
-  color: #fff;
+  background-color: var(--cor-verde-militar-hover);
+  color: #ffffff;
+  border-color: var(--cor-dourado-fosco);
+  transform: scale(1.05);
 }
 
 .card-modulo--em-breve:hover .card-modulo__icone {
-  background-color: var(--cor-primaria-suave);
-  color: var(--cor-primaria);
+  background-color: var(--cor-verde-militar);
+  color: var(--cor-dourado-fosco);
+  transform: none;
 }
 
 /* --- Textos do card --- */
@@ -186,9 +193,10 @@
   gap: var(--espaco-md);
   padding: clamp(var(--espaco-md), 3vw, var(--espaco-lg));
   margin-bottom: var(--espaco-xl);
-  background-color: var(--cor-primaria-suave);
-  border: 1px solid var(--cor-borda);
+  background: linear-gradient(135deg, rgba(22, 36, 51, 0.95), rgba(42, 66, 52, 0.65));
+  border: 1px solid var(--cor-dourado-borda);
   border-radius: var(--raio-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(197, 168, 105, 0.2);
 }
 
 .contagem__cabecalho {
@@ -199,19 +207,19 @@
 
 .contagem__icone {
   display: inline-flex;
-  color: var(--cor-primaria);
+  color: var(--cor-dourado-fosco);
 }
 
 .contagem__titulo {
   font-size: var(--tamanho-xl);
   font-weight: var(--peso-negrito);
-  color: var(--cor-texto);
+  color: #ffffff;
   line-height: 1.25;
 }
 
 .contagem__data {
   font-size: var(--tamanho-sm);
-  color: var(--cor-texto-suave);
+  color: #e2e8f0;
 }
 
 .contagem__numeros {
@@ -225,28 +233,30 @@
   align-items: center;
   min-width: 3.75rem;
   padding: var(--espaco-sm);
-  background-color: var(--cor-fundo-card);
+  background-color: #0c151f;
+  border: 1px solid rgba(197, 168, 105, 0.25);
   border-radius: var(--raio-md);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }
 
 .contagem__valor {
   font-size: var(--tamanho-xl);
   font-weight: var(--peso-negrito);
-  color: var(--cor-primaria);
+  color: var(--cor-dourado-fosco);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 
 .contagem__rotulo {
   font-size: var(--tamanho-xs);
-  color: var(--cor-texto-suave);
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .contagem__fim {
   font-weight: var(--peso-negrito);
-  color: var(--cor-primaria);
+  color: var(--cor-dourado-fosco);
 }
 
 /* "?" no canto superior esquerdo: mostra data, horários e avisos da prova */

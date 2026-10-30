@@ -57,8 +57,9 @@
 }
 
 .login-aba--ativa {
-  background-color: var(--cor-fundo-card);
-  color: var(--cor-primaria);
+  background-color: var(--cor-verde-militar);
+  color: var(--cor-dourado-fosco);
+  border: 1px solid var(--cor-verde-militar-borda);
   box-shadow: var(--sombra-sm);
 }
 

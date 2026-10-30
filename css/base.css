@@ -78,9 +78,9 @@ img, svg { max-width: 100%; display: block; }
   top: 0;
   z-index: 100;
   height: var(--altura-cabecalho);
-  background-color: var(--cor-fundo-card);
+  background-color: var(--cor-marinho-elevado);
   border-bottom: 1px solid var(--cor-borda);
-  box-shadow: var(--sombra-sm);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
 }
@@ -140,24 +140,31 @@ img, svg { max-width: 100%; display: block; }
 .btn:active { transform: scale(0.97); }
 
 .btn-primario {
-  background-color: var(--cor-primaria);
-  color: #fff;
+  background-color: var(--cor-dourado-fosco);
+  color: #0a1118;
+  font-weight: var(--peso-negrito);
+  border: 1px solid var(--cor-dourado-hover);
 }
 
 .btn-primario:hover {
-  background-color: var(--cor-primaria-hover);
-  box-shadow: var(--sombra-md);
+  background-color: var(--cor-dourado-hover);
+  color: #050a0e;
+  box-shadow: 0 4px 16px rgba(197, 168, 105, 0.35);
   text-decoration: none;
 }
 
 .btn-secundario {
-  background-color: transparent;
-  color: var(--cor-primaria);
-  border: 1.5px solid var(--cor-primaria);
+  background-color: var(--cor-verde-militar-suave);
+  color: var(--cor-texto);
+  border: 1.5px solid var(--cor-verde-militar-borda);
 }
 
 .btn-secundario:hover {
-  background-color: var(--cor-primaria-suave);
+  background-color: var(--cor-verde-militar);
+  border-color: var(--cor-dourado-fosco);
+  color: var(--cor-dourado-fosco);
+  text-decoration: none;
+}
   text-decoration: none;
 }
 
