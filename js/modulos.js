@@ -6,7 +6,7 @@
  *   id        : slug único sem acento (usado na URL e para cruzar com questões)
  *   titulo    : nome exibido no card
  *   tipo      : "disciplina" (questões de estudo da matéria) | "simulados" (provas anteriores)
- *               | "em-breve" (tela de aviso)
+ *               | "guia" (Guia de Estudos) | "em-breve" (tela de aviso)
  *   disciplina: nome da disciplina tal como aparece em dados/questoes.js
  *               (só obrigatório quando tipo === "disciplina")
  *   icone     : nome do ícone SVG definido em js/icones.js
@@ -97,10 +97,10 @@ export const MODULOS = [
   {
     id: 'guia-de-estudos',
     titulo: 'Guia de Estudos',
-    tipo: 'em-breve',
+    tipo: 'guia',
     disciplina: null,
     icone: 'map',
-    status: 'em-breve',
+    status: 'ativo',
   },
   {
     id: 'leituras-obrigatorias',

@@ -174,6 +174,20 @@
   line-height: 1.7;
 }
 
+/* ---- Tabela digitada como texto na prova (ex.: Q47 de 2024/Inverno) ---- */
+.tabela-prova {
+  border-collapse: collapse;
+  margin: var(--espaco-sm) 0;
+  font-size: 0.95em;
+}
+
+.tabela-prova th,
+.tabela-prova td {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--cor-borda, #ccc);
+  text-align: left;
+}
+
 /* ---- Lista de alternativas ---- */
 .alternativas-lista {
   display: flex;

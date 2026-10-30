@@ -11,6 +11,7 @@ import { estatisticasModulo } from './armazenamento.js';
 import { slugify }  from './utils.js';
 import { htmlContagem, iniciarContagem } from './contagem.js';
 import { resumoSimulados } from './simulado.js';
+import { resumoGuia } from './guia.js';
 
 /**
  * Filtra as questões pertencentes a uma disciplina,
@@ -37,6 +38,10 @@ function htmlInfoCard(modulo, todasQuestoes, questoesProvas) {
 
   if (modulo.tipo === 'simulados') {
     return `<span class="card-modulo__info">${resumoSimulados(questoesProvas)}</span>`;
+  }
+
+  if (modulo.tipo === 'guia') {
+    return `<span class="card-modulo__info">${resumoGuia()}</span>`;
   }
 
   const questoes = questoesDaDisciplina(todasQuestoes, modulo.disciplina);
@@ -67,24 +72,28 @@ function htmlInfoCard(modulo, todasQuestoes, questoesProvas) {
 function htmlCard(modulo, todasQuestoes, questoesProvas) {
   const estaAtivo = modulo.status === 'ativo';
   const eSimulados = modulo.tipo === 'simulados';
+  const eGuia = modulo.tipo === 'guia';
 
   // Destino do link
   const href = !estaAtivo ? `#/em-breve/${modulo.id}`
     : eSimulados ? '#/simulados'
+    : eGuia ? '#/guia'
     : `#/questoes/${modulo.id}`;
 
   const classeExtra = estaAtivo ? '' : ' card-modulo--em-breve';
 
   // Label de acessibilidade
-  const questoes = estaAtivo && !eSimulados
+  const questoes = estaAtivo && !eSimulados && !eGuia
     ? questoesDaDisciplina(todasQuestoes, modulo.disciplina)
     : [];
-  const { total, respondidas } = estaAtivo && !eSimulados
+  const { total, respondidas } = estaAtivo && !eSimulados && !eGuia
     ? estatisticasModulo(questoes)
     : { total: 0, respondidas: 0 };
 
   const ariaLabel = eSimulados
     ? `${modulo.titulo}: ${resumoSimulados(questoesProvas)}`
+    : eGuia
+    ? `${modulo.titulo}: ${resumoGuia()}`
     : estaAtivo
     ? `${modulo.titulo}: ${total} questões, ${respondidas} respondidas`
     : `${modulo.titulo}: em breve`;

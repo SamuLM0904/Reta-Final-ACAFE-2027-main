@@ -178,6 +178,7 @@
 
 /* --- Box de contagem regressiva para a prova --- */
 .contagem {
+  position: relative;          /* referência para o "?" do canto */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -202,8 +203,10 @@
 }
 
 .contagem__titulo {
+  font-size: var(--tamanho-xl);
   font-weight: var(--peso-negrito);
   color: var(--cor-texto);
+  line-height: 1.25;
 }
 
 .contagem__data {
@@ -245,3 +248,93 @@
   font-weight: var(--peso-negrito);
   color: var(--cor-primaria);
 }
+
+/* "?" no canto superior esquerdo: mostra data, horários e avisos da prova */
+.contagem__ajuda {
+  position: absolute;
+  top: 12px;     /* mesma distância do topo e da esquerda, acompanhando o arredondamento do box */
+  left: 12px;
+  z-index: 5;
+  display: flex;
+}
+
+.contagem__ajuda-botao {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--raio-pill);
+  border: none;
+  background-color: #d3d7da;      /* cinza neutro */
+  color: #5f686e;
+  font: inherit;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: var(--peso-negrito);
+  line-height: 1;
+  cursor: help;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+.contagem__ajuda-botao:hover,
+.contagem__ajuda-botao:focus-visible {
+  background-color: #bcc2c6;
+  color: #3f474c;
+  outline: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contagem__ajuda-botao { background-color: #3a4245; color: #b4bcc0; }
+  .contagem__ajuda-botao:hover,
+  .contagem__ajuda-botao:focus-visible { background-color: #4a5357; color: #dde3e6; }
+}
+
+/* Em telas estreitas o título fica no topo: abre espaço para o "?" */
+@media (max-width: 600px) {
+  .contagem { padding-top: calc(var(--espaco-md) + 24px); }
+}
+
+.contagem__ajuda-balao {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: max-content;
+  max-width: min(320px, 80vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-md);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity var(--transicao), transform var(--transicao), visibility var(--transicao);
+}
+
+.contagem__ajuda-balao strong { color: var(--cor-texto); }
+
+.contagem__ajuda:hover .contagem__ajuda-balao,
+.contagem__ajuda:focus-within .contagem__ajuda-balao,
+.contagem__ajuda--aberta .contagem__ajuda-balao {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.contagem__aviso {
+  margin-top: var(--espaco-xs);
+  padding-top: var(--espaco-xs);
+  border-top: 1px solid var(--cor-borda);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-primaria);
+  font-weight: var(--peso-medio);
+}
+
+.contagem__aviso:empty { display: none; }

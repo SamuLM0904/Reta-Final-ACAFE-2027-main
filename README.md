@@ -44,7 +44,8 @@ Reta Final ACAFE 2027/
 │   └── utils.js            ← Funções utilitárias (slugify, escape, etc.)
 │
 ├── dados/
-│   ├── provas-anteriores.js ← Questões das provas anteriores da ACAFE — usadas SÓ nos simulados
+│   ├── provas-anteriores.js ← Cria o banco das provas anteriores (QUESTOES_PROVAS) — usado SÓ nos simulados
+│   ├── provas/              ← UM ARQUIVO POR PROVA (ex.: 2026-inverno.js), cada um acrescenta as suas questões
 │   └── questoes.js          ← Questões de estudo por matéria (de outras provas — a cadastrar)
 │
 ├── imagens/                ← Prints (.webp) das imagens reais das provas
@@ -76,28 +77,29 @@ Com o Firebase ligado, cada aluno entra com **usuário e senha** e todo o progre
 4. Firestore → aba **Regras** → apague o conteúdo, cole o do arquivo `firestore.rules` deste projeto → **Publicar**.
 5. ⚙️ **Configurações do projeto** → *Seus apps* → ícone **Web `</>`** → registre o app → copie o objeto `firebaseConfig` e cole em `js/firebase-config.js` (no lugar de `null`, como no exemplo do próprio arquivo).
 6. Rode `node servidor.js`, abra http://localhost:3000 e **crie a sua conta**.
-7. Torne-se administrador: **Authentication → Usuários** → copie o *UID do usuário* da sua conta → **Firestore → Iniciar coleção** → ID da coleção `admins` → ID do documento = o UID copiado → adicione um campo qualquer (ex.: `nome` = seu nome) → Salvar.
-8. Abra http://localhost:3000/#/admin → **Enviar questões para o banco**. Repita sempre que cadastrar questões novas nos arquivos de `dados/`.
+7. Torne-se administrador: **Firestore → Iniciar coleção** → ID da coleção `admins` → ID do documento = **o seu nome de usuário** (ex.: `admin_acafe`, ou o seu e-mail se você se cadastrou com e-mail) → adicione um campo qualquer (ex.: `nome` = seu nome) → Salvar.
+8. (Opcional) http://localhost:3000/#/admin → **Enviar questões para o banco** guarda uma cópia das questões no Firestore. O site não depende dela: as questões sempre vêm dos arquivos de `dados/`.
 
 ### Como os dados ficam no banco
 
 | Coleção | Conteúdo | Quem acessa |
 |---|---|---|
-| `alunos/{uid}` | perfil, respostas, simulados e histórico de cada aluno | só o próprio aluno |
+| `alunos/{usuario}` | perfil, respostas, simulados e histórico de cada aluno (ex.: `alunos/joao_silva`) | só o próprio aluno |
 | `questoes/{id}` | banco de questões (`banco: 'provas'` ou `'estudo'`) | leitura: alunos logados • escrita: administradores |
-| `admins/{uid}` | quem pode enviar questões | criado só pelo Console |
+| `admins/{usuario}` | quem pode enviar questões (ex.: `admins/admin_acafe`) | criado só pelo Console |
 
 - O navegador mantém uma cópia local: o site continua funcionando sem internet e sincroniza quando a conexão volta (gravações agrupadas a cada 2 s).
 - Na primeira vez que um aluno entra num navegador onde já estudava sem login, esse progresso é levado para a conta dele.
-- Se as questões ainda não foram enviadas ao banco, o site usa as dos arquivos de `dados/`.
-- **Esqueci a senha:** funciona por e-mail só para quem se cadastrou com e-mail. Contas com `nome_sobrenome` não têm como receber e-mail — recomende aos alunos usar o e-mail se quiserem poder recuperar a senha.
+- **As questões vêm sempre dos arquivos de `dados/`.** A coleção `questoes` no Firestore é só uma cópia opcional (enviada pelo `#/admin`) e não é lida pelo site.
+- **Senhas não podem ser vistas** — nem pelo administrador: o Firebase guarda só uma versão embaralhada (por segurança).
+- **Esqueci a senha:** quem se cadastrou com e-mail usa "Esqueci minha senha" na tela de login. Para contas `nome_sobrenome`: no Console, **Authentication → Usuários** → menu ⋮ da conta → **Excluir conta**; o aluno cria a conta de novo com o **mesmo nome** e uma senha nova — o progresso continua, porque fica em `alunos/nome_sobrenome`.
 - O plano gratuito (Spark) do Firebase é suficiente para uma turma.
 
 ---
 
 ## Como adicionar uma questão nova
 
-- **Questão de prova anterior da ACAFE** → `dados/provas-anteriores.js`, array `QUESTOES_PROVAS`. Ela passa a entrar automaticamente no sorteio dos simulados. Cadastre também as questões de **Inglês** (15 a 21, `disciplina: 'Inglês'`, id com `-ing-`) além das de Espanhol. Questões anuladas não entram.
+- **Questão de prova anterior da ACAFE** → no arquivo da prova, `dados/provas/<ano>-<inverno|verao>.js` (ex.: `dados/provas/2026-inverno.js`), dentro de `QUESTOES_PROVAS.push(...)`. **Prova nova = arquivo novo** (copie a estrutura de um existente) **+ uma linha `<script src="dados/provas/<arquivo>.js">` no `index.html`**. Ela passa a entrar automaticamente no sorteio dos simulados. Cadastre também as questões de **Inglês** (15 a 21, `disciplina: 'Inglês'`, id com `-ing-`) além das de Espanhol. Questões anuladas não entram.
 - **Questão de estudo (outras provas)** → `dados/questoes.js`, array `QUESTOES`. Ela aparece no módulo da matéria (campo `disciplina`).
 
 O formato do objeto é o mesmo nos dois arquivos:

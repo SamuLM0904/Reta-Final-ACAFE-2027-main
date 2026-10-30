@@ -17,6 +17,16 @@
  *       atual: { idioma, ids: ["<id>", ...], respostas: { "<id>": "C" }, tempoMs, indice, criadoEm } | null,
  *       tentativas: [ { data, idioma, ids, respostas, acertos, total, tempoMs } ]
  *     },
+ *     memoria: [   // MEMÓRIA DE ERROS E ACERTOS — só muda quando o aluno marca uma resposta
+ *       { q: "<id>", a: "C", ok: true, t: 1730000000000, o: "estudo" | "simulado", s: "<id do simulado>" }
+ *     ],
+ *     memoriaResetadaEm: 1730000000000,  // ms — quando o administrador zerou a memória (ver definirAluno)
+ *     guia: {      // GUIA DE ESTUDOS (ver guia.js)
+ *       perfil:  { minutosDia, fimDeSemanaMais, minutosFimDeSemana, bloco: { estudo, pausa },
+ *                  dificeis: ["fisica", ...], idioma, meta, provasAnteriores, cursinho, atualizadoEm },
+ *       ajustes: { "AAAA-MM-DD": ±minutos },     // "hoje vou estudar mais/menos"
+ *       planos:  { "AAAA-MM-DD": { base, minutos, blocos: [...] } }   // plano fixado de cada dia
+ *     },
  *     atualizadoEm: 1730000000000   // ms — usado para sincronizar com a nuvem
  *   }
  *
@@ -29,7 +39,7 @@ const CHAVE_BASE = 'acafe2027';
 let chave = CHAVE_BASE;       // muda para "acafe2027:<uid>" quando um aluno entra
 let aoGravar = null;          // envia para a nuvem (definido por definirAluno)
 
-const vazio = () => ({ respostas: {}, simulado: { atual: null, tentativas: [] } });
+const vazio = () => ({ respostas: {}, simulado: { atual: null, tentativas: [] }, memoria: [] });
 
 /**
  * Lê o objeto raiz do storage.
@@ -87,8 +97,16 @@ export function definirAluno(uid, dadosNuvem = null, enviar = null) {
   }
 
   const nuvem = dadosNuvem && (dadosNuvem.respostas || dadosNuvem.simulado) ? dadosNuvem : null;
-  const usarLocal = local && (!nuvem || (local.atualizadoEm || 0) > (nuvem.atualizadoEm || 0));
+  let usarLocal = local && (!nuvem || (local.atualizadoEm || 0) > (nuvem.atualizadoEm || 0));
   const dados = { ...vazio(), ...(dadosNuvem || {}), ...(usarLocal ? local : nuvem || {}) };
+
+  // O administrador zerou a memória pela nuvem depois da última vez que este navegador
+  // soube disso: descarta daqui as marcações anteriores ao reset (senão elas voltariam).
+  const resetEm = dadosNuvem?.memoriaResetadaEm || 0;
+  if (usarLocal && resetEm > (local.memoriaResetadaEm || 0)) {
+    dados.memoria = (dados.memoria || []).filter(m => m.t > resetEm);
+    dados.memoriaResetadaEm = resetEm;
+  }
   try { localStorage.setItem(chave, JSON.stringify(dados)); } catch { /* ignora */ }
 
   aoGravar = enviar;
@@ -184,11 +202,100 @@ export function salvarSimuladoAtual(atual) {
 }
 
 /**
+ * Descarta o simulado em andamento e apaga da memória de erros e acertos
+ * tudo o que foi marcado nele.
+ */
+export function descartarSimuladoAtual() {
+  const dados = lerTudo();
+  const atual = dados.simulado?.atual;
+  if (atual) {
+    const id = idDoSimulado(atual);
+    dados.memoria = (dados.memoria || []).filter(m => m.s !== id);
+  }
+  dados.simulado = { ...lerSimulado(), atual: null };
+  gravarTudo(dados);
+}
+
+/** Identificador de um simulado (simulados antigos não tinham id: usa a data de criação). */
+export const idDoSimulado = simulado => simulado.id || simulado.criadoEm;
+
+/**
  * Registra uma tentativa finalizada e encerra o simulado em andamento.
  * @param {{ data: string, idioma: string, ids: string[], respostas: Object, acertos: number, total: number, tempoMs: number }} tentativa
  */
 export function registrarTentativaSimulado(tentativa) {
   const dados = lerTudo();
   dados.simulado = { atual: null, tentativas: [...lerSimulado().tentativas, tentativa] };
+  gravarTudo(dados);
+}
+
+/* ================================================================
+   Memória de erros e acertos
+   Só é alterada quando o aluno MARCA uma resposta (e quando um simulado
+   em andamento é descartado). Navegar, pular, "Recomeçar" ou "Refazer"
+   não mexem nela. É a base da análise de desempenho do aluno.
+   ================================================================ */
+
+/**
+ * Lê a memória de erros e acertos.
+ * @returns {{ q: string, a: string, ok: boolean, t: number, o: string, s?: string }[]}
+ */
+export function lerMemoria() {
+  return lerTudo().memoria || [];
+}
+
+/**
+ * Registra uma resposta marcada.
+ * No simulado, a marcação substitui a anterior da mesma questão no mesmo
+ * simulado (o aluno pode trocar de alternativa); no estudo, cada conferência
+ * é um novo registro.
+ * @param {{ questaoId: string, letra: string, acertou: boolean, origem: 'estudo'|'simulado', simuladoId?: string }} r
+ */
+export function registrarNaMemoria({ questaoId, letra, acertou, origem, simuladoId }) {
+  const dados = lerTudo();
+  let memoria = dados.memoria || [];
+  if (origem === 'simulado') memoria = memoria.filter(m => !(m.s === simuladoId && m.q === questaoId));
+  const registro = { q: questaoId, a: letra, ok: acertou, t: Date.now(), o: origem };
+  if (simuladoId) registro.s = simuladoId;
+  dados.memoria = [...memoria, registro];
+  gravarTudo(dados);
+}
+
+/**
+ * Remove da memória a marcação de uma questão num simulado (o aluno desmarcou).
+ * @param {string} simuladoId
+ * @param {string} questaoId
+ */
+export function removerDaMemoria(simuladoId, questaoId) {
+  const dados = lerTudo();
+  dados.memoria = (dados.memoria || []).filter(m => !(m.s === simuladoId && m.q === questaoId));
+  gravarTudo(dados);
+}
+
+/**
+ * Zera a memória de erros e acertos neste navegador (usado quando o administrador
+ * reseta a memória da própria conta; a dos outros alunos é zerada na nuvem).
+ * @param {number} resetEm - momento do reset (ms)
+ */
+export function resetarMemoriaLocal(resetEm = Date.now()) {
+  const dados = lerTudo();
+  dados.memoria = [];
+  dados.memoriaResetadaEm = resetEm;
+  gravarTudo(dados);
+}
+
+/* ================================================================
+   Guia de estudos
+   ================================================================ */
+
+/** Dados do guia (perfil, ajustes e planos), ou null se o aluno ainda não respondeu. */
+export function lerGuia() {
+  return lerTudo().guia || null;
+}
+
+/** Grava os dados do guia (objeto completo). */
+export function salvarGuia(guia) {
+  const dados = lerTudo();
+  dados.guia = guia;
   gravarTudo(dados);
 }

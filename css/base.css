@@ -264,3 +264,84 @@ img, svg { max-width: 100%; display: block; }
   border: 0;
 }
 
+
+/* ============================================================
+   Janela de confirmação na própria página (js/confirmar.js)
+   ============================================================ */
+.confirmacao {
+  /* Centralizada na tela (o reset do site zera a margem automática do <dialog>) */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  max-height: 90vh;
+  overflow: auto;
+  width: min(92vw, 440px);
+  padding: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  box-shadow: var(--sombra-hover);
+  animation: confirmacao-entrada var(--transicao-md);
+}
+
+.confirmacao::backdrop {
+  background-color: rgba(10, 20, 18, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.confirmacao__caixa {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-lg);
+}
+
+.confirmacao__icone {
+  display: inline-flex;
+  padding: var(--espaco-sm);
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+}
+
+.confirmacao__icone--perigo {
+  background-color: var(--cor-errada-fundo);
+  color: var(--cor-errada);
+}
+
+.confirmacao__titulo {
+  font-size: var(--tamanho-lg);
+  color: var(--cor-texto);
+}
+
+.confirmacao__mensagem {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.6;
+}
+
+.confirmacao__mensagem strong { color: var(--cor-texto); }
+
+.confirmacao__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espaco-sm);
+  width: 100%;
+  margin-top: var(--espaco-sm);
+}
+
+.btn-perigo { background-color: var(--cor-errada); }
+.btn-perigo:hover { background-color: var(--cor-errada); filter: brightness(1.1); }
+
+@keyframes confirmacao-entrada {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirmacao { animation: none; }
+}

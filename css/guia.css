@@ -1,0 +1,339 @@
+/* ============================================================
+   guia.css — Guia de Estudos (questionário, plano do dia,
+   próximos dias, chat e desempenho). Reaproveita os cartões e
+   tabelas de simulado.css.
+   ============================================================ */
+
+/* ---- Questionário ---- */
+.guia-form {
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+
+.guia-pergunta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guia-pergunta legend {
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-sm);
+}
+
+.guia-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-sm);
+  font-size: var(--tamanho-sm);
+}
+
+.guia-linha[hidden] { display: none; }
+
+.guia-select,
+.guia-numero,
+.guia-texto {
+  min-height: 40px;
+  padding: var(--espaco-xs) var(--espaco-sm);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font: inherit;
+}
+
+.guia-numero { width: 5.5rem; }
+.guia-texto  { flex: 1 1 16rem; min-width: 0; }
+
+.guia-select:focus,
+.guia-numero:focus,
+.guia-texto:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+}
+
+.guia-dica {
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+.guia-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espaco-sm);
+}
+
+.guia-link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--cor-primaria);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---- Selos e etiquetas ---- */
+.guia-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px var(--espaco-sm);
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto-suave);
+  font-size: var(--tamanho-xs);
+  font-weight: var(--peso-medio);
+  vertical-align: middle;
+}
+
+.guia-selo--ok      { color: var(--cor-certa);  background-color: var(--cor-certa-fundo);  border-color: var(--cor-certa-borda); }
+.guia-selo--erro    { color: var(--cor-errada); background-color: var(--cor-errada-fundo); border-color: var(--cor-errada-borda); }
+.guia-selo--atencao { color: #8a5300; background-color: #fff4e5; border-color: var(--cor-progresso); }
+
+.guia-chip {
+  display: inline-block;
+  padding: 1px var(--espaco-sm);
+  margin: 1px 0;
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  font-size: var(--tamanho-xs);
+}
+
+.guia-chip--simulado { background-color: #fff4e5; color: #8a5300; }
+
+/* ---- Plano de hoje ---- */
+.guia-hoje__topo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--espaco-sm);
+}
+
+.guia-hoje__progresso {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-primaria);
+  font-weight: var(--peso-medio);
+}
+
+.guia-ajuste {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-sm);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+
+.guia-blocos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+}
+
+.guia-bloco {
+  display: flex;
+  gap: var(--espaco-md);
+  padding: var(--espaco-md);
+  background-color: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  transition: opacity var(--transicao);
+}
+
+.guia-bloco--simulado { border-left: 4px solid var(--cor-progresso); }
+.guia-bloco--feito { opacity: 0.6; }
+.guia-bloco--feito .guia-bloco__titulo { text-decoration: line-through; }
+
+.guia-bloco__marcar input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--cor-primaria);
+  cursor: pointer;
+}
+
+.guia-bloco__corpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-xs);
+  min-width: 0;
+}
+
+.guia-bloco__titulo {
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+}
+
+.guia-bloco__tempo {
+  display: inline-block;
+  min-width: 3.5rem;
+  color: var(--cor-primaria);
+  font-variant-numeric: tabular-nums;
+}
+
+.guia-bloco__foco,
+.guia-bloco__atividade {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+.guia-pausa {
+  padding-left: calc(22px + var(--espaco-md) * 2);
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-fraco);
+}
+
+/* ---- Próximos dias ---- */
+.guia-dias {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guia-dia {
+  display: grid;
+  grid-template-columns: 6.5rem 4rem 1fr auto;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-sm) 0;
+  border-bottom: 1px solid var(--cor-borda);
+  font-size: var(--tamanho-sm);
+}
+
+.guia-dia:last-child { border-bottom: none; }
+.guia-dia__data  { font-weight: var(--peso-medio); color: var(--cor-texto); }
+.guia-dia__tempo { color: var(--cor-texto-suave); font-variant-numeric: tabular-nums; }
+.guia-dia__acoes { display: flex; gap: var(--espaco-xs); }
+.guia-dia__acoes .btn { min-width: 36px; padding: 0 var(--espaco-sm); }
+
+@media (max-width: 560px) {
+  .guia-dia { grid-template-columns: 1fr auto; }
+  .guia-dia__materias { grid-column: 1 / -1; }
+}
+
+/* ---- Mudanças ativas ---- */
+.guia-mudancas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guia-mudancas li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-xs) 0;
+  font-size: var(--tamanho-sm);
+}
+
+/* ---- Chat ---- */
+.guia-chat__mensagens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.guia-chat__mensagens:empty { display: none; }
+
+.guia-msg {
+  max-width: 90%;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio-md);
+  font-size: var(--tamanho-sm);
+  line-height: 1.5;
+}
+
+.guia-msg--aluno {
+  align-self: flex-end;
+  background-color: var(--cor-primaria);
+  color: #fff;
+  white-space: pre-wrap;
+}
+
+.guia-msg--guia {
+  align-self: flex-start;
+  background-color: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+.guia-msg__sub {
+  margin-top: var(--espaco-sm);
+  font-weight: var(--peso-medio);
+  font-size: var(--tamanho-sm);
+}
+
+.guia-msg__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-xs);
+  margin-top: var(--espaco-sm);
+}
+
+.guia-lista {
+  margin: var(--espaco-xs) 0 0;
+  padding-left: 1.2rem;
+  font-size: var(--tamanho-sm);
+  line-height: 1.5;
+}
+
+.guia-lista--erro    { color: var(--cor-errada); }
+.guia-lista--atencao { color: #8a5300; }
+
+.guia-chat__envio {
+  display: flex;
+  gap: var(--espaco-sm);
+  align-items: flex-end;
+}
+
+.guia-chat__envio textarea {
+  flex: 1;
+  min-height: 44px;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font: inherit;
+  resize: vertical;
+}
+
+.guia-chat__envio textarea:focus { outline: none; border-color: var(--cor-primaria); }
+
+.guia-chat__mic--gravando {
+  border-color: var(--cor-errada);
+  background-color: var(--cor-errada-fundo);
+  animation: guia-pulsar 1.2s ease-in-out infinite;
+}
+
+@keyframes guia-pulsar { 50% { opacity: 0.6; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .guia-chat__mic--gravando { animation: none; }
+}
+
+/* ---- Desempenho ---- */
+.guia-projecao {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto);
+  line-height: 1.6;
+}

@@ -318,3 +318,145 @@
   .simulado-materia { grid-template-columns: 1fr 3.5rem; }
   .simulado-materia__barra { grid-column: 1 / -1; grid-row: 2; }
 }
+
+/* ---- Escolha da prova (simulado de um ano) e avisos ---- */
+.simulado-prova {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  font-size: var(--tamanho-sm);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto);
+  max-width: 320px;
+}
+
+.simulado-prova[hidden] { display: none; }
+
+.simulado-prova__select {
+  min-height: 44px;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font: inherit;
+  font-weight: normal;
+}
+
+.simulado-prova__select:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+}
+
+.simulado-aviso {
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-left: 3px solid var(--cor-progresso);
+  border-radius: var(--raio-sm);
+  background-color: var(--cor-fundo);
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}
+
+.simulado-aviso strong { color: var(--cor-texto); }
+
+/* ---- Escolha do tipo de simulado: dois cartões grandes ---- */
+.simulado-modo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--espaco-md);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.simulado-modo legend {
+  font-size: var(--tamanho-base);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-sm);
+}
+
+.simulado-modo__opcao {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-md);
+  padding: var(--espaco-lg);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background-color: var(--cor-fundo);
+  cursor: pointer;
+  transition: border-color var(--transicao), background-color var(--transicao),
+              box-shadow var(--transicao), transform var(--transicao);
+}
+
+.simulado-modo__opcao:hover {
+  border-color: var(--cor-primaria);
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-md);
+}
+
+/* O rádio fica escondido: o cartão inteiro é a opção */
+.simulado-modo__opcao input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.simulado-modo__opcao:has(input:checked) {
+  border-color: var(--cor-primaria);
+  background-color: var(--cor-primaria-suave);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 25%, transparent);
+}
+
+.simulado-modo__opcao:has(input:focus-visible) {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 3px;
+}
+
+/* Marca de selecionado no canto */
+.simulado-modo__opcao:has(input:checked)::after {
+  content: '✓';
+  position: absolute;
+  top: var(--espaco-sm);
+  right: var(--espaco-sm);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-primaria);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: var(--peso-negrito);
+}
+
+.simulado-modo__icone {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: var(--espaco-sm);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-primaria);
+}
+
+.simulado-modo__texto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  padding-right: var(--espaco-lg);
+}
+
+.simulado-modo__titulo {
+  font-size: var(--tamanho-lg);
+  font-weight: var(--peso-negrito);
+  color: var(--cor-texto);
+}
+
+.simulado-modo__descricao {
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+}

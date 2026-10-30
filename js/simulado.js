@@ -6,12 +6,14 @@
  *   #/simulado                      → fazendo o simulado em andamento
  *   #/simulado/resultado/<n>        → resultado da tentativa n + revisão com explicações
  *
- * Cada simulado SORTEIA questões do banco de todas as provas anteriores
- * (dados/provas-anteriores.js), mantendo o formato da prova ACAFE: 63 questões,
- * com a mesma quantidade por bloco/matéria (ver BLOCOS). A língua estrangeira
- * (Espanhol ou Inglês) é escolhida antes de começar. Questões que compartilham
- * um texto-base ou imagem ficam juntas. Questões ainda não vistas em simulados
- * anteriores têm prioridade no sorteio.
+ * Dois tipos de simulado, ambos com a língua estrangeira escolhida (Espanhol ou Inglês):
+ *   - Aleatório: SORTEIA questões do banco de todas as provas anteriores
+ *     (dados/provas-anteriores.js), no formato da prova ACAFE: 63 questões, com a
+ *     mesma quantidade por bloco/matéria (ver BLOCOS). Questões feitas nos últimos
+ *     30 dias (simulados finalizados e respostas marcadas) não entram; se faltarem
+ *     questões novas, completa com as feitas há mais tempo. Questões que
+ *     compartilham um texto-base ou imagem ficam juntas.
+ *   - Prova completa de um ano: a prova escolhida, na ordem original.
  *
  * Funciona como a prova real: marca-se (e troca-se) a resposta, navega-se
  * livremente, e gabarito e explicações só aparecem ao finalizar. O cronômetro é
@@ -19,8 +21,12 @@
  */
 
 import { icone } from './icones.js';
+import { confirmar } from './confirmar.js';
 import { htmlImagens, htmlAlternativa, vincularImagens, aplicarFeedback } from './render-questao.js';
-import { lerSimulado, salvarSimuladoAtual, registrarTentativaSimulado } from './armazenamento.js';
+import {
+  lerSimulado, salvarSimuladoAtual, descartarSimuladoAtual, registrarTentativaSimulado,
+  idDoSimulado, registrarNaMemoria, removerDaMemoria, lerMemoria,
+} from './armazenamento.js';
 
 /** Duração da prova ACAFE (redação + 63 questões objetivas). */
 const DURACAO_MS = 5 * 60 * 60 * 1000;
@@ -80,22 +86,56 @@ function chaveDeGrupo(q) {
   return 'questao:' + q.id;
 }
 
+/** Janela em que questões já feitas não voltam a cair no simulado aleatório. */
+const DIAS_SEM_REPETIR = 30;
+
 /**
- * Sorteia um simulado completo.
+ * Quando cada questão foi feita pela última vez (ms): questões de simulados
+ * finalizados e respostas marcadas (memória de erros e acertos).
+ * @returns {Object<string, number>}
+ */
+function ultimaVezFeita() {
+  const ultima = {};
+  const anotar = (id, t) => { if (t > (ultima[id] || 0)) ultima[id] = t; };
+  lerSimulado().tentativas.forEach(t => (t.ids || []).forEach(id => anotar(id, new Date(t.data).getTime())));
+  lerMemoria().forEach(m => anotar(m.q, m.t));
+  return ultima;
+}
+
+/**
+ * Para cada bloco, quantas questões do banco o aluno NÃO fez nos últimos 30 dias.
+ * @returns {{ bloco: Object, banco: number, novas: number }[]}
+ */
+function disponibilidade(questoesProvas, idioma) {
+  const limite = Date.now() - DIAS_SEM_REPETIR * 86400000;
+  const ultima = ultimaVezFeita();
+  return BLOCOS.map(bloco => {
+    const banco = bancoDoBloco(questoesProvas, bloco, idioma);
+    return { bloco, banco: banco.length, novas: banco.filter(q => !(ultima[q.id] > limite)).length };
+  });
+}
+
+/**
+ * Sorteia um simulado aleatório completo.
+ * Questões feitas nos últimos 30 dias não entram; se o banco não tiver questões
+ * novas suficientes num bloco, completa com as feitas há mais tempo.
  * @param {Object[]} questoesProvas
  * @param {string}   idioma - 'Espanhol' | 'Inglês'
- * @returns {string[]} ids das questões, na ordem da prova
+ * @returns {{ ids: string[], repetidas: number }} ids na ordem da prova
  */
 export function sortearSimulado(questoesProvas, idioma) {
-  // Quantas vezes cada questão já caiu em simulados anteriores (menos vistas têm prioridade)
-  const usos = {};
-  lerSimulado().tentativas.forEach(t => (t.ids || []).forEach(id => { usos[id] = (usos[id] || 0) + 1; }));
+  const limite = Date.now() - DIAS_SEM_REPETIR * 86400000;
+  const ultima = ultimaVezFeita();
 
   const ids = [];
+  let repetidas = 0;
   BLOCOS.forEach(bloco => {
-    const banco = embaralhar(bancoDoBloco(questoesProvas, bloco, idioma))
-      .sort((a, b) => (usos[a.id] || 0) - (usos[b.id] || 0));   // sort estável: mantém o embaralhado
-    const escolhidas = banco.slice(0, bloco.quantidade);
+    const banco = embaralhar(bancoDoBloco(questoesProvas, bloco, idioma));
+    const novas  = banco.filter(q => !(ultima[q.id] > limite));
+    const feitas = banco.filter(q => ultima[q.id] > limite)
+      .sort((a, b) => ultima[a.id] - ultima[b.id]);           // feitas há mais tempo primeiro
+    const escolhidas = [...novas, ...feitas].slice(0, bloco.quantidade);
+    repetidas += escolhidas.filter(q => ultima[q.id] > limite).length;
 
     // Agrupa as que compartilham texto/imagem; embaralha os grupos; dentro do grupo, ordem original
     const grupos = new Map();
@@ -108,8 +148,22 @@ export function sortearSimulado(questoesProvas, idioma) {
       g.sort((a, b) => a.prova.localeCompare(b.prova) || a.numeroOriginal - b.numeroOriginal)
        .forEach(q => ids.push(q.id)));
   });
-  return ids;
+  return { ids, repetidas };
 }
+
+/**
+ * Monta a prova completa de uma edição, na ordem original, com o idioma escolhido.
+ * @returns {string[]} ids
+ */
+function montarProva(questoesProvas, prova, idioma) {
+  return questoesProvas
+    .filter(q => q.prova === prova && (!IDIOMAS.includes(q.disciplina) || q.disciplina === idioma))
+    .sort((a, b) => a.numeroOriginal - b.numeroOriginal)
+    .map(q => q.id);
+}
+
+/** Título de um simulado/tentativa: a prova escolhida ou "Simulado aleatório". */
+const tituloSimulado = s => (s.modo === 'prova' ? s.prova : 'Simulado aleatório');
 
 /** Converte ids em questões (ignora ids que não existam mais no banco). */
 function questoesPorIds(questoesProvas, ids) {
@@ -153,18 +207,53 @@ function provasNoBanco(questoesProvas) {
 export function renderizarTelaSimulados(container, questoesProvas) {
   const { atual, tentativas } = lerSimulado();
   const provas = provasNoBanco(questoesProvas);
-  const idiomaPadrao = atual?.idioma || tentativas[tentativas.length - 1]?.idioma || 'Espanhol';
+  const ultimaTentativa = tentativas[tentativas.length - 1];
+  const idiomaPadrao = atual?.idioma || ultimaTentativa?.idioma || 'Espanhol';
+  const modoPadrao   = atual?.modo || ultimaTentativa?.modo || 'aleatorio';
+  const provaPadrao  = atual?.prova || ultimaTentativa?.prova || provas[0];
 
-  const linhasComposicao = idioma => BLOCOS.map(b => {
-    const banco = bancoDoBloco(questoesProvas, b, idioma).length;
-    const falta = banco < b.quantidade;
-    return `
+  /** Tabela de composição + avisos, conforme o tipo, a prova e o idioma escolhidos. */
+  function htmlComposicao(modo, prova, idioma) {
+    if (modo === 'prova') {
+      const qs = questoesPorIds(questoesProvas, montarProva(questoesProvas, prova, idioma));
+      const linhas = BLOCOS.map(b => {
+        const n = qs.filter(q => blocoDa(q) === b).length;
+        return `<tr><td>${nomeBloco(b, idioma)}</td><td class="simulado-tabela__num">${n}</td></tr>`;
+      }).join('');
+      const feitas = tentativas.filter(t => t.modo === 'prova' && t.prova === prova && t.idioma === idioma);
+      return `
+        <table class="simulado-tabela">
+          <caption>${prova} — ${plural(qs.length, 'questão', 'questões')}, na ordem original</caption>
+          <thead><tr><th>Matéria</th><th>Questões</th></tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>
+        ${qs.length < 63 ? '<p class="simulado-card__info">Questões anuladas pela ACAFE não entram na prova.</p>' : ''}
+        ${feitas.length ? `<p class="simulado-aviso">Você já fez esta prova ${plural(feitas.length, 'vez', 'vezes')} (última em ${formatarData(feitas[feitas.length - 1].data)}).</p>` : ''}`;
+    }
+
+    const disp = disponibilidade(questoesProvas, idioma);
+    const linhas = disp.map(({ bloco, banco, novas }) => `
       <tr>
-        <td>${nomeBloco(b, idioma)}</td>
-        <td class="simulado-tabela__num">${b.quantidade}</td>
-        <td class="simulado-tabela__num${falta ? ' simulado-tabela__falta' : ''}">${banco}</td>
-      </tr>`;
-  }).join('');
+        <td>${nomeBloco(bloco, idioma)}</td>
+        <td class="simulado-tabela__num">${bloco.quantidade}</td>
+        <td class="simulado-tabela__num">${banco}</td>
+        <td class="simulado-tabela__num${novas < bloco.quantidade ? ' simulado-tabela__falta' : ''}">${novas}</td>
+      </tr>`).join('');
+    const repetir = disp.reduce((s, d) => s + Math.max(0, Math.min(d.bloco.quantidade, d.banco) - d.novas), 0);
+    return `
+      <table class="simulado-tabela">
+        <caption>Composição do simulado (formato da prova ACAFE)</caption>
+        <thead><tr><th>Matéria</th><th>Questões</th><th>No banco</th><th>Novas para você</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>
+      <p class="simulado-card__info">
+        "Novas para você" são as questões que você não fez nos últimos ${DIAS_SEM_REPETIR} dias: só elas entram no sorteio.
+      </p>
+      ${repetir ? `<p class="simulado-aviso">
+        O banco ainda não tem questões novas suficientes: <strong>${plural(repetir, 'questão vai se repetir', 'questões vão se repetir')}</strong>
+        (as que você fez há mais tempo). Isso diminui conforme novas provas forem cadastradas.
+      </p>` : ''}`;
+  }
 
   const emAndamento = atual ? (() => {
     const respondidas = Object.keys(atual.respostas).length;
@@ -172,7 +261,7 @@ export function renderizarTelaSimulados(container, questoesProvas) {
       <section class="simulado-card simulado-card--destaque" aria-label="Simulado em andamento">
         <div class="simulado-card__icone" aria-hidden="true">${icone('clock', 22)}</div>
         <div class="simulado-card__corpo">
-          <h3 class="simulado-card__titulo">Simulado em andamento</h3>
+          <h3 class="simulado-card__titulo">Em andamento: ${tituloSimulado(atual)}</h3>
           <p class="simulado-card__info">
             ${atual.idioma} • ${respondidas}/${atual.ids.length} respondidas •
             ${formatarTempo(atual.tempoMs)} de prova • iniciado em ${formatarData(atual.criadoEm)}
@@ -191,7 +280,7 @@ export function renderizarTelaSimulados(container, questoesProvas) {
       <ul class="simulado-historico">
         ${tentativas.map((t, i) => ({ t, i })).reverse().map(({ t, i }) => `
           <li>
-            <span>${formatarData(t.data)} • ${t.idioma} • <strong>${t.acertos}/${t.total}</strong>
+            <span>${formatarData(t.data)} • ${tituloSimulado(t)} • ${t.idioma} • <strong>${t.acertos}/${t.total}</strong>
               (${Math.round(t.acertos / t.total * 100)}%) em ${formatarTempo(t.tempoMs)}</span>
             <a href="#/simulado/resultado/${i}" class="btn btn-secundario btn-pequeno">Ver resultado</a>
           </li>`).join('')}
@@ -207,10 +296,9 @@ export function renderizarTelaSimulados(container, questoesProvas) {
           </div>
           <h2 class="simulados-titulo">Simulados — Provas Anteriores</h2>
           <p class="simulados-descricao">
-            Cada simulado sorteia questões das provas anteriores da ACAFE, misturando as edições,
-            no mesmo formato da prova: ${BLOCOS.reduce((s, b) => s + b.quantidade, 0)} questões
-            com a mesma quantidade por matéria. Responda como no dia do vestibular: o gabarito e
-            as explicações aparecem só quando você finalizar.
+            Faça um simulado com questões sorteadas das provas anteriores da ACAFE, no mesmo formato
+            da prova, ou escolha a prova completa de um ano. Responda como no dia do vestibular:
+            o gabarito e as explicações aparecem só quando você finalizar.
           </p>
         </header>
 
@@ -219,7 +307,33 @@ export function renderizarTelaSimulados(container, questoesProvas) {
 
           <section class="simulado-card simulado-card--novo" aria-label="Novo simulado">
             <div class="simulado-card__corpo">
-              <h3 class="simulado-card__titulo">Novo simulado</h3>
+              <fieldset class="simulado-modo">
+                <legend>Tipo de simulado</legend>
+                <label class="simulado-modo__opcao">
+                  <input type="radio" name="modo" value="aleatorio" ${modoPadrao === 'aleatorio' ? 'checked' : ''}>
+                  <span class="simulado-modo__icone" aria-hidden="true">${icone('refresh-cw', 26)}</span>
+                  <span class="simulado-modo__texto">
+                    <span class="simulado-modo__titulo">Aleatório</span>
+                    <span class="simulado-modo__descricao">Questões sorteadas e misturadas das provas anteriores, no formato da ACAFE</span>
+                  </span>
+                </label>
+                <label class="simulado-modo__opcao">
+                  <input type="radio" name="modo" value="prova" ${modoPadrao === 'prova' ? 'checked' : ''}>
+                  <span class="simulado-modo__icone" aria-hidden="true">${icone('clipboard-list', 26)}</span>
+                  <span class="simulado-modo__texto">
+                    <span class="simulado-modo__titulo">Prova completa de um ano</span>
+                    <span class="simulado-modo__descricao">Escolha uma prova anterior e faça ela inteira, na ordem original</span>
+                  </span>
+                </label>
+              </fieldset>
+
+              <label class="simulado-prova" id="simulado-escolha-prova">
+                <span>Prova</span>
+                <select name="prova" class="simulado-prova__select">
+                  ${provas.map(p => `<option value="${p}" ${p === provaPadrao ? 'selected' : ''}>${p}</option>`).join('')}
+                </select>
+              </label>
+
               <fieldset class="simulado-idioma">
                 <legend>Língua estrangeira</legend>
                 ${IDIOMAS.map(idioma => `
@@ -229,20 +343,16 @@ export function renderizarTelaSimulados(container, questoesProvas) {
                   </label>`).join('')}
               </fieldset>
 
-              <table class="simulado-tabela">
-                <caption>Composição do simulado</caption>
-                <thead><tr><th>Matéria</th><th>Questões</th><th>No banco</th></tr></thead>
-                <tbody id="simulado-composicao">${linhasComposicao(idiomaPadrao)}</tbody>
-              </table>
+              <div id="simulado-composicao"></div>
+
               <p class="simulado-card__info">
                 Banco atual: ${plural(provas.length, 'prova', 'provas')} (${provas.join(', ') || '—'}).
-                Quanto mais provas forem cadastradas, mais variados ficam os simulados.
+                Tempo de prova: 5 horas (o cronômetro pausa quando você sai da tela).
               </p>
-              <p class="simulado-card__info">Tempo de prova: 5 horas (o cronômetro pausa quando você sai da tela).</p>
             </div>
             <div class="simulado-card__acoes">
               <button type="button" class="btn btn-primario" id="btn-gerar" ${questoesProvas.length ? '' : 'disabled'}>
-                ${icone('clipboard-list', 16)} Gerar simulado
+                ${icone('clipboard-list', 16)} <span id="btn-gerar-texto">Gerar simulado</span>
               </button>
             </div>
           </section>
@@ -253,25 +363,53 @@ export function renderizarTelaSimulados(container, questoesProvas) {
     </div>
   `;
 
-  const idiomaEscolhido = () => container.querySelector('input[name="idioma"]:checked').value;
+  const escolha = () => ({
+    modo:   container.querySelector('input[name="modo"]:checked').value,
+    prova:  container.querySelector('select[name="prova"]').value,
+    idioma: container.querySelector('input[name="idioma"]:checked').value,
+  });
 
-  container.querySelectorAll('input[name="idioma"]').forEach(r => r.addEventListener('change', () => {
-    container.querySelector('#simulado-composicao').innerHTML = linhasComposicao(idiomaEscolhido());
-  }));
+  function atualizarEscolha() {
+    const { modo, prova, idioma } = escolha();
+    container.querySelector('#simulado-escolha-prova').hidden = modo !== 'prova';
+    container.querySelector('#simulado-composicao').innerHTML = htmlComposicao(modo, prova, idioma);
+    container.querySelector('#btn-gerar-texto').textContent = modo === 'prova' ? 'Começar prova' : 'Gerar simulado';
+  }
+  container.querySelectorAll('input[name="modo"], input[name="idioma"], select[name="prova"]')
+    .forEach(el => el.addEventListener('change', atualizarEscolha));
+  atualizarEscolha();
 
-  container.querySelector('#btn-descartar')?.addEventListener('click', () => {
-    if (!window.confirm('Descartar o simulado em andamento? As respostas marcadas e o tempo serão apagados.')) return;
-    salvarSimuladoAtual(null);
+  container.querySelector('#btn-descartar')?.addEventListener('click', async () => {
+    if (!(await confirmar({
+      titulo: 'Descartar o simulado em andamento?',
+      mensagem: 'As respostas marcadas e o tempo serão apagados, e as marcações deste simulado saem da sua memória de erros e acertos.',
+      textoConfirmar: 'Descartar',
+      perigo: true,
+    }))) return;
+    descartarSimuladoAtual();
     renderizarTelaSimulados(container, questoesProvas);
   });
 
-  container.querySelector('#btn-gerar').addEventListener('click', () => {
-    if (lerSimulado().atual &&
-        !window.confirm('Já existe um simulado em andamento. Gerar um novo vai descartá-lo. Continuar?')) return;
-    const idioma = idiomaEscolhido();
+  container.querySelector('#btn-gerar').addEventListener('click', async () => {
+    if (lerSimulado().atual) {
+      if (!(await confirmar({
+        titulo: 'Começar um novo simulado?',
+        mensagem: 'Já existe um simulado em andamento. Começar um novo vai descartá-lo e apagar as marcações dele da sua memória de erros e acertos.',
+        textoConfirmar: 'Descartar e começar novo',
+        perigo: true,
+      }))) return;
+      descartarSimuladoAtual();
+    }
+    const { modo, prova, idioma } = escolha();
+    const ids = modo === 'prova'
+      ? montarProva(questoesProvas, prova, idioma)
+      : sortearSimulado(questoesProvas, idioma).ids;
     salvarSimuladoAtual({
+      id: `sim-${Date.now()}`,
+      modo,
+      ...(modo === 'prova' ? { prova } : {}),
       idioma,
-      ids: sortearSimulado(questoesProvas, idioma),
+      ids,
       respostas: {},
       tempoMs: 0,
       indice: 0,
@@ -373,7 +511,7 @@ function renderizarQuestaoSimulado(container) {
             </span>
           </div>
           <div class="questoes-meta" id="simulado-meta">
-            <span class="questoes-meta__disciplina">Simulado ACAFE • ${idioma}</span>
+            <span class="questoes-meta__disciplina">${tituloSimulado(sim.atual)} • ${idioma}</span>
             <span class="questoes-meta__separador" aria-hidden="true">•</span>
             <span>Questão <strong>${indice + 1}</strong> de <strong>${total}</strong></span>
             <span class="questoes-meta__separador" aria-hidden="true">•</span>
@@ -422,8 +560,14 @@ function renderizarQuestaoSimulado(container) {
     const btn = e.target.closest('.alternativa-btn');
     if (!btn) return;
     const letra = btn.dataset.letra;
-    if (respostas[questao.id] === letra) delete respostas[questao.id];
-    else respostas[questao.id] = letra;
+    const simuladoId = idDoSimulado(sim.atual);
+    if (respostas[questao.id] === letra) {
+      delete respostas[questao.id];
+      removerDaMemoria(simuladoId, questao.id);
+    } else {
+      respostas[questao.id] = letra;
+      registrarNaMemoria({ questaoId: questao.id, letra, acertou: letra === questao.gabarito, origem: 'simulado', simuladoId });
+    }
     marcarAlternativa(lista, respostas[questao.id]);
     atualizarRespondidas(container);
     salvarProgresso();
@@ -498,18 +642,31 @@ function htmlNavegador(questoes, atual, situacao, idioma) {
   `;
 }
 
-function finalizar() {
+async function finalizar() {
   const { questoes } = sim;
   const { respostas } = sim.atual;
   const emBranco = questoes.filter(q => !respostas[q.id]).length;
-  const aviso = emBranco
-    ? `Você deixou ${plural(emBranco, 'questão', 'questões')} em branco. Finalizar mesmo assim?`
-    : 'Finalizar o simulado e ver o resultado?';
-  if (!window.confirm(aviso)) return;
+  const confirmado = await confirmar(emBranco
+    ? {
+        titulo: 'Finalizar o simulado?',
+        mensagem: `Você deixou <strong>${plural(emBranco, 'questão', 'questões')} em branco</strong>. Questões em branco não pontuam.`,
+        textoConfirmar: 'Finalizar mesmo assim',
+        textoCancelar: 'Continuar respondendo',
+      }
+    : {
+        titulo: 'Finalizar o simulado?',
+        mensagem: 'Você vai ver sua nota, o gabarito e as explicações.',
+        textoConfirmar: 'Finalizar',
+        textoCancelar: 'Continuar respondendo',
+      });
+  if (!confirmado || !sim) return;
 
   pausarCronometro();
   const acertos = questoes.filter(q => respostas[q.id] === q.gabarito).length;
   registrarTentativaSimulado({
+    id: idDoSimulado(sim.atual),
+    modo: sim.atual.modo || 'aleatorio',
+    ...(sim.atual.prova ? { prova: sim.atual.prova } : {}),
     data: new Date().toISOString(),
     idioma: sim.atual.idioma,
     ids: questoes.map(q => q.id),
@@ -565,7 +722,7 @@ export function renderizarResultadoSimulado(container, questoesProvas, n) {
         <div class="resultado-tela">
           <div class="resultado-resumo">
             ${icone('trophy', 48)}
-            <p class="simulado-resultado-prova">Simulado ACAFE • ${tentativa.idioma} • ${formatarData(tentativa.data)}</p>
+            <p class="simulado-resultado-prova">${tituloSimulado(tentativa)} • ${tentativa.idioma} • ${formatarData(tentativa.data)}</p>
             <p class="resultado-pontuacao">${acertos}<span>/${total}</span></p>
             <p class="resultado-percentual">${pct}% de acertos • ${plural(total - acertos - emBranco, 'erro', 'erros')} • ${emBranco} em branco</p>
             <p class="resultado-percentual">Tempo de prova: ${formatarTempo(tentativa.tempoMs)}</p>

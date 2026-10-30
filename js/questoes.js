@@ -12,9 +12,10 @@
  */
 
 import { icone }          from './icones.js';
+import { confirmar } from './confirmar.js';
 import { slugify }        from './utils.js';
 import { htmlImagens, htmlAlternativa, vincularImagens, aplicarFeedback } from './render-questao.js';
-import { salvarResposta, lerRespostas, recomecarModulo, apagarRespostas } from './armazenamento.js';
+import { salvarResposta, lerRespostas, recomecarModulo, apagarRespostas, registrarNaMemoria } from './armazenamento.js';
 
 /* ================================================================
    Estado interno da sessão de questões
@@ -355,11 +356,12 @@ function vincularEventosQuestao(container, modulo) {
   });
 
   // Recomeçar
-  btnRecomecar.addEventListener('click', () => {
-    const confirmar = window.confirm(
-      'Deseja recomeçar? Todo o progresso deste módulo será apagado.'
-    );
-    if (!confirmar) return;
+  btnRecomecar.addEventListener('click', async () => {
+    if (!(await confirmar({
+      titulo: 'Recomeçar este módulo?',
+      mensagem: 'As questões voltam a ficar sem resposta para você refazer. Sua memória de erros e acertos é mantida.',
+      textoConfirmar: 'Recomeçar',
+    }))) return;
     recomecarModulo(estado.questoes);
     estado.respostasSession = {};
     irParaQuestao(container, modulo, 0);
@@ -389,6 +391,7 @@ function conferirResposta(container) {
 
   // Salva no localStorage e no estado da sessão
   salvarResposta(questao.id, resposta);
+  registrarNaMemoria({ questaoId: questao.id, letra: resposta.alternativaSelecionada, acertou, origem: 'estudo' });
   estado.respostasSession[questao.id] = resposta;
   estado.selecionada = null;
 

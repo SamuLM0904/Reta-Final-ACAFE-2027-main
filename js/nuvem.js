@@ -4,11 +4,12 @@
  * Só é ativada quando js/firebase-config.js tem a configuração do projeto;
  * sem ela, o site funciona no modo local (localStorage) como antes.
  *
- * Estrutura no Firestore:
- *   alunos/{uid}      → dados de cada aluno: { perfil, respostas, simulado, atualizadoEm }
+ * Estrutura no Firestore (os documentos usam o NOME DE USUÁRIO do aluno,
+ * ex.: "joao_silva" ou "maria@email.com", para ficarem fáceis de achar no Console):
+ *   alunos/{usuario}  → dados de cada aluno: { perfil, respostas, simulado, atualizadoEm }
  *                       (o mesmo objeto salvo no navegador por armazenamento.js)
  *   questoes/{id}     → banco de questões: cada questão + { banco: 'provas' | 'estudo', ordem }
- *   admins/{uid}      → existe = esse usuário pode enviar questões ao banco
+ *   admins/{usuario}  → existe = esse usuário pode enviar questões ao banco
  *
  * Login: o aluno usa um e-mail OU nome e sobrenome. Com nome, o usuário vira
  * "primeironome_sobrenome" e é guardado no Firebase como o e-mail interno
@@ -52,9 +53,12 @@ export function normalizarUsuario(texto) {
 /** E-mail usado no Firebase para um usuário. */
 const emailDoUsuario = u => (u.includes('@') ? u : `${u}@${DOMINIO_ALUNOS}`);
 
-/** Nome de usuário exibido a partir do e-mail do Firebase. */
+/** Nome de usuário a partir do e-mail do Firebase ("joao_silva" ou o próprio e-mail). */
 export const usuarioExibido = user =>
   user?.email?.endsWith('@' + DOMINIO_ALUNOS) ? user.email.split('@')[0] : user?.email || '';
+
+/** Documento do aluno logado: alunos/{usuario}. */
+const docAluno = () => fb.f.doc(fb.db, 'alunos', usuarioExibido(usuario));
 
 /* ================================================================
    Inicialização
@@ -115,7 +119,7 @@ export async function entrar(textoUsuario, senha) {
 }
 
 /**
- * Cria a conta do aluno e o documento alunos/{uid} com o perfil.
+ * Cria a conta do aluno e o documento alunos/{usuario} com o perfil.
  * @param {string} textoUsuario - e-mail ou nome completo
  * @param {string} senha
  * @param {string} nome         - nome para exibição
@@ -126,7 +130,7 @@ export async function criarConta(textoUsuario, senha, nome) {
   try {
     const { user } = await fb.a.createUserWithEmailAndPassword(fb.auth, emailDoUsuario(u), senha);
     if (nome) await fb.a.updateProfile(user, { displayName: nome });
-    await fb.f.setDoc(fb.f.doc(fb.db, 'alunos', user.uid), {
+    await fb.f.setDoc(fb.f.doc(fb.db, 'alunos', usuarioExibido(user)), {
       perfil: { usuario: u, nome: nome || '', criadoEm: new Date().toISOString() },
     }, { merge: true });
   } catch (e) { throw traduzirErro(e); }
@@ -147,17 +151,17 @@ export async function sair() {
    Dados do aluno
    ================================================================ */
 
-/** Lê alunos/{uid}. @returns {Promise<Object|null>} */
+/** Lê alunos/{usuario}. @returns {Promise<Object|null>} */
 export async function lerDadosAluno() {
   if (!usuario) return null;
-  const snap = await fb.f.getDoc(fb.f.doc(fb.db, 'alunos', usuario.uid));
+  const snap = await fb.f.getDoc(docAluno());
   return snap.exists() ? snap.data() : null;
 }
 
 let pendente = null, temporizador = null;
 
 /**
- * Grava alunos/{uid}, agrupando gravações seguidas (no máximo uma a cada 2 s).
+ * Grava alunos/{usuario}, agrupando gravações seguidas (no máximo uma a cada 2 s).
  * @param {Object} dados - objeto completo do aluno (respostas, simulado, ...)
  */
 export function agendarGravacaoAluno(dados) {
@@ -172,7 +176,7 @@ export function gravarAgora() {
   clearTimeout(temporizador);
   if (!pendente || !usuario || !fb) return Promise.resolve();
   const dados = pendente; pendente = null;
-  return fb.f.setDoc(fb.f.doc(fb.db, 'alunos', usuario.uid), dados, { merge: true })
+  return fb.f.setDoc(docAluno(), dados, { merge: true })
     .catch(e => console.warn('[Nuvem] Falha ao salvar (vai tentar de novo na próxima alteração):', e));
 }
 
@@ -202,7 +206,7 @@ export async function lerQuestoes() {
 export async function eAdmin() {
   if (!usuario || !fb) return false;
   try {
-    return (await fb.f.getDoc(fb.f.doc(fb.db, 'admins', usuario.uid))).exists();
+    return (await fb.f.getDoc(fb.f.doc(fb.db, 'admins', usuarioExibido(usuario)))).exists();
   } catch { return false; }
 }
 
@@ -224,4 +228,36 @@ export async function enviarQuestoes(estudo, provas) {
     await lote.commit();
   }
   return itens.length;
+}
+
+/* ================================================================
+   Administração de alunos (Guia de Estudos)
+   ================================================================ */
+
+/**
+ * Lista os alunos cadastrados (só administradores podem).
+ * @returns {Promise<{ usuario: string, nome: string, respostas: number }[]>}
+ */
+export async function listarAlunos() {
+  const snap = await fb.f.getDocs(fb.f.collection(fb.db, 'alunos'));
+  return snap.docs
+    .map(d => ({ usuario: d.id, nome: d.data().perfil?.nome || '', respostas: (d.data().memoria || []).length }))
+    .sort((a, b) => a.usuario.localeCompare(b.usuario));
+}
+
+/**
+ * Zera a memória de erros e acertos de um aluno (só administradores podem).
+ * Grava também `memoriaResetadaEm`, para que a cópia no navegador do aluno
+ * descarte as marcações antigas quando ele entrar de novo (ver armazenamento.js).
+ * @param {string} textoUsuario - nome de usuário (ou e-mail / nome e sobrenome)
+ * @returns {Promise<{ usuario: string, apagadas: number, resetEm: number }>}
+ */
+export async function resetarMemoriaDoAluno(textoUsuario) {
+  const u = normalizarUsuario(textoUsuario) || (textoUsuario || '').trim().toLowerCase();
+  const ref = fb.f.doc(fb.db, 'alunos', u);
+  const snap = await fb.f.getDoc(ref);
+  if (!snap.exists()) throw new Error(`Aluno "${u}" não encontrado.`);
+  const resetEm = Date.now();
+  await fb.f.updateDoc(ref, { memoria: [], memoriaResetadaEm: resetEm, atualizadoEm: resetEm });
+  return { usuario: u, apagadas: (snap.data().memoria || []).length, resetEm };
 }

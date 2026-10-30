@@ -13,17 +13,26 @@
   <link rel="stylesheet" href="css/variaveis.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/questoes.css">
+  <link rel="stylesheet" href="css/questoes.css?v=126">
   <link rel="stylesheet" href="css/simulado.css">
+  <link rel="stylesheet" href="css/guia.css">
   <link rel="stylesheet" href="css/login.css">
 
   <!--
     Os dados são scripts clássicos (sem type="module"), carregados antes do app:
       dados/questoes.js          → window.QUESTOES        (questões de estudo por matéria)
       dados/provas-anteriores.js → window.QUESTOES_PROVAS (provas antigas — só simulados)
+      dados/provas/*.js          → uma prova por arquivo, acrescentadas a QUESTOES_PROVAS
   -->
   <script src="dados/questoes.js?v=124"></script>
-  <script src="dados/provas-anteriores.js?v=124"></script>
+  <script src="dados/provas-anteriores.js?v=125"></script>
+  <!-- Uma linha por prova (cada arquivo acrescenta as suas questões ao banco) -->
+  <script src="dados/provas/2026-inverno.js?v=126"></script>
+  <script src="dados/provas/2026-verao.js?v=126"></script>
+  <script src="dados/provas/2025-inverno.js?v=126"></script>
+  <script src="dados/provas/2025-verao.js?v=126"></script>
+  <script src="dados/provas/2024-inverno.js?v=126"></script>
+  <script src="dados/provas/2024-verao.js?v=126"></script>
 </head>
 
 <body>

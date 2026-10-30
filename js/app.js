@@ -7,12 +7,13 @@
  *   #/simulados     → Simulados com as provas anteriores (montar/continuar/histórico)
  *   #/simulado      → Simulado em andamento
  *   #/simulado/resultado/<n> → Resultado e revisão da tentativa n
+ *   #/guia          → Guia de Estudos (cronograma diário + chat de mudanças)
  *   #/em-breve/<id> → Tela "Em breve"
  *   #/admin         → Enviar as questões dos arquivos para o banco (só administradores)
  *
  * Com o banco de dados (Firebase) configurado em js/firebase-config.js, o aluno
- * precisa entrar (login) e seus dados ficam na nuvem; as questões passam a vir do
- * Firestore (com os arquivos de dados como reserva). Sem configuração, tudo
+ * precisa entrar (login) e seus dados ficam na nuvem. As questões vêm sempre dos
+ * arquivos de dados/ (a cópia no Firestore não é lida). Sem configuração, tudo
  * funciona no modo local, como antes.
  *
  * Os dados são carregados via <script> no HTML (sem `export`, para
@@ -24,13 +25,15 @@
 import { renderizarDashboard }    from './dashboard.js';
 import { iniciarSessaoQuestoes }  from './questoes.js';
 import { renderizarTelaSimulados, iniciarSimulado, renderizarResultadoSimulado } from './simulado.js';
+import { renderizarGuia }         from './guia.js';
 import { MODULOS }                from './modulos.js';
 import { icone }                  from './icones.js';
+import { confirmar } from './confirmar.js';
 import { definirAluno }           from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
   nuvemAtiva, iniciarNuvem, usuarioAtual, usuarioExibido, sair,
-  lerDadosAluno, agendarGravacaoAluno, lerQuestoes, eAdmin, enviarQuestoes,
+  lerDadosAluno, agendarGravacaoAluno, eAdmin, enviarQuestoes,
 } from './nuvem.js';
 
 /* ================================================================
@@ -63,7 +66,11 @@ function renderizarCabecalho() {
     </header>
   `;
   elCabecalho.querySelector('#btn-sair')?.addEventListener('click', async () => {
-    if (!window.confirm('Sair da sua conta?')) return;
+    if (!(await confirmar({
+      titulo: 'Sair da sua conta?',
+      mensagem: 'Seu progresso fica salvo. Para voltar, é só entrar de novo com seu usuário e senha.',
+      textoConfirmar: 'Sair',
+    }))) return;
     await sair();
   });
 }
@@ -137,6 +144,13 @@ function roteador() {
   if (matchResultado) {
     document.title = 'Resultado do simulado — Reta Final ACAFE 2027';
     if (!renderizarResultadoSimulado(elApp, questoesProvas, Number(matchResultado[1]))) renderizarNaoEncontrado();
+    return;
+  }
+
+  // Rota: guia de estudos
+  if (hash === '#/guia') {
+    document.title = 'Guia de Estudos — Reta Final ACAFE 2027';
+    renderizarGuia(elApp, questoesProvas, todasQuestoes);
     return;
   }
 
@@ -268,13 +282,8 @@ async function aoMudarUsuario(user) {
   try { dados = await lerDadosAluno(); } catch (e) { console.warn('[Nuvem] Usando a cópia local:', e); }
   definirAluno(user.uid, dados, agendarGravacaoAluno);
 
-  try {
-    const questoes = await lerQuestoes();
-    if (questoes) {
-      window.QUESTOES = questoes.estudo;
-      window.QUESTOES_PROVAS = questoes.provas;
-    }
-  } catch (e) { console.warn('[Nuvem] Usando as questões dos arquivos:', e); }
+  // As questões vêm SEMPRE dos arquivos de dados/ (decisão de 30/10/2026): a cópia no
+  // Firestore (#/admin) não é lida, para nunca ficar desatualizada em relação aos arquivos.
 
   renderizarCabecalho();
   roteador();
