@@ -204,14 +204,14 @@
   gap: var(--espaco-sm);
   width: 100%;
   padding: clamp(var(--espaco-sm), 2vw, var(--espaco-md));
-  background-color: var(--cor-fundo);
+  background-color: var(--cor-marinho-base);
   border: 1.5px solid var(--cor-borda);
   border-radius: var(--raio-md);
   cursor: pointer;
   text-align: left;
   font-family: var(--fonte-base);
   font-size: var(--tamanho-base);
-  color: var(--cor-texto);
+  color: #ffffff;
   min-height: 52px;
   transition:
     border-color var(--transicao),
@@ -222,9 +222,9 @@
 }
 
 .alternativa-btn:hover:not(:disabled) {
-  border-color: var(--cor-primaria);
-  background-color: var(--cor-primaria-suave);
-  box-shadow: var(--sombra-sm);
+  border-color: var(--cor-dourado-fosco);
+  background-color: var(--cor-verde-militar-suave);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .alternativa-btn:active:not(:disabled) {
@@ -239,12 +239,13 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: var(--cor-borda);
+  background-color: var(--cor-verde-militar);
+  border: 1px solid var(--cor-verde-militar-borda);
   font-size: var(--tamanho-sm);
   font-weight: var(--peso-negrito);
-  color: var(--cor-texto-suave);
+  color: var(--cor-dourado-fosco);
   flex-shrink: 0;
-  transition: background-color var(--transicao), color var(--transicao);
+  transition: background-color var(--transicao), color var(--transicao), border-color var(--transicao);
   line-height: 1;
 }
 
@@ -258,13 +259,14 @@
 
 .alternativa-texto {
   line-height: 1.5;
+  color: #ffffff;
 }
 
 /* Explicação (visível só após conferir) */
 .alternativa-explicacao {
   display: none;
   font-size: var(--tamanho-sm);
-  color: var(--cor-texto-suave);
+  color: #e2e8f0;
   font-style: italic;
   line-height: 1.5;
   padding-top: var(--espaco-xs);
@@ -276,13 +278,14 @@
 
 /* Alternativa selecionada (antes de conferir) */
 .alternativa-btn--selecionada {
-  border-color: var(--cor-primaria);
-  background-color: var(--cor-primaria-suave);
+  border-color: var(--cor-dourado-fosco);
+  background-color: rgba(42, 66, 52, 0.55);
 }
 
 .alternativa-btn--selecionada .alternativa-letra {
-  background-color: var(--cor-primaria);
-  color: #fff;
+  background-color: var(--cor-dourado-fosco);
+  border-color: var(--cor-dourado-hover);
+  color: #0a1118;
 }
 
 /* Alternativa correta (após conferir) */
@@ -294,6 +297,7 @@
 
 .alternativa-btn--certa .alternativa-letra {
   background-color: var(--cor-certa);
+  border-color: #68d391;
   color: #fff;
 }
 
