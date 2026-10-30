@@ -51,7 +51,7 @@ function lerTudo() {
     const dados = raw ? JSON.parse(raw) : {};
     return { ...vazio(), ...dados };
   } catch {
-    return vazio();
+      return vazio();
   }
 }
 
