@@ -399,6 +399,26 @@ img, svg { max-width: 100%; display: block; }
 
 .configuracoes__secao--admin { align-items: stretch; }
 
+.configuracoes__admins {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.configuracoes__admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-sm);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+}
+
 .configuracoes__subtitulo {
   font-size: var(--tamanho-xs);
   font-weight: var(--peso-negrito);

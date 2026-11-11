@@ -21,7 +21,7 @@
  *   alunos/{usuario}   → dados de cada aluno: { perfil, respostas, simulado, memoria, guia, atualizadoEm }
  *                        (o mesmo objeto salvo no navegador por armazenamento.js)
  *   questoes/{id}      → banco de questões: cada questão + { banco: 'provas' | 'estudo', ordem }
- *   admins/{uid}       → administradores (ID = UID da conta): { usuario, nome, funcao } — só pelo Console
+ *   admins/{uid}       → administradores (ID = UID da conta); primeiro admin pelo Console
  */
 
 import { FIREBASE_CONFIG } from './firebase-config.js';
@@ -433,6 +433,39 @@ export async function enviarQuestoes(estudo, provas) {
 /* ================================================================
    Administração de alunos (Guia de Estudos)
    ================================================================ */
+
+/** Lista os administradores cadastrados (só administradores podem). */
+export async function listarAdministradores() {
+  const snap = await fb.f.getDocs(fb.f.collection(fb.db, 'admins'));
+  return snap.docs
+    .map(d => ({ uid: d.id, usuario: d.data().usuario || d.id }))
+    .sort((a, b) => a.usuario.localeCompare(b.usuario));
+}
+
+/** Promove uma conta existente identificada pelo nome de usuário. */
+export async function adicionarAdministrador(textoUsuario) {
+  const u = normalizarUsuario(textoUsuario);
+  if (!u) throw new Error('Digite um nome de usuário válido, sem e-mail.');
+  const conta = await fb.f.getDoc(docUsuario(u));
+  if (!conta.exists() || !conta.data().uid) throw new Error(`Conta "${u}" não encontrada.`);
+
+  const uid = conta.data().uid;
+  const ref = fb.f.doc(fb.db, 'admins', uid);
+  if ((await fb.f.getDoc(ref)).exists()) throw new Error(`"${u}" já é administrador.`);
+  await fb.f.setDoc(ref, {
+    uid,
+    usuario: u,
+    funcao: 'admin',
+    adicionadoEm: Date.now(),
+  });
+  return u;
+}
+
+/** Remove um administrador, sem permitir que a conta remova o próprio acesso. */
+export async function removerAdministrador(uid) {
+  if (!usuario || uid === usuario.uid) throw new Error('Não é possível remover o próprio acesso de administrador.');
+  await fb.f.deleteDoc(fb.f.doc(fb.db, 'admins', uid));
+}
 
 /**
  * Lista os alunos cadastrados (só administradores podem).

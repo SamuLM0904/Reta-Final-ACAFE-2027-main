@@ -97,21 +97,21 @@ Por dentro, o Firebase exige que toda conta tenha um identificador no formato de
 
 ### Administradores
 
-Administradores veem, no botão de **engrenagem** (⚙️ Configurações, no canto superior direito), a opção **Resetar a memória de um aluno**. Alunos comuns veem ali só **Sair da conta**.
+Há dois níveis de acesso: **usuário** (padrão para toda conta) e **administrador**. Administradores veem, em ⚙️ Configurações, a seção **Níveis de acesso** para promover contas existentes pelo nome de usuário ou remover outros administradores. Também podem **resetar a memória de um aluno**. Alunos comuns não veem essas opções.
 
-**Para tornar alguém administrador** (vale para você e para quantos quiser):
+**Para configurar o primeiro administrador**, use o Console do Firebase:
 
 1. A pessoa **cria a conta normalmente** no site (com nome e sobrenome ou e-mail). Faça sempre nesta ordem: primeiro a conta, depois o admin.
 2. No Console do Firebase → **Authentication → Usuários**: ache a conta e copie o **UID do usuário** (código como `aB3dE5...`). Dica: o UID de cada usuário também está em **Firestore → `usuarios` → documento com o nome de usuário → campo `uid`**.
 3. **Firestore Database → coleção `admins`** → *Adicionar documento*:
    - **ID do documento** = o **UID** copiado no passo 2;
    - campos para organizar (recomendado): `usuario` (ex.: "maria_souza"), `nome` (ex.: "Maria Souza"), `funcao` (ex.: "professora"), `adicionadoEm` (data).
-4. A pessoa recarrega o site: a opção de administração aparece na engrenagem.
+4. Publique as regras atualizadas do arquivo `firestore.rules` pelo Console → Firestore → **Regras**. A pessoa recarrega o site; depois disso, ela pode gerenciar os demais administradores nas Configurações.
 
-**Para tirar o acesso:** apague o documento dela na coleção `admins`. **Para ver quem é admin:** a coleção `admins` lista todos.
+O primeiro administrador é definido no Console para impedir que uma conta comum se promova. A partir daí, administradores podem conceder ou retirar o nível de outros usuários cadastrados na própria interface. O administrador conectado não pode remover o próprio acesso pela interface; para revogá-lo, use o Console do Firebase.
 
 **Por que ninguém consegue se tornar admin sozinho:**
-- A coleção `admins` **não pode ser alterada pelo site** (regra `allow write: if false`): só pelo Console do Firebase, que só quem tem acesso ao projeto abre. Mantenha o Console restrito à sua conta Google (⚙️ Configurações do projeto → **Usuários e permissões**: não adicione outras pessoas, ou dê só "Leitor").
+- A coleção `admins` só pode ser alterada por quem já é administrador, conforme as regras do Firestore. Mantenha o acesso ao Console do Firebase restrito à sua conta Google (⚙️ Configurações do projeto → **Usuários e permissões**).
 - O documento do admin usa o **UID** da conta, que é gerado pelo Firebase e não se repete: mesmo que alguém crie uma conta com o mesmo nome de um admin, essa conta tem outro UID e **não** vira admin.
 - Se apagar e recriar a conta de um admin, crie de novo o documento em `admins` com o UID novo (e apague o antigo).
 
@@ -124,7 +124,7 @@ Administradores veem, no botão de **engrenagem** (⚙️ Configurações, no ca
 | `usuarios/{usuario}` | liga o usuário à conta: `{ uid, email, temEmail }` (usado para entrar pelo usuário) | lido por nome exato antes do login; cada um cria o seu |
 | `contas/{uid}` | liga a conta ao usuário: `{ usuario }` | só o dono |
 | `emails/{email}` | índice para "Esqueci meu usuário": `{ usuario, uid }` (só e-mails de recuperação) | lido por e-mail exato; cada um grava o seu |
-| `admins/{uid}` | administradores (ID = UID da conta): `{ usuario, nome, funcao }` | criado só pelo Console |
+| `admins/{uid}` | administradores (ID = UID da conta) | primeiro criado pelo Console; depois gerenciado por administradores |
 
 - O navegador mantém uma cópia local: o site continua funcionando sem internet e sincroniza quando a conexão volta (gravações agrupadas a cada 2 s).
 - Na primeira vez que um aluno entra num navegador onde já estudava sem login, esse progresso é levado para a conta dele.
@@ -265,4 +265,3 @@ Para ver os ícones disponíveis, abra `js/icones.js` e consulte as chaves do ob
 ## Licença
 
 Uso educacional pessoal. Os textos das questões pertencem à ACAFE e são reproduzidos para fins de estudo.
-
