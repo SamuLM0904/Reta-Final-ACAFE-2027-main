@@ -13,7 +13,7 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 | 08/11/2026 | Conferir as dúvidas das questões de estudo (gabaritos oficiais discutíveis, classificações e exclusões) — seção "Questões de estudo" do [DUVIDAS.md](DUVIDAS.md). | Ficou o gabarito oficial; as 4 questões que dependiam de obra foram tiradas. |
 | 07/11/2026 | Conferir os 8 capítulos complementares que eu criei (Análise Dimensional, Bioquímica, Saúde Pública, Geografia de SC, Regionalização do Brasil, Geopolítica, História da Medicina e da Ciência, 1ª Revolução Industrial) — lista com as questões no [DUVIDAS.md](DUVIDAS.md). | Já em uso no filtro, como "Complementar". |
 | 07/11/2026 | Conferir a junção dos capítulos repetidos de Química ("Interações" + "Forças Intermoleculares"; os dois "Teorias Modernas Ácido-Base"). | Um conteúdo só para cada par. |
-| 06/11/2026 | Fazer o commit das mudanças? Antes, convém `git pull`: o GitHub tem 5 commits que não estão neste computador. | Nada commitado. |
+| 11/11/2026 | Apagar o stash `stash@{0}` ("WIP on main: c052169 teste")? Tudo o que ele guardava já está nos commits 550ed8b e 75c45ed. | Guardado, por segurança. |
 | 06/11/2026 | Guardar no projeto o prompt de contexto para outra IA (ex.: `CONTEXTO-IA.md`)? | Ficou só no chat. |
 | 06/11/2026 | Itens em aberto do [DUVIDAS.md](DUVIDAS.md): tabelas da 2026/Inv Q41 e 2025/Inv Q31; "linha 20" da 2025/Inv Q05; 2025/Ver Q33 inconsistente; cadastrar ou não as anuladas. | Como descrito lá. |
 | 30/10/2026 | IA do chat do Guia: confirmar o Gemini Flash gratuito e criar a chave em aistudio.google.com. | O chat usa o interpretador por regras. |
@@ -49,6 +49,7 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 | Data | Item | Decisão |
 |---|---|---|
+| 11/11/2026 | Commit das mudanças | Feito: 550ed8b (seu) + 75c45ed (os 664 arquivos novos que tinham ficado no stash), enviados ao GitHub. |
 | 07/11/2026 | Onde fica o botão de tema | Só em Configurações (botão de sol/lua). |
 | 06/11/2026 | Dificuldade das questões | Eu classifico agora; validar com alunos só quando você disser. |
 | 06/11/2026 | Resumos das obras | Eu escrevo; por enquanto só a janela/livro, sem download. |

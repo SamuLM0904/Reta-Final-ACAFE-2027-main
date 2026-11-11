@@ -102,9 +102,16 @@ export function renderizarLogin(container) {
     form.elements.email?.addEventListener('input', () => { avisoEmail.hidden = Boolean(form.elements.email.value.trim()); });
     campoU.addEventListener('input', atualizarPrevia);
     form.elements.nome?.addEventListener('input', () => {
-      if (!campoU.dataset.editado) { campoU.value = form.elements.nome.value; atualizarPrevia(); }
+      // sugere o usuário já no formato de login (ex.: "Felipe Zonta" → felipe_zonta)
+      if (!campoU.dataset.editado) { campoU.value = normalizarUsuario(form.elements.nome.value); atualizarPrevia(); }
     });
     campoU.addEventListener('input', () => { campoU.dataset.editado = '1'; });
+    // ao sair do campo, o que o aluno digitou fica no formato de login
+    campoU.addEventListener('blur', () => {
+      if (!criar || campoU.value.includes('@')) return;
+      const u = normalizarUsuario(campoU.value);
+      if (u) { campoU.value = u; atualizarPrevia(); }
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
