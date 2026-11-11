@@ -95,7 +95,7 @@ export function renderizarLogin(container) {
       previa.textContent = !campoU.value.trim()
         ? 'Sugerido a partir do seu nome; você pode mudar.'
         : campoU.value.includes('@') ? 'O usuário não pode ter "@" (o e-mail vai no campo de recuperação).'
-        : u ? `Seu usuário: ${u}` : 'Use pelo menos 3 letras.';
+        : u ? '' : 'Use pelo menos 3 letras.';
     };
     // Aviso de "sem e-mail" visível enquanto o campo de e-mail estiver vazio
     const avisoEmail = container.querySelector('#login-aviso-email');
