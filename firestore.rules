@@ -1,1 +1,100 @@
-w
+  rules_version = '2';
+
+  // Regras de segurança do banco de dados (Firestore).
+  // Publique pelo Console do Firebase (Firestore → Regras) ou com: firebase deploy --only firestore:rules
+  //
+  // O aluno entra com USUÁRIO e SENHA (o e-mail é opcional, só para recuperar a senha).
+  //   usuarios/{usuario} → { uid, email, temEmail } liga o usuário (ex.: "joao_silva") à conta
+  //   contas/{uid}       → { usuario } liga a conta ao usuário
+  //   emails/{email}     → { usuario, uid } índice para "Esqueci meu usuário"
+  //   alunos/{usuario}   → dados do aluno (ID = nome de usuário, para achar fácil no Console)
+  //   admins/{uid}       → administradores (ID = UID da conta); primeiro criado pelo Console
+  service cloud.firestore {
+    match /databases/{banco}/documents {
+
+      function logado() { return request.auth != null; }
+
+      function caminho(colecao, id) { return /databases/$(banco)/documents/$(colecao)/$(id); }
+
+      // Contas antigas (antes da coleção usuarios): o identificador da conta era o próprio usuário
+      function donoAntigo(usuario) {
+        return request.auth.token.email == usuario ||
+          request.auth.token.email == usuario + '@alunos.retafinal.app';
+      }
+
+      // O usuário logado é o dono do nome de usuário `usuario`?
+      function eDono(usuario) {
+        return logado() && (
+          (exists(caminho('usuarios', usuario)) && get(caminho('usuarios', usuario)).data.uid == request.auth.uid) ||
+          donoAntigo(usuario)
+        );
+      }
+
+      // Administrador = existe admins/{UID da conta}. O UID é gerado pelo Firebase.
+      function admin() {
+        return logado() && exists(caminho('admins', request.auth.uid));
+      }
+
+      function dadosAdminValidos(uid) {
+        return request.resource.data.keys().hasAll(['uid', 'usuario', 'funcao', 'adicionadoEm']) &&
+          request.resource.data.keys().hasOnly(['uid', 'usuario', 'nome', 'funcao', 'adicionadoEm']) &&
+          request.resource.data.uid == uid &&
+          request.resource.data.usuario is string &&
+          request.resource.data.funcao == 'admin' &&
+          request.resource.data.adicionadoEm is number &&
+          (!('nome' in request.resource.data) || request.resource.data.nome is string);
+      }
+
+      // Registro usuário → conta. É lido ANTES do login (para entrar pelo usuário), mas só
+      // por nome exato (não dá para listar todos). Cada um cria o seu; ninguém toma um
+      // usuário que já tem dados (alunos/{usuario}) e não é dele.
+      match /usuarios/{usuario} {
+        allow get: if true;
+        allow list: if false;
+        allow create: if logado() &&
+          request.resource.data.uid == request.auth.uid &&
+          (!exists(caminho('alunos', usuario)) || donoAntigo(usuario));
+        allow update: if logado() &&
+          resource.data.uid == request.auth.uid &&
+          request.resource.data.uid == request.auth.uid;
+        allow delete: if admin() || (logado() && resource.data.uid == request.auth.uid);   // trocar de usuário
+      }
+
+      // Índice e-mail de recuperação → usuário ("Esqueci meu usuário"). Lido por e-mail exato
+      // (não dá para listar); cada um só grava o índice do próprio e-mail.
+      match /emails/{email} {
+        allow get: if true;
+        allow list: if false;
+        allow create, update: if logado() &&
+          request.resource.data.uid == request.auth.uid && request.auth.token.email == email;
+        allow delete: if admin() || (logado() && resource.data.uid == request.auth.uid);
+      }
+
+      // Conta → usuário: só o dono
+      match /contas/{uid} {
+        allow read, write: if logado() && request.auth.uid == uid;
+      }
+
+      // Dados de cada aluno: só o próprio aluno lê e grava.
+      // O administrador lê (lista de alunos) e atualiza (resetar a memória de erros e acertos, em Configurações).
+      match /alunos/{usuario} {
+        allow read, write: if eDono(usuario);
+        allow read, update: if admin();
+      }
+
+      // Banco de questões: alunos logados leem; só administradores gravam
+      match /questoes/{id} {
+        allow read: if logado();
+        allow write: if admin();
+      }
+
+      // O primeiro admin é criado pelo Console. Depois, admins podem gerenciar outros admins.
+      match /admins/{uid} {
+        allow get: if admin() || (logado() && request.auth.uid == uid);
+        allow list: if admin();
+        allow create: if admin() && dadosAdminValidos(uid);
+        allow update: if false;
+        allow delete: if admin() && uid != request.auth.uid;
+      }
+    }
+  }
