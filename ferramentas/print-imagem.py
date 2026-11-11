@@ -10,6 +10,10 @@
 #   A área opcional (em pontos do PDF; página A4 = 595 x 842) serve para escolher
 #   quais imagens da página entram, quando há mais de uma questão na página.
 #   Todas as imagens dentro dessa área são unidas num único print (ex.: Figura 1 e Figura 2).
+# uso: python ferramentas/print-imagem.py <pdf> <pagina> <saida.webp> x0,y0,x1,y1 recorte
+#   Modo "recorte": para figuras VETORIAIS (gráficos, esquemas desenhados no PDF, que não são
+#   imagens raster): fotografa exatamente essa área da página a 250 dpi. A área deve envolver
+#   só a figura, sem o texto do enunciado em volta.
 import io, sys, pymupdf
 from PIL import Image, ImageFilter
 
@@ -19,6 +23,13 @@ pdf, pagina, saida = sys.argv[1], int(sys.argv[2]), sys.argv[3]
 area = pymupdf.Rect(*map(float, sys.argv[4].split(','))) if len(sys.argv) > 4 else None
 
 pag = pymupdf.open(pdf)[pagina - 1]
+if len(sys.argv) > 5 and sys.argv[5] == 'recorte':
+    pix = pag.get_pixmap(dpi=250, clip=area)
+    img = Image.frombytes('RGB', (pix.width, pix.height), pix.samples)
+    buf = io.BytesIO(); img.save(buf, 'WEBP', lossless=True, quality=100, method=6)
+    open(saida, 'wb').write(buf.getvalue())
+    print(f'{saida}: recorte da área {area}, 250 dpi -> {img.width}x{img.height}, {buf.tell() // 1024} KB')
+    sys.exit(0)
 imagens = [i for i in pag.get_image_info()
            if i['bbox'][2] - i['bbox'][0] > 30 and (area is None or pymupdf.Rect(i['bbox']).intersects(area))]
 if not imagens:

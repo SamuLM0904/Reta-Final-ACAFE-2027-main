@@ -24,13 +24,13 @@
  */
 
 import { renderizarDashboard }    from './dashboard.js';
-import { iniciarSessaoQuestoes }  from './questoes.js';
+import { iniciarSessaoQuestoes, renderizarConteudosModulo } from './questoes.js';
 import { renderizarTelaSimulados, iniciarSimulado, renderizarResultadoSimulado, renderizarQuestoesFeitas } from './simulado.js';
 import { renderizarGuia }         from './guia.js';
+import { renderizarRevisao }      from './revisao.js';
 import { MODULOS }                from './modulos.js';
 import { icone }                  from './icones.js';
-import { abrirConfiguracoes }     from './configuracoes.js';
-import { definirAluno }           from './armazenamento.js';
+import { abrirConfiguracoes }     from './configuracoes.js';import { definirAluno }           from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
   nuvemAtiva, iniciarNuvem, usuarioAtual, usuarioExibido,
@@ -56,14 +56,14 @@ function renderizarCabecalho() {
           <span class="cabecalho-titulo">Reta Final ACAFE 2027</span>
           <span class="cabecalho-subtitulo">Medicina • questões reais das provas anteriores da ACAFE</span>
         </a>
-        ${user ? `
-          <div class="cabecalho-usuario">
+        <div class="cabecalho-usuario">
+          ${user ? `
             <span class="cabecalho-usuario__nome" title="Usuário: ${usuarioExibido(user)}">
               ${user.displayName || usuarioExibido(user)}
-            </span>
-            <button type="button" class="btn btn-secundario btn-pequeno cabecalho-config" id="btn-config"
-              aria-label="Configurações" title="Configurações">${icone('settings', 20)}</button>
-          </div>` : ''}
+            </span>` : ''}
+          <button type="button" class="btn btn-secundario btn-pequeno cabecalho-config" id="btn-config"
+            aria-label="Configurações" title="Configurações">${icone('settings', 20)}</button>
+        </div>
       </div>
     </header>
   `;
@@ -108,8 +108,8 @@ function roteador() {
     return;
   }
 
-  // Rota: módulo de questões
-  const matchQuestoes = hash.match(/^#\/questoes\/(.+)$/);
+  // Rota: módulo de questões (lista de conteúdos) e conteúdo escolhido (#/questoes/<módulo>/<conteúdo>)
+  const matchQuestoes = hash.match(/^#\/questoes\/([^/]+)(?:\/(.+))?$/);
   if (matchQuestoes) {
     const idModulo = matchQuestoes[1];
     const modulo   = MODULOS.find(m => m.id === idModulo);
@@ -120,7 +120,8 @@ function roteador() {
     }
 
     document.title = `${modulo.titulo} — Reta Final ACAFE 2027`;
-    iniciarSessaoQuestoes(elApp, todasQuestoes, modulo);
+    if (matchQuestoes[2]) iniciarSessaoQuestoes(elApp, todasQuestoes, { ...modulo, conteudo: decodeURIComponent(matchQuestoes[2]) });
+    else renderizarConteudosModulo(elApp, todasQuestoes, modulo);
     return;
   }
 
@@ -144,6 +145,13 @@ function roteador() {
   if (matchResultado) {
     document.title = 'Resultado do simulado — Reta Final ACAFE 2027';
     if (!renderizarResultadoSimulado(elApp, questoesProvas, Number(matchResultado[1]))) renderizarNaoEncontrado();
+    return;
+  }
+
+  // Rota: correção de erros (bloco do guia)
+  if (hash === '#/revisao') {
+    document.title = 'Correção de erros — Reta Final ACAFE 2027';
+    renderizarRevisao(elApp, questoesProvas, todasQuestoes);
     return;
   }
 

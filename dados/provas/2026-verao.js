@@ -89,6 +89,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Artes (Arte Urbana)',
     numeroOriginal: 1,
+    dificuldade: 'facil',
+    conteudo: 'por-2a1',
     enunciado: `
       <b>QUESTÃO 01</b><br>
       A Figura 1 mostra o mural “Menina com balão” do artista Banksy. A obra exibe uma criança de vestido que estende a mão para um balão vermelho, em forma de coração, que voa para longe. A obra original é um estêncil da criança em preto com o balão em vermelho sobre uma parede de cimento cinzenta em uma rua de Londres.<br><br>
@@ -110,6 +112,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 2,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 02</b><br>
@@ -131,6 +135,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Intertextualidade',
     numeroOriginal: 3,
+    dificuldade: 'dificil',
+    conteudo: 'por-2a4',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 03</b><br>
@@ -156,6 +162,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto (Ideia Central)',
     numeroOriginal: 4,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 04</b><br>
@@ -177,6 +185,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Estratégias Argumentativas',
     numeroOriginal: 5,
+    dificuldade: 'media',
+    conteudo: 'por-3a6',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 05</b><br>
@@ -201,6 +211,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Figuras de Linguagem',
     numeroOriginal: 6,
+    dificuldade: 'media',
+    conteudo: 'por-1a5',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 06</b><br>
@@ -221,6 +233,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Comparação entre Textos',
     numeroOriginal: 7,
+    dificuldade: 'facil',
+    conteudo: 'por-2a5',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 07</b><br>
@@ -242,6 +256,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Modos Verbais (Subjuntivo)',
     numeroOriginal: 8,
+    dificuldade: 'facil',
+    conteudo: 'por-2b1',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 08</b><br>
@@ -262,6 +278,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Funções da Linguagem',
     numeroOriginal: 9,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a4',
     textoApoio: TEXTOS_ACAFE_2026_VER_1_E_2,
     enunciado: `
       <b>QUESTÃO 09</b><br>
@@ -286,6 +304,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Figuras de Linguagem (Tira)',
     numeroOriginal: 10,
+    dificuldade: 'media',
+    conteudo: 'por-1a5',
     enunciado: `
       <b>QUESTÃO 10</b><br>
       Leia a tira de quadrinhos na Figura 2, e analise as afirmativas.<br><br>
@@ -314,6 +334,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (Lindolf Bell)',
     numeroOriginal: 11,
+    dificuldade: 'dificil',
+    obra: 'codigo-aguas',
     enunciado: `
       <b>QUESTÃO 11</b><br>
       Lindolf Bell (1938-1998) foi um poeta catarinense que emergiu no cenário literário brasileiro durante a terceira fase do Modernismo (1945-1975), período marcado por experimentações temáticas e linguísticas.<br><br>
@@ -349,6 +371,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (Memorial de Maria Moura)',
     numeroOriginal: 12,
+    dificuldade: 'dificil',
+    obra: 'memorial-maria-moura',
     enunciado: `
       <b>QUESTÃO 12</b><br>
       A obra <i>Memorial de Maria Moura</i>, de Rachel de Queiroz, lida com diversas tensões sociais relacionadas ao contexto histórico e social do sertão nordestino do século XIX.<br><br>
@@ -369,6 +393,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (O Exercício da Incerteza)',
     numeroOriginal: 13,
+    dificuldade: 'media',
+    obra: 'exercicio-incerteza',
     enunciado: `
       <b>QUESTÃO 13</b><br>
       Em sua obra de memórias <i>O exercício da incerteza</i>, o autor e médico Drauzio Varella escreveu: “Irmã gêmea da vaidade, a prepotência é filha da insegurança e do despreparo.”<br><br>
@@ -389,6 +415,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (Memórias Póstumas de Brás Cubas)',
     numeroOriginal: 14,
+    dificuldade: 'dificil',
+    obra: 'memorias-postumas',
     enunciado: `
       <b>QUESTÃO 14</b><br>
       Em <i>Memórias Póstumas de Brás Cubas</i>, Machado de Assis reflete muitas das complexidades sociais e psicológicas do século XIX em suas personagens femininas.<br><br>
@@ -420,6 +448,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 15,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 15</b><br>
@@ -440,6 +469,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -460,6 +490,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 17,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 17</b><br>
@@ -480,6 +511,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Estructuras Lingüísticas',
     numeroOriginal: 18,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 18</b><br>
@@ -507,6 +539,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos (Infografía)',
     numeroOriginal: 19,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Con base en la comprensión del texto 2, señala la opción <b>CORRECTA</b>.
@@ -528,6 +561,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 20,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Analiza los vocablos destacados en el siguiente trecho del texto 2 y señala la opción <b>CORRECTA</b>.<br><br>
@@ -551,6 +585,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos (Comparación)',
     numeroOriginal: 21,
+    dificuldade: 'dificil',
     textoApoio: TEXTO_ACAFE_2026_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 21</b><br>
@@ -583,6 +618,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Espacial (Cilindro e Segmento Circular)',
     numeroOriginal: 22,
+    dificuldade: 'dificil',
+    conteudo: 'mat-3a2',
     enunciado: `
       <b>QUESTÃO 22</b><br>
       A ressonância magnética (RM) é um exame de imagem que usa campos magnéticos e ondas de rádio para criar imagens detalhadas de órgãos, tecidos e ossos do corpo sem usar radiação ionizante. É utilizada para diagnosticar e monitorar diversas condições, como tumores, doenças neurológicas e problemas musculares. Durante o exame, o paciente deita-se em uma maca, a qual se move para dentro de um aparelho em forma de cilindro, devendo permanecer imóvel para se obter imagens nítidas. Um aparelho de RM com diâmetro medindo 1 m e comprimento de 2 m precisa passar por uma manutenção preventiva e para isso será preenchido por um líquido especial até a altura de 75 cm, como ilustra a Figura.<br><br>
@@ -603,6 +640,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Probabilidade Condicional (Teorema de Bayes)',
     numeroOriginal: 23,
+    dificuldade: 'media',
+    conteudo: 'mat-3b3',
     enunciado: `
       <b>QUESTÃO 23</b><br>
       Santa Catarina registrou 52 696 focos do mosquito <i>Aedes aegypti</i> em 262 municípios até setembro de 2025. O mesmo informe também registrou 2 584 notificações de chikungunya no Estado. Os registros apontam 839 casos prováveis e 670 comfirmados. O total representa um aumento de 581,1% em relação ao mesmo período de 2024. Transmitida pelo <i>Aedes aegypti</i>, a Chikungunya causa sintomas como febre alta, dores intensas nas articulações, bem como, dores musculares, dor de cabeça, cansaço extremo e manchas vermelhas na pele. Em casos graves, pode levar à internação e até a óbito. Suponha que 5% da população de uma comunidade do interior do estado de Santa Catarina está infectada com Chikungunya. Sabe-se que, entre os infectados, 60% apresentam febre; entre os não infectados, 10% apresentam febre por outras causas. Uma pessoa é escolhida ao acaso e apresenta febre.<br><br>
@@ -623,6 +662,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Razão, Porcentagem e Unidades de Área',
     numeroOriginal: 24,
+    dificuldade: 'media',
+    conteudo: 'mat-1a5',
     enunciado: `
       <b>QUESTÃO 24</b><br>
       O tratamento de queimaduras graves exige uma abordagem abrangente que inclui diagnóstico precoce, intervenções cirúrgicas precisas e cuidados pós-operatórios adequados. O diagnóstico precoce é fundamental para a identificação imediata da extensão das queimaduras, permitindo uma avaliação precisa do dano e o planejamento eficaz do tratamento. Isso é essencial, pois as queimaduras podem comprometer significativamente a função da pele e a qualidade de vida do paciente, se não forem tratadas adequadamente. O transplante de pele é frequentemente recomendado para restaurar a integridade e a funcionalidade da pele após queimaduras graves. O transplante é um procedimento cirúrgico que transfere pele saudável de uma parte do corpo ou de um doador falecido para substituir a pele danificada. A pele enxertada funciona como uma cobertura biológica, protegendo a área contra infecções, minimizando a perda de líquidos e calor, e estimulando a cicatrização. Uma criança com altura de 1,20 m, pesando 43,2 kg sofreu um acidente e teve 25% da pele do seu corpo queimada. Essa criança necessita de um transplante de pele em toda a área queimada. A fórmula de Mosteller estima a área, em m², da superfície corporal (ASC) de uma pessoa:<br><br>
@@ -645,6 +686,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Polinômios (Multiplicidade de Raízes)',
     numeroOriginal: 25,
+    dificuldade: 'media',
+    conteudo: 'mat-4a1',
     enunciado: `
       <b>QUESTÃO 25</b><br>
       A multiplicidade de uma raiz de um polinômio é o número de vezes que essa raiz aparece na fatoração completa do polinômio. Por exemplo, se 5 é uma raiz de multiplicidade 3 do polinômio <i>P</i>(<i>x</i>), significa que o fator (<i>x</i> − 5) aparece exatamente 3 vezes da fatoração completa de <i>P</i>(<i>x</i>). Em termos formais, um número <i>r</i> é uma raiz de multiplicidade <i>m</i> de um polinômio <i>P</i>(<i>x</i>) se <i>P</i>(<i>x</i>) = (<i>x</i> − <i>r</i>)<sup><i>m</i></sup> · <i>Q</i>(<i>x</i>), onde <i>Q</i>(<i>r</i>) ≠ 0.<br><br>
@@ -665,6 +708,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Análise Combinatória, Funções e Geometria Plana',
     numeroOriginal: 26,
+    dificuldade: 'media',
+    conteudo: 'mat-3b2',
     enunciado: `
       <b>QUESTÃO 26</b><br>
       Assinale a alternativa <b>CORRETA</b>.
@@ -684,6 +729,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Analítica (Coroa Circular)',
     numeroOriginal: 27,
+    dificuldade: 'media',
+    conteudo: 'mat-4b1',
     enunciado: `
       <b>QUESTÃO 27</b><br>
       Seja o paralelogramo <i>ABCD</i> tal que <i>A</i>(4,1), <i>B</i>(7,3) e <i>C</i>(6,9). Determine a área da coroa circular com o centro <i>O</i> sendo o cruzamento das diagonais desse paralelogramo e os raios da coroa sendo <i>r</i> = <i>OD</i> e <i>R</i> = <i>OA</i>.
@@ -703,6 +750,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Módulo, Função Exponencial e Inequação Logarítmica',
     numeroOriginal: 28,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a5',
     enunciado: `
       <b>QUESTÃO 28</b><br>
       Analise as afirmações.<br><br>
@@ -730,6 +779,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Cinemática (Lançamento Vertical)',
     numeroOriginal: 29,
+    dificuldade: 'dificil',
+    conteudo: 'fis-2a4',
     enunciado: `
       <b>QUESTÃO 29</b><br>
       Que bom se tivesse sido assim...<br><br>
@@ -760,6 +811,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Movimento Harmônico Simples (MHS)',
     numeroOriginal: 30,
+    dificuldade: 'media',
+    conteudo: 'fis-3a3',
     enunciado: `
       <b>QUESTÃO 30</b><br>
       A ablação é um procedimento médico que consiste na destruição controlada de tecido, muitas vezes por radiofrequência ou bisturi eletrônico, utilizado em intervenções cirúrgicas como tratamento de arritmias cardíacas, lesões malignas ou lesões de partes moles.<br>
@@ -789,6 +842,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Óptica Geométrica (Instrumentos Ópticos)',
     numeroOriginal: 31,
+    dificuldade: 'dificil',
+    conteudo: 'fis-1b4',
     enunciado: `
       <b>QUESTÃO 31</b><br>
       O astrônomo Edwin Hubble (1889–1953) foi responsável por uma verdadeira revolução na cosmologia moderna ao demonstrar, a partir de observações astronômicas, que existem outras galáxias além da Via Láctea e que o universo está em expansão acelerada. Sua contribuição deu origem à chamada Lei de Hubble, e sustentou as bases da teoria do Big Bang.<br><br>
@@ -817,6 +872,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Radioatividade e Ondas Eletromagnéticas',
     numeroOriginal: 32,
+    dificuldade: 'media',
+    conteudo: 'fis-4a4',
     enunciado: `
       <b>QUESTÃO 32</b><br>
       A radioatividade é um tema comum às disciplinas de Física e Química, sendo amplamente aplicada na medicina diagnóstica. Um dos radioisótopos mais utilizados é o Tecnécio-99m, que emite radiação gama e possui meia-vida de 6 horas, ideal para procedimentos como a cintilografia óssea.<br><br>
@@ -844,6 +901,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Hidrodinâmica (Equação da Continuidade)',
     numeroOriginal: 33,
+    dificuldade: 'media',
+    conteudo: 'fis-2a3',
     enunciado: `
       <b>QUESTÃO 33</b><br>
       Durante um exame de imagem por Doppler vascular, um neurologista observa um aneurisma fusiforme em uma artéria cerebral de um paciente. A artéria saudável possui diâmetro interno de 8 mm e conduz sangue com velocidade média de 0,4 m/s. No trecho com aneurisma, o diâmetro da artéria dobra, atingindo 16 mm, e o escoamento permanece estável. Sabe-se que o sangue pode ser tratado como fluido incompressível em regime laminar permanente.<br><br>
@@ -870,6 +929,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Eletrodinâmica (Circuito RC e Capacitores)',
     numeroOriginal: 34,
+    dificuldade: 'dificil',
+    conteudo: 'fis-4a3',
     enunciado: `
       <b>QUESTÃO 34</b><br>
       Segundo a American Heart Association (AHA), o uso precoce de desfibriladores automáticos pode aumentar em até 70% a chance de sobrevivência após uma parada cardíaca súbita. Esses aparelhos funcionam com circuitos elétricos simples, capazes de acumular e descarregar energia rapidamente por meio de capacitores.<br><br>
@@ -902,6 +963,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Termodinâmica (Transformações Gasosas)',
     numeroOriginal: 35,
+    dificuldade: 'media',
+    conteudo: 'fis-2b3',
     enunciado: `
       <b>QUESTÃO 35</b><br>
       Em um laboratório didático, um técnico opera um cilindro com êmbolo contendo gás ideal, o qual dispõe de um banho térmico de temperatura controlada (para processos isotérmicos), uma manta isolante (para processos adiabáticos), um trava-êmbolo que impede o movimento (para processos isocóricos) e um conjunto de pesos sobre o êmbolo que mantém a pressão constante quando desejado (processos isobáricos).<br><br>
@@ -937,6 +1000,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Ligações Químicas e Reações Nucleares',
     numeroOriginal: 36,
+    dificuldade: 'facil',
+    conteudo: 'qui-1a4',
     enunciado: `
       <b>QUESTÃO 36</b><br>
       Apesar de extremamente seguras, as usinas nucleares são uma preocupação, pois qualquer acidente tem grande potencial de causar problemas ao meio ambiente e à humanidade. Uma das maiores preocupações com acidentes em usinas nucleares é relativo ao risco de liberação de radionuclídeos perigosos, como o iodo-131, um isótopo radioativo formado no decaimento do urânio-235, durante reações de fissão nuclear. A exposição a este isótopo pode causar sérios danos, especialmente, à tireoide, órgão que pode ser protegido pelo uso de iodeto de potássio, que atua bloqueando a absorção do iodo radioativo.<br><br>
@@ -958,6 +1023,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Compostos Organometálicos e Ligações Químicas',
     numeroOriginal: 37,
+    dificuldade: 'media',
+    conteudo: 'qui-1a4',
     enunciado: `
       <b>QUESTÃO 37</b><br>
       A crescente contaminação por metais pesados em rios, lagos e aquíferos tem se tornado uma preocupação ambiental e de saúde pública em várias regiões do mundo. Entre esses poluentes, os compostos organometálicos, formados pela combinação de metais pesados, como mercúrio, cádmio e chumbo com grupos orgânicos, apresentam particular risco por sua alta toxicidade e capacidade de bioacumulação. O tratamento eficiente da água contaminada por esses compostos é complexo, pois suas propriedades químicas dificultam a simples remoção por processos físicos tradicionais.<br><br>
@@ -978,6 +1045,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Produto de Solubilidade (Kps)',
     numeroOriginal: 38,
+    dificuldade: 'media',
+    conteudo: 'qui-4a4',
     enunciado: `
       <b>QUESTÃO 38</b><br>
       Vacinas e medicamentos injetáveis são formulados em soluções aquosas, que precisam manter estabilidade química, pH controlado e ausência de precipitados. Certos sais, usados como agentes tamponantes ou veiculadores de íons, possuem baixa solubilidade e podem precipitar dependendo das concentrações e do pH da solução. O fosfato de cálcio, por exemplo, é pouco solúvel em água e, em concentrações inadequadas, pode se precipitar.<br><br>
@@ -998,6 +1067,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Polímeros (Polimerização por Condensação)',
     numeroOriginal: 39,
+    dificuldade: 'facil',
+    conteudo: 'qui-4b3',
     enunciado: `
       <b>QUESTÃO 39</b><br>
       Nos últimos anos, os polímeros biodegradáveis têm ganhado destaque como alternativa aos plásticos convencionais, especialmente na área da saúde e no controle da poluição por microplásticos. Um exemplo é o poliácido lático (PLA), obtido por polimerização do ácido lático, amplamente utilizado em suturas cirúrgicas absorvíveis e embalagens descartáveis. O PLA é um poliéster, e sua degradação é facilitada em ambientes úmidos. Abaixo está representada a equação química da polimerização do ácido lático.<br><br>
@@ -1018,6 +1089,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Equilíbrio Químico (Haber-Bosch)',
     numeroOriginal: 40,
+    dificuldade: 'media',
+    conteudo: 'qui-4a3',
     enunciado: `
       <b>QUESTÃO 40</b><br>
       A produção de amônia (NH<sub>3</sub>) é essencial para a fabricação de fertilizantes nitrogenados, fundamentais para a agricultura mundial. Tradicionalmente, a amônia é obtida pela reação de Haber-Bosch (ΔH = − 46 kJ/mol de amônia formada), que combina gás hidrogênio e nitrogênio à alta pressão e temperatura (400 a 500 ºC). Contudo, o processo convencional utiliza hidrogênio proveniente do gás natural (CH<sub>4</sub>), emitindo grandes quantidades de gás carbônico. Nesse contexto, surge a amônia verde, produzida a partir de hidrogênio obtido por eletrólise da água com energia renovável, como solar ou eólica, sendo uma alternativa promissora na transição energética e na agricultura sustentável.<br><br>
@@ -1043,6 +1116,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Ácidos e Bases (Solução-Tampão)',
     numeroOriginal: 41,
+    dificuldade: 'media',
+    conteudo: 'qui-4a4',
     enunciado: `
       <b>QUESTÃO 41</b><br>
       Em simulações laboratoriais de ambientes fisiológicos, como meios de cultura celular, é comum o uso de soluções tampão que estabilizem o pH em torno de 7. Um dos pares mais utilizados é o ácido acético e seu sal, o acetato de sódio, que formam um sistema em equilíbrio. Essa solução-tampão responde a pequenas adições de ácido ou base, resistindo a variações bruscas no pH. Indicadores como o azul de bromotimol são utilizados para monitorar mudanças de pH.<br><br>
@@ -1063,6 +1138,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Estequiometria e Concentração de Soluções',
     numeroOriginal: 42,
+    dificuldade: 'media',
+    conteudo: 'qui-3a4',
     enunciado: `
       <b>QUESTÃO 42</b><br>
       As bebidas isotônicas são formuladas para auxiliar na reposição de sais minerais (íons) e água após atividades físicas intensas. Uma das substâncias frequentemente presentes é o cloreto de magnésio, que fornece os íons Mg<sup>2+</sup> e Cl<sup>-</sup>, importantes na regulação osmótica, manutenção do ritmo cardíaco e na saúde muscular. Além de cloreto de magnésio, essas bebidas, ainda contém diversos outros sais minerais, além de vitaminas e açúcar, entre outros componentes químicos. A rotulagem de uma garrafa de 500 mL de uma bebida isotônica informa conter 0,028 mol/L de íons cloreto. Considere também, para esta situação, que a única fonte de magnésio e cloreto na formulação deste isotônico é o cloreto de magnésio dissolvido.<br><br>
@@ -1088,6 +1165,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Genética Molecular (cDNA e Expressão Gênica)',
     numeroOriginal: 43,
+    dificuldade: 'facil',
+    conteudo: 'bio-1a3',
     enunciado: `
       <b>QUESTÃO 43</b><br>
       Com o intuito de estudar doenças metabólicas, pesquisadores analisam as proteínas produzidas em células humanas. Para isso, em vez de trabalharem diretamente com o DNA genômico (gDNA), que contém tanto regiões codificantes quanto não codificantes para a produção de proteínas, eles optam por produzir um DNA complementar (cDNA) a partir de moléculas de RNA mensageiro (mRNA). Essa estratégia é comum porque o mRNA já passou por processamento celular, no qual os trechos não codificantes foram removidos. Assim, o cDNA obtido reflete de forma mais direta, apenas as partes do gene que resultam em proteínas.<br><br>
@@ -1109,6 +1188,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Botânica (Alternância de Gerações)',
     numeroOriginal: 44,
+    dificuldade: 'facil',
+    conteudo: 'bio-3a1',
     enunciado: `
       <b>QUESTÃO 44</b><br>
       A poluição hídrica, intensificada pela urbanização e industrialização, exige soluções sustentáveis. A fitorremediação surge como uma alternativa promissora, utilizando plantas, especialmente macrófitas aquáticas, para filtrar e degradar poluentes de efluentes domésticos e industriais. Técnicas como <i>wetlands</i> e jardins filtrantes aproveitam essa capacidade natural, oferecendo tratamento de baixo custo, alta eficiência e potencial para reuso da água e aproveitamento da biomassa. Essa abordagem ecologicamente viável demonstra como processos biológicos podem ser aliados na descontaminação ambiental e na promoção da sustentabilidade. Ações como essa são fundamentais para a preservação e manutenção de ambientes.<br>
@@ -1131,6 +1212,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Histologia (Tecido Cartilaginoso)',
     numeroOriginal: 45,
+    dificuldade: 'facil',
+    conteudo: 'bio-2b7',
     enunciado: `
       <b>QUESTÃO 45</b><br>
       A cantora e ex-BBB Juliette revelou ter condromalácia patelar, condição em que a cartilagem da patela sofre desgaste e amolecimento, causando dor, estalos e limitação de movimentos. Essa doença é mais comum em adultos jovens e pode predispor à artrose em idades mais avançadas. Um dos maiores desafios no tratamento é que a cartilagem possui baixo potencial de regeneração.<br><br>
@@ -1151,6 +1234,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Zoologia (Anelídeos)',
     numeroOriginal: 46,
+    dificuldade: 'media',
+    conteudo: 'bio-4a2',
     enunciado: `
       <b>QUESTÃO 46</b><br>
       No livro e no filme <i>Duna</i>, os gigantescos “Vermes da Areia” (<i>Shai-Hulud</i>) são retratados como criaturas capazes de remodelar o ecossistema do planeta Arrakis. Embora fictícios, pesquisadores apontam semelhanças entre eles e os anelídeos da Terra, como as minhocas e os poliquetas. Entre os anelídeos, destacam-se os vermes <i>eunicídeos</i>, que podem alcançar até 2 metros de extensão. Esses organismos apresentam corpo segmentado e são equipados com mandíbulas robustas, o que lhes confere hábitos predatórios. Muitos agem como caçadores de emboscada, alimentando-se inclusive de polvos, lulas e pequenos vertebrados. Além desses, existem também minhocas de grande porte, como as da espécie <i>Megascolides</i>, que chegam a medir até dois metros de comprimento. Os maiores exemplares conhecidos são encontrados predominantemente na Austrália.<br>
@@ -1172,6 +1257,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Doenças Bacterianas (Sífilis)',
     numeroOriginal: 47,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a3',
     enunciado: `
       <b>QUESTÃO 47</b><br>
       A sífilis é uma infecção sexualmente transmissível (IST) causada pela bactéria <i>Treponema pallidum</i>. Dados da Diretoria de Vigilância Epidemiológica de Santa Catarina (Dive/SC) indicam que os casos cresceram mais de 20 vezes em uma década, passando de 574 em 2012 para mais de 15 mil notificações em 2022. O aumento está relacionado à ampliação dos testes diagnósticos, mas especialistas alertam para uma “falsa sensação de segurança em relação às ISTs”, visto que muitas ainda podem provocar complicações graves.<br>
@@ -1193,6 +1280,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Fisiologia Muscular (Rabdomiólise)',
     numeroOriginal: 48,
+    dificuldade: 'media',
+    conteudo: 'bio-2b8',
     enunciado: `
       <b>QUESTÃO 48</b><br>
       <b>Jovem sofre falência nos rins após treino na academia</b><br><br>
@@ -1215,6 +1304,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Saúde Pública (Doenças de Veiculação Hídrica)',
     numeroOriginal: 49,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a3',
     enunciado: `
       <b>QUESTÃO 49</b><br>
       “De acordo com dados da ONU, mais de 2 bilhões de pessoas no mundo ainda não têm acesso à água potável segura, e cerca de 3,6 bilhões vivem sem saneamento básico adequado. Nessas condições, doenças de veiculação hídrica permanecem como uma das principais causas de mortalidade em países em desenvolvimento. Além do impacto direto na saúde, a falta de saneamento compromete a frequência escolar, a produtividade econômica e a qualidade de vida das populações afetadas.”<br>
@@ -1240,6 +1331,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Império (Revolta dos Malês)',
     numeroOriginal: 50,
+    dificuldade: 'facil',
+    conteudo: 'his-2b5',
     enunciado: `
       <b>QUESTÃO 50</b><br>
       A Revolta do Malês, ocorrida em 1835 na Bahia, foi um importante levante de escravizados e libertos de origem africana.<br><br>
@@ -1260,6 +1353,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Expansão Marítima (Tratado de Tordesilhas)',
     numeroOriginal: 51,
+    dificuldade: 'facil',
+    conteudo: 'his-1b1',
     enunciado: `
       <b>QUESTÃO 51</b><br>
       Leia o trecho extraído do Tratado de Tordesilhas (1494):<br><br>
@@ -1282,6 +1377,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Primeiro Reinado (Constituição de 1824)',
     numeroOriginal: 52,
+    dificuldade: 'facil',
+    conteudo: 'his-2b3',
     enunciado: `
       <b>QUESTÃO 52</b><br>
       A Constituição outorgada por D. Pedro I, em 1824, estabeleceu as bases do Estado brasileiro durante o Primeiro Reinado.<br><br>
@@ -1302,6 +1399,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'História da Ciência (Marie Curie)',
     numeroOriginal: 53,
+    dificuldade: 'facil',
+    conteudo: 'his-c1',
     enunciado: `
       <b>QUESTÃO 53</b><br>
       Marie Curie foi uma proeminente cientista, cujas descobertas, no início do século XX, contribuíram de forma significativa para a medicina.<br><br>
@@ -1322,6 +1421,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Renascimento (Anatomia e Medicina)',
     numeroOriginal: 54,
+    dificuldade: 'facil',
+    conteudo: 'his-2a2',
     enunciado: `
       <b>QUESTÃO 54</b><br>
       O estudo da anatomia humana passou por uma significativa transformação durante o Renascimento, tornando-se um marco para o avanço da medicina.<br><br>
@@ -1342,6 +1443,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Primeira Revolução Industrial (Ludismo e Direitos Trabalhistas)',
     numeroOriginal: 55,
+    dificuldade: 'media',
+    conteudo: 'his-c2',
     enunciado: `
       <b>QUESTÃO 55</b><br>
       Analise as afirmativas como <b>verdadeiras (V)</b> ou <b>falsas (F)</b>, relacionadas à Primeira Revolução Industrial, ao Ludismo e à origem de direitos trabalhistas.<br><br>
@@ -1367,6 +1470,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Contemporâneo (Epidemia de AIDS)',
     numeroOriginal: 56,
+    dificuldade: 'facil',
+    conteudo: 'his-4b4',
     enunciado: `
       <b>QUESTÃO 56</b><br>
       A epidemia de AIDS, que se intensificou no Brasil, nas décadas de 1980 e 1990, foi marcada por grandes desafios sociais, políticos e de saúde pública.<br><br>
@@ -1391,6 +1496,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Relevo do Continente Americano',
     numeroOriginal: 57,
+    dificuldade: 'media',
+    conteudo: 'geo-2u1',
     enunciado: `
       <b>QUESTÃO 57</b><br>
       As formas de relevo são importantes elementos das paisagens, apesar de serem consideradas elementos naturais, elas interagem com as sociedades humanas. No Continente Americano as formas de relevo podem ser organizadas em regiões.<br><br>
@@ -1411,6 +1518,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Urbanização Brasileira',
     numeroOriginal: 58,
+    dificuldade: 'facil',
+    conteudo: 'geo-3u5',
     enunciado: `
       <b>QUESTÃO 58</b><br>
       A urbanização brasileira, um fenômeno intenso e acelerado, caracterizou-se por um processo de concentração de renda e serviços nas grandes metrópoles, impulsionado por fatores como a industrialização tardia e a modernização do campo. No entanto, esse crescimento vertiginoso não ocorreu de forma equitativa, resultando em profundas contradições sociais e espaciais. A falta de planejamento e de políticas públicas eficazes levou à proliferação de assentamentos precários e à segregação socioespacial, tornando o acesso à moradia digna, saneamento básico e transporte público, um desafio para grande parte da população.<br><br>
@@ -1431,6 +1540,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Globalização (Empresas Multinacionais)',
     numeroOriginal: 59,
+    dificuldade: 'dificil',
+    conteudo: 'geo-4u5',
     enunciado: `
       <b>QUESTÃO 59</b><br>
       Empresas multinacionais, também conhecidas como transnacionais aparecem como importantes elementos dos tempos atuais, as multinacionais estão entre os destaques do atual processo de globalização.<br><br>
@@ -1452,6 +1563,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Teorias Demográficas',
     numeroOriginal: 60,
+    dificuldade: 'dificil',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 60</b><br>
       As teorias demográficas buscam explicar o crescimento populacional, que está ligado a questões de saúde pública. A respeito do tema, assinale a alternativa <b>CORRETA</b>.
@@ -1471,6 +1584,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Demografia Brasileira (Taxa de Fecundidade)',
     numeroOriginal: 61,
+    dificuldade: 'facil',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 61</b><br>
       A taxa de fecundidade mostra o número médio de filhos nascidos vivos por mulher em idade fértil. No Brasil, de acordo com dados do IBGE, a taxa de fecundidade está em queda. No ano 2000, eram 2.32 filhos por mulher em idade fértil, número que em 2023 caiu para 1.57. A diminuição de filhos por mulher em idade fértil é um dos fatores que contribuem com a diminuição do crescimento populacional brasileiro e, no futuro, pode também estar associada a uma redução da população do país.<br><br>
@@ -1491,6 +1606,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia de Santa Catarina (Mesorregiões)',
     numeroOriginal: 62,
+    dificuldade: 'dificil',
+    conteudo: 'geo-c1',
     enunciado: `
       <b>QUESTÃO 62</b><br>
       Regionalizar significa dividir o território de acordo com um ou um conjunto de critérios. Uma forma de analisar o estado catarinense é por meio das Mesorregiões.<br><br>
@@ -1511,6 +1628,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Cartografia (Anamorfose) e Geografia da Saúde',
     numeroOriginal: 63,
+    dificuldade: 'media',
+    conteudo: 'geo-1u3',
     enunciado: `
       <b>QUESTÃO 63</b><br>
       As relações entre Geografia e temas da saúde envolvem questões ambientais, geopolíticas e em relação aos mapas da Geografia, dentro dos chamados mapas temáticos, que podem expressar a espacialização de doenças e outros temas relacionados à saúde, como representado abaixo:<br><br>
@@ -1541,6 +1660,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 15,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 15</b><br>
       <b>Text 1</b> is an excerpt from an article entitled "<i>Aesthetic Overload: Why Gen Z is Obsessed with Making Life Look Perfect</i>", published on an online platform. Read it and analyze the statements that follow.<br><br>
@@ -1570,6 +1690,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto (Ideia Principal)',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 16</b><br>
       <b>Text 2</b> is part of an article published on Medical News Today, a health information website. Read it.<br><br>
@@ -1594,6 +1715,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Conditionals)',
     numeroOriginal: 17,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 17</b><br>
       Analyze the conditionals below.<br><br>
@@ -1622,6 +1744,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Preposições)',
     numeroOriginal: 18,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 18</b><br>
       <b>Text 3</b> is an excerpt from the article <b>The World's Plastic Pollution Crisis, Explained</b>, published by National Geographic. Some prepositions have been removed from it.<br><br>
@@ -1645,6 +1768,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Adjetivos e Advérbios)',
     numeroOriginal: 19,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Complete the sentences with the correct form of the word in parentheses, following standard English grammar rules.<br><br>
@@ -1671,6 +1795,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário (Idioms)',
     numeroOriginal: 20,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Read <b>Text 4</b> carefully, focusing on the idiom that is both <u>underlined</u> and in <b>bold</b>.<br><br>
@@ -1694,6 +1819,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Estrutura da Oração)',
     numeroOriginal: 21,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 21</b><br>
       Consider the proverb: <i>“Early to bed and early to rise makes a man healthy, wealthy, and wise.”</i><br>

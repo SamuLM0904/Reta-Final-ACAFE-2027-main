@@ -26,8 +26,10 @@ import {
   MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, diasEntre,
   inicioDaSemana, minutosDoDia, simuladoDoDia, indexarQuestoes, analisarMemoria, calcularPrioridades,
   conteudosFracos, taxaErro, planejarPeriodo, aplicarMudancas, avaliarMudancas, projetarAcertos,
-  formatarHoras, dataCurta,
+  formatarHoras, dataCurta, notaCorteDoPerfil, acertosParaNota, escoreDosAcertos, NOTAS_CORTE_2024,
+  faseDaPreparacao, valeComoSimuladoDaSemana, errosPendentes,
 } from './guia-plano.js';
+import { criarSimuladoAleatorio } from './simulado.js';
 import { interpretarPedido } from './guia-chat.js';
 
 const DIA_PROVA = chaveDia(PROVA.inicio);
@@ -53,13 +55,18 @@ function montarContexto(questoesProvas, questoesEstudo) {
   const indice = indexarQuestoes(questoesProvas, questoesEstudo);
   const analise = analisarMemoria(lerMemoria(), indice, agora);
   const { tentativas, atual } = lerSimulado();
+  // só valem como "o simulado da semana" os do tamanho previsto pela fase (os menores são treino)
+  const completos = tentativas.filter(t => valeComoSimuladoDaSemana(t, DIA_PROVA));
+  const fase = faseDaPreparacao(hoje, DIA_PROVA);
   const ctx = {
-    guia, hoje, agora, analise, atual, tentativas,
+    guia, hoje, agora, analise, atual, tentativas, fase,
     diaProva: DIA_PROVA,
-    prioridades: guia?.perfil ? calcularPrioridades(guia.perfil, analise, agora) : [],
+    prioridades: guia?.perfil ? calcularPrioridades(guia.perfil, analise, agora, fase) : [],
+    errosPendentes: errosPendentes(lerMemoria(), { agora, ignorarSimulado: atual?.id }),
     materiasComQuestoes: new Set(questoesEstudo.map(q => materiaDaDisciplina(q.disciplina)?.id).filter(Boolean)),
-    semanasComSimuladoFeito: new Set(tentativas.map(t => inicioDaSemana(chaveDia(new Date(t.data))))),
-    simuladoFeitoHoje: tentativas.some(t => chaveDia(new Date(t.data)) === hoje),
+    // só simulados completos contam como "o simulado da semana" (os menores são treino)
+    semanasComSimuladoFeito: new Set(completos.map(t => inicioDaSemana(chaveDia(new Date(t.data))))),
+    simuladoFeitoHoje: completos.some(t => chaveDia(new Date(t.data)) === hoje),
   };
   ctx.planosFixos = guia ? Object.fromEntries(Object.entries(guia.planos || {}).filter(([d]) => d < hoje)) : {};
   return ctx;
@@ -128,6 +135,9 @@ function opcoesHoras(selecionado, max = 14) {
 function opcoesMinutos(selecionado) {
   return [0, 15, 30, 45].map(m => `<option value="${m}"${m === selecionado ? ' selected' : ''}>${String(m).padStart(2, '0')}min</option>`).join('');
 }
+/** Escore no formato brasileiro, com duas casas (ex.: 4.589,37). */
+const formatarNota = nota => nota.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 const radio = (nome, valor, rotulo, marcado) => `
   <label class="simulado-idioma__opcao"><input type="radio" name="${nome}" value="${valor}"${marcado ? ' checked' : ''}> ${rotulo}</label>`;
 
@@ -167,13 +177,14 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
             <legend>2. No fim de semana você consegue estudar mais?</legend>
             <div class="guia-linha">
               ${radio('fds', 'sim', 'Sim', p.fimDeSemanaMais)}
-              ${radio('fds', 'nao', 'Não, o mesmo tempo', !p.fimDeSemanaMais)}
+              ${radio('fds', 'nao', 'Não (mesmo tempo dos dias de semana)', !p.fimDeSemanaMais)}
             </div>
             <div class="guia-linha" id="guia-fds-tempo" ${p.fimDeSemanaMais ? '' : 'hidden'}>
-              <span>Quanto por dia, no sábado e no domingo?</span>
-              <select name="horasFds" class="guia-select" aria-label="Horas no fim de semana">${opcoesHoras(p.minutosFimDeSemana !== undefined ? Math.floor(p.minutosFimDeSemana / 60) : 6, 16)}</select>
-              <select name="minFds" class="guia-select" aria-label="Minutos no fim de semana">${opcoesMinutos(p.minutosFimDeSemana !== undefined ? p.minutosFimDeSemana % 60 : 0)}</select>
+              <label>Quantas horas no total, somando sábado e domingo?
+                <input type="number" name="horasFds" min="0.5" max="32" step="0.5" class="guia-numero"
+                  value="${p.fimDeSemanaMais && p.minutosFimDeSemana ? p.minutosFimDeSemana * 2 / 60 : 12}"> horas</label>
             </div>
+            <p class="guia-dica" id="guia-fds-dica" ${p.fimDeSemanaMais ? '' : 'hidden'}>O total é dividido igualmente entre os dois dias (ex.: 12 horas = 6h no sábado e 6h no domingo).</p>
           </fieldset>
 
           <fieldset class="guia-pergunta">
@@ -204,10 +215,17 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>6. Quantas questões (de 63) você quer acertar na prova?</legend>
+            <legend>6. Qual a nota de corte do curso que você quer?</legend>
             <div class="guia-linha">
-              <input type="number" name="meta" min="1" max="63" class="guia-numero" value="${p.meta || 45}"> questões
+              <input type="number" name="notaCorte" min="4000" max="5500" step="any" class="guia-numero guia-numero--largo"
+                value="${notaCorteDoPerfil(p) ?? ''}" placeholder="ex.: 4589,37" aria-label="Nota de corte (escore ACAFE)">
+              <select name="corte2024" class="guia-select" aria-label="Usar a nota de corte de 2024 de uma instituição">
+                <option value="">Usar a de 2024 de…</option>
+                ${NOTAS_CORTE_2024.map(c => `<option value="${c.nota}">${c.instituicao} — ${formatarNota(c.nota)}</option>`).join('')}
+              </select>
             </div>
+            <p class="guia-dica">É o escore do último classificado, como a ACAFE divulga (soma das 9 disciplinas, com a redação;
+              fica perto de 4.500). O guia calcula quantos acertos ela exige e reforça as matérias que estão abaixo disso.</p>
           </fieldset>
 
           <fieldset class="guia-pergunta">
@@ -237,9 +255,14 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
     </div>`;
 
   const form = container.querySelector('#guia-form');
-  form.addEventListener('change', () => {
+  form.addEventListener('change', (e) => {
     container.querySelector('#guia-fds-tempo').hidden = form.fds.value !== 'sim';
+    container.querySelector('#guia-fds-dica').hidden = form.fds.value !== 'sim';
     container.querySelector('#guia-bloco-outro').hidden = form.bloco.value !== 'outro';
+    if (e.target === form.corte2024 && form.corte2024.value) {
+      form.notaCorte.value = form.corte2024.value;
+      form.corte2024.value = '';
+    }
   });
   container.querySelector('#guia-cancelar')?.addEventListener('click', aoSalvar);
 
@@ -248,16 +271,19 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
     const erro = container.querySelector('#guia-erro');
     const minutosDia = Number(form.horasDia.value) * 60 + Number(form.minDia.value);
     const fimDeSemanaMais = form.fds.value === 'sim';
-    const minutosFimDeSemana = fimDeSemanaMais ? Number(form.horasFds.value) * 60 + Number(form.minFds.value) : minutosDia;
+    const horasFds = Number(String(form.horasFds.value).replace(',', '.'));
+    // o total do fim de semana é dividido entre sábado e domingo (o plano guarda o tempo de cada dia)
+    const minutosFimDeSemana = fimDeSemanaMais ? Math.round(horasFds * 60 / 2) : minutosDia;
     const pronto = BLOCOS_PRONTOS.find(b => b.valor === form.bloco.value);
     const bloco = pronto ? { estudo: pronto.estudo, pausa: pronto.pausa }
       : { estudo: Number(form.estudo.value), pausa: Number(form.pausa.value) };
-    const meta = Number(form.meta.value);
+    const notaCorte = Number(String(form.notaCorte.value).replace(',', '.'));
     const problema =
       minutosDia < 15 && minutosFimDeSemana < 15 ? 'Informe pelo menos 15 minutos de estudo por dia.'
+      : fimDeSemanaMais && !(horasFds >= 0.5 && horasFds <= 32) ? 'Informe de 0,5 a 32 horas no total do fim de semana.'
       : !(bloco.estudo >= 15 && bloco.estudo <= 180) ? 'O bloco de estudo deve ter entre 15 e 180 minutos.'
       : !(bloco.pausa >= 0 && bloco.pausa <= 60) ? 'A pausa deve ter entre 0 e 60 minutos.'
-      : !(meta >= 1 && meta <= 63) ? 'A meta deve ser um número de 1 a 63.'
+      : !(notaCorte >= 4000 && notaCorte <= 5500) ? 'Informe a nota de corte como a ACAFE divulga, um escore entre 4.000 e 5.500 (ex.: 4589,37).'
       : null;
     if (problema) { erro.textContent = problema; erro.hidden = false; return; }
 
@@ -265,7 +291,7 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
       minutosDia, fimDeSemanaMais, minutosFimDeSemana, bloco,
       dificeis: [...form.querySelectorAll('[name="dificeis"]:checked')].map(c => c.value),
       idioma: form.idioma.value,
-      meta,
+      notaCorte,
       provasAnteriores: form.provas.value,
       cursinho: form.cursinho.value === 'sim',
       atualizadoEm: Date.now(),
@@ -303,6 +329,8 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
           <h2 class="agenda-faixa">Cronograma até a prova<span>${diasParaProva > 0
             ? `faltam ${diasParaProva} dia${diasParaProva > 1 ? 's' : ''} • ${PROVA.dataExtenso}`
             : diasParaProva === 0 ? 'hoje é o dia da prova • boa prova! 🍀' : 'a prova já aconteceu'}</span></h2>
+          ${diasParaProva > 1 ? `<p class="guia-fase"><strong>Ritmo: ${ctx.fase.nome}</strong> — ${ctx.fase.descricao}.
+            O guia ajusta o ritmo sozinho conforme a prova se aproxima.</p>` : ''}
           ${htmlChat()}
           ${htmlMudancasAtivas(ctx)}
           ${htmlLinhaDoTempo(ctx, plano)}
@@ -313,6 +341,23 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
 
   container.querySelector('#guia-editar').addEventListener('click', () =>
     renderizarQuestionario(container, guia.perfil, redesenhar));
+
+  // Simulado da semana e mini-simulado do dia: cria o simulado pronto e abre
+  container.querySelectorAll('[data-gerar-simulado]').forEach(btn => btn.addEventListener('click', async () => {
+    if (lerSimulado().atual && !(await confirmar({
+      titulo: 'Começar um novo simulado?',
+      mensagem: 'Já existe um simulado em andamento. Começar este vai descartá-lo e apagar as marcações dele da sua memória de erros e acertos.',
+      textoConfirmar: 'Descartar e começar',
+      perigo: true,
+    }))) return;
+    const criado = criarSimuladoAleatorio(questoesProvas, {
+      idioma: guia.perfil.idioma || 'Espanhol',
+      total: Number(btn.dataset.gerarSimulado),
+      nome: btn.dataset.nome,
+      materias: btn.dataset.materias ? btn.dataset.materias.split(',') : null,
+    });
+    if (criado) window.location.hash = '#/simulado';
+  }));
 
   // Blocos feitos
   container.querySelectorAll('[data-bloco-feito]').forEach(caixa => caixa.addEventListener('change', () => {
@@ -379,19 +424,26 @@ function htmlBloco(bloco, i, ctx, feito) {
   const materia = MATERIAS.find(m => m.id === bloco.materia);
   let titulo, acao = '';
   if (bloco.tipo === 'simulado') {
-    titulo = 'Simulado completo';
+    titulo = bloco.nome || 'Simulado completo';
     const finalizado = ctx.simuladoFeitoHoje;
     acao = finalizado ? `<span class="guia-selo guia-selo--ok">${icone('check', 14)} Simulado finalizado hoje</span>`
-      : `<a href="${ctx.atual ? '#/simulado' : '#/simulados'}" class="btn btn-primario btn-pequeno">${ctx.atual ? 'Continuar simulado' : 'Ir para os simulados'}</a>`;
+      : ctx.atual ? '<a href="#/simulado" class="btn btn-primario btn-pequeno">Continuar simulado</a>'
+      : `<button type="button" class="btn btn-primario btn-pequeno" data-gerar-simulado="${bloco.total || 63}"
+          data-nome="${escaparHtml(bloco.nome || 'Simulado completo')}">Começar o simulado (${bloco.total || 63} questões)</button>`;
   } else if (bloco.tipo === 'externo') {
     titulo = 'Simulado externo';
+  } else if (bloco.tipo === 'revisao') {
+    titulo = 'Correção de erros';
+    const devidas = ctx.errosPendentes.filter(p => p.devida).length;
+    acao = devidas ? `<a href="#/revisao" class="btn btn-primario btn-pequeno">Refazer ${devidas === 1 ? 'a questão' : `as ${devidas} questões`}</a>`
+      : `<span class="guia-selo guia-selo--ok">${icone('check', 14)} Nenhuma questão para refazer agora</span>`;
   } else {
     titulo = nomeMateria(materia, ctx.guia.perfil);
     const modulo = moduloMateria(materia, ctx.guia.perfil);
     if (modulo && ctx.materiasComQuestoes.has(materia.id)) acao = `<a href="#/questoes/${modulo}" class="btn btn-secundario btn-pequeno">Praticar questões</a>`;
   }
   return `
-    <li class="guia-bloco${feito ? ' guia-bloco--feito' : ''}${bloco.tipo !== 'materia' ? ' guia-bloco--simulado' : ''}">
+    <li class="guia-bloco${feito ? ' guia-bloco--feito' : ''}${bloco.tipo !== 'materia' && bloco.tipo !== 'revisao' ? ' guia-bloco--simulado' : ''}${bloco.tipo === 'revisao' ? ' guia-bloco--revisao' : ''}">
       <label class="guia-bloco__marcar" title="Marcar como feito">
         <input type="checkbox" data-bloco-feito="${i}"${feito ? ' checked' : ''} aria-label="Bloco ${i + 1} feito">
       </label>
@@ -410,6 +462,26 @@ function atualizarResumoFeitos(container) {
   if (!el || !caixas.length) return;
   const feitos = caixas.filter(c => c.checked).length;
   el.textContent = feitos === caixas.length ? `Tudo feito! 🎉` : `${feitos} de ${caixas.length} blocos feitos`;
+}
+
+/** Matérias de estudo do plano (ids de MATERIAS, sem repetir). */
+const materiasDoPlano = plano => [...new Set(plano.blocos.filter(b => b.tipo === 'materia').map(b => b.materia))];
+
+/** Número de questões do mini-simulado do dia. */
+const QUESTOES_MINI_DO_DIA = 10;
+
+/** Botão do mini-simulado do dia: questões das matérias estudadas hoje. */
+function htmlMiniDoDia(plano, ctx) {
+  const materias = materiasDoPlano(plano);
+  if (!materias.length || diasEntre(ctx.hoje, DIA_PROVA) <= 1) return '';
+  const nomes = materias.map(id => nomeMateria(MATERIAS.find(m => m.id === id), ctx.guia.perfil)).join(', ');
+  return `
+    <div class="guia-mini">
+      <p><strong>Mini-simulado do dia</strong>: ${QUESTOES_MINI_DO_DIA} questões das provas anteriores de ${escaparHtml(nomes)},
+        para fixar o que você estudou hoje (cerca de ${Math.round(QUESTOES_MINI_DO_DIA * 300 / 63)} min).</p>
+      <button type="button" class="btn btn-secundario btn-pequeno" data-gerar-simulado="${QUESTOES_MINI_DO_DIA}"
+        data-nome="Mini-simulado do dia" data-materias="${materias.join(',')}">Fazer o mini-simulado</button>
+    </div>`;
 }
 
 /* ---------------- Linha do tempo (modelo da agenda da UFSC) ---------------- */
@@ -442,10 +514,11 @@ function tituloDoDia(plano, chave, hoje) {
   if (somarDias(chave, 1) === DIA_PROVA) return `${prefixo}Véspera: revisão leve`;
   if (!plano.blocos.length) return `${prefixo}Dia livre`;
   const sim = plano.blocos.find(b => b.tipo === 'simulado' || b.tipo === 'externo');
-  const materias = plano.blocos.filter(b => b.tipo === 'materia').length;
+  const materias = plano.blocos.filter(b => b.tipo === 'materia' || b.tipo === 'revisao').length;
   const blocos = n => `${n} bloco${n > 1 ? 's' : ''}`;
   if (sim) {
-    const nome = sim.tipo === 'externo' ? 'Simulado externo' : sim.minutos < 300 ? 'Simulado (parte)' : 'Simulado completo';
+    const inteiro = Math.round(300 * (sim.total || 63) / 63);
+    const nome = sim.tipo === 'externo' ? 'Simulado externo' : sim.minutos < inteiro ? 'Simulado (parte)' : (sim.nome || 'Simulado completo');
     return `${prefixo}${nome}${materias ? ` + ${blocos(materias)}` : ''}`;
   }
   return `${prefixo}${formatarHoras(plano.minutos)} de estudo · ${blocos(materias)}`;
@@ -453,7 +526,8 @@ function tituloDoDia(plano, chave, hoje) {
 
 /** Linha compacta de um bloco (dias futuros e passados). */
 function htmlBlocoCompacto(b, guia, feito) {
-  const nome = b.tipo === 'simulado' ? 'Simulado completo (site)' : b.tipo === 'externo' ? 'Simulado externo'
+  const nome = b.tipo === 'simulado' ? `${b.nome || 'Simulado completo'} (site)` : b.tipo === 'externo' ? 'Simulado externo'
+    : b.tipo === 'revisao' ? 'Correção de erros'
     : nomeMateria(MATERIAS.find(m => m.id === b.materia), guia.perfil);
   return `
     <li class="agenda-bloco${feito ? ' agenda-bloco--feito' : ''}">
@@ -527,6 +601,7 @@ function htmlCartaoDia(ctx, plano, tipo) {
       <h3 class="agenda-cartao__titulo">${tituloDoDia(plano, chave, hoje)}${selo}</h3>
       ${htmlAjusteDoDia(guia, chave, true)}
       ${corpo}
+      ${htmlMiniDoDia(plano, ctx)}
       ${plano.blocos.length ? `<p class="guia-dica">O plano de hoje fica fixo durante o dia; o de amanhã já leva em conta o que você acertou e errou hoje.
         <button type="button" class="guia-link" id="guia-refazer-hoje">Refazer o plano de hoje com meu desempenho atual</button></p>` : ''}`;
   }
@@ -814,6 +889,9 @@ function htmlDesempenho(ctx) {
   }
 
   const projecao = projetarAcertos(analise);
+  const nota = notaCorteDoPerfil(perfil);
+  const acertosProjetados = projecao ? Math.round(projecao.acertos * 63 / projecao.questoesConsideradas) : null;
+  const necessarios = nota ? acertosParaNota(nota) : null;
   const linhas = prioridades.map(p => {
     const acc = analise.materias[p.id];
     const pct = acc ? Math.round(acc.acertos / acc.n * 100) : null;
@@ -837,8 +915,15 @@ function htmlDesempenho(ctx) {
         <h3 class="simulado-card__titulo">Seu desempenho</h3>
         ${projecao ? `<p class="guia-projecao">
           Pelo seu desempenho${projecao.questoesConsideradas < 63 ? ` (nas matérias com respostas suficientes, ${projecao.questoesConsideradas} das 63 questões)` : ''},
-          você acertaria cerca de <strong>${Math.round(projecao.acertos * 63 / projecao.questoesConsideradas)} de 63</strong> questões.
-          Sua meta é <strong>${perfil.meta}</strong>${Math.round(projecao.acertos * 63 / projecao.questoesConsideradas) >= perfil.meta ? ' — no caminho certo! 💪' : '.'}
+          você acertaria cerca de <strong>${acertosProjetados} de 63</strong> questões
+          (escore estimado de <strong>${formatarNota(escoreDosAcertos(acertosProjetados))}</strong>, com uma redação média).
+        </p>` : ''}
+        ${nota ? `<p class="guia-projecao">
+          Sua nota de corte é <strong>${formatarNota(nota)}</strong>: em média, ela exige cerca de <strong>${necessarios} acertos</strong> nas 63 objetivas.
+          ${acertosProjetados === null ? ''
+            : acertosProjetados >= necessarios ? 'Você está no caminho certo! 💪'
+            : `Faltam cerca de <strong>${necessarios - acertosProjetados} ${necessarios - acertosProjetados === 1 ? 'questão' : 'questões'}</strong>: o plano dá mais tempo às matérias abaixo do necessário.`}
+          <span class="guia-dica">Estimativa feita com os classificados do Verão 2024; a conversão exata depende da média dos candidatos de cada ano.</span>
         </p>` : ''}
         <table class="simulado-tabela">
           <caption>Respostas registradas (simulados e questões de estudo) e fatia de cada matéria no seu plano</caption>
@@ -847,7 +932,7 @@ function htmlDesempenho(ctx) {
         </table>
         ${fracos.length ? `
           <p class="guia-msg__sub">Conteúdos para reforçar (mais erros):</p>
-          <ul class="guia-lista">${fracos.map(c => `<li>${nomeMateria(c.m, perfil)}: ${escaparHtml(c.subtopico)} — ${c.n - c.acertos} erro${c.n - c.acertos > 1 ? 's' : ''} em ${c.n}</li>`).join('')}</ul>` : ''}
+          <ul class="guia-lista">${fracos.map(c => `<li>${nomeMateria(c.m, perfil)}: ${escaparHtml(c.nome)} — ${c.n - c.acertos} erro${c.n - c.acertos > 1 ? 's' : ''} em ${c.n}</li>`).join('')}</ul>` : ''}
         ${dicaDiagnostico}
       </div>
     </section>`;

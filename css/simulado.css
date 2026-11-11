@@ -38,8 +38,8 @@
 
 .simulado-card--destaque {
   border-color: var(--cor-dourado-fosco);
-  background: linear-gradient(135deg, rgba(22, 36, 51, 0.95), rgba(42, 66, 52, 0.75));
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(197, 168, 105, 0.2);
+  background: var(--gradiente-destaque);
+  box-shadow: var(--sombra-destaque);
 }
 
 .simulado-card__icone {
@@ -429,7 +429,7 @@
   justify-content: center;
   border-radius: var(--raio-pill);
   background-color: var(--cor-primaria);
-  color: #fff;
+  color: var(--cor-texto-sobre-primaria);
   font-size: 0.8rem;
   font-weight: var(--peso-negrito);
 }
@@ -463,6 +463,12 @@
 }
 
 /* ---- Questões feitas nos simulados aleatórios, por prova ---- */
+.simulado-historico__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-xs);
+}
+
 .simulado-historico__topo {
   display: flex;
   flex-wrap: wrap;
@@ -496,3 +502,105 @@
 .simulado-legenda__item--nao-feita { opacity: 0.6; }
 .simulado-legenda__item--nao-feita::before { border: 1px solid transparent; background: var(--cor-borda); }
 
+
+/* ---- Filtros em árvore (matéria → conteúdo → dificuldade) ---- */
+.simulado-filtros { display: flex; flex-direction: column; gap: var(--espaco-sm); align-items: flex-start; }
+.simulado-filtros > div { width: 100%; display: flex; flex-direction: column; gap: var(--espaco-sm); align-items: flex-start; }
+.simulado-filtros > div[hidden] { display: none; }
+
+.arvore {
+  list-style: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+}
+.arvore__ramo + .arvore__ramo { border-top: 1px solid var(--cor-borda); }
+
+.arvore__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-xs) var(--espaco-sm);
+}
+
+.arvore__expandir {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.arvore__expandir:hover { background-color: var(--cor-verde-militar-suave); color: var(--cor-texto); }
+
+.arvore__materia { display: inline-flex; align-items: center; gap: var(--espaco-xs); font-weight: var(--peso-medio); flex: 1 1 12rem; }
+.arvore__dificuldade { min-height: 32px; padding-block: 0; font-size: var(--tamanho-sm); }
+
+.arvore__folhas {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--espaco-md) var(--espaco-sm) calc(32px + var(--espaco-md));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 2px var(--espaco-md);
+  font-size: var(--tamanho-sm);
+}
+.arvore__folhas[hidden] { display: none; }
+.arvore__folhas label { display: inline-flex; align-items: baseline; gap: var(--espaco-xs); }
+.arvore__n { color: var(--cor-texto-fraco); }
+
+/* ---- Diagnóstico de erros (por que errou) ---- */
+.diagnostico {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-md);
+  padding: var(--espaco-md);
+  border: 1px dashed var(--cor-errada-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-errada-fundo);
+}
+.diagnostico__titulo { font-weight: var(--peso-negrito); color: var(--cor-texto); }
+.diagnostico__opcoes { display: flex; flex-wrap: wrap; gap: var(--espaco-xs); }
+.diagnostico__opcao--marcada { border-color: var(--cor-dourado-fosco); background-color: var(--cor-dourado-suave); color: var(--cor-texto); }
+.diagnostico__dica { font-size: var(--tamanho-sm); color: var(--cor-texto-suave); line-height: 1.55; }
+
+/* ---- Aviso de obras literárias e livro das obras ---- */
+.obras__caixa { max-width: 40rem; }
+.obras__lista { margin: var(--espaco-sm) 0; padding-left: var(--espaco-lg); display: flex; flex-direction: column; gap: var(--espaco-xs); }
+.obras__sobretitulo { font-size: var(--tamanho-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--cor-dourado-fosco); }
+.obras__sumario { list-style: none; margin: var(--espaco-sm) 0; padding: 0; display: flex; flex-direction: column; gap: var(--espaco-xs); }
+.obras__capitulo-link {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-marinho-base);
+  color: var(--cor-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.obras__capitulo-link:hover, .obras__capitulo-link:focus-visible { border-color: var(--cor-dourado-fosco); background-color: var(--cor-verde-militar-suave); }
+.obras__numero { font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); text-transform: uppercase; letter-spacing: 0.06em; }
+.obras__ficha { color: var(--cor-texto-suave); font-size: var(--tamanho-sm); }
+.obras__texto {
+  max-height: min(55vh, 32rem);
+  overflow-y: auto;
+  margin: var(--espaco-sm) 0;
+  padding-right: var(--espaco-xs);
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+.obras__em-preparacao { color: var(--cor-texto-fraco); font-style: italic; }
+.obras__navegacao { justify-content: space-between; }

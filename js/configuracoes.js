@@ -2,6 +2,7 @@
  * configuracoes.js — Painel de configurações (botão de engrenagem no cabeçalho).
  *
  * Por enquanto tem:
+ *   - Aparência: botão de sol/lua que troca o tema (ver js/tema.js) — aparece mesmo sem login;
  *   - Dados da conta (nome completo e usuário) e "Trocar senha" (todos). A senha não pode
  *     ser exibida: o Firebase guarda só uma versão embaralhada dela.
  *   - Sair da conta (todos);
@@ -16,6 +17,7 @@ import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
 import { resetarMemoriaLocal } from './armazenamento.js';
+import { htmlBotaoTema, vincularBotoesTema } from './tema.js';
 import {
   eAdmin, listarAlunos, resetarMemoriaDoAluno, usuarioAtual, usuarioExibido, sair, trocarSenha,
   redefinirSenha, temEmailReal, cadastrarEmailRecuperacao, alterarNome, alterarUsuario,
@@ -38,6 +40,15 @@ export async function abrirConfiguracoes() {
         <button type="button" class="configuracoes__fechar" data-fechar aria-label="Fechar">${icone('x', 20)}</button>
       </div>
 
+      <section class="configuracoes__secao" aria-label="Aparência">
+        <h3 class="configuracoes__subtitulo">Aparência</h3>
+        <div class="configuracoes__linha">
+          ${htmlBotaoTema({ texto: true, classe: 'btn btn-secundario' })}
+        </div>
+        <p class="configuracoes__info">Vale para este navegador.</p>
+      </section>
+
+      ${user ? `
       <section class="configuracoes__secao" aria-label="Conta">
         <h3 class="configuracoes__subtitulo">Conta</h3>
         <dl class="configuracoes__dados">
@@ -86,7 +97,7 @@ export async function abrirConfiguracoes() {
         <p class="configuracoes__info" id="config-senha-status" role="status"></p>
       </section>
 
-      <div id="config-admin"><p class="configuracoes__info">Verificando permissões...</p></div>
+      <div id="config-admin"><p class="configuracoes__info">Verificando permissões...</p></div>` : ''}
     </div>`;
   document.body.appendChild(dialogo);
   dialogo.addEventListener('close', () => dialogo.remove());
@@ -94,6 +105,9 @@ export async function abrirConfiguracoes() {
     if (e.target === dialogo || e.target.closest('[data-fechar]')) dialogo.close();
   });
   dialogo.showModal();
+
+  vincularBotoesTema(dialogo);
+  if (!user) return;   // sem login (modo local): só a aparência
 
   dialogo.querySelector('#config-sair').addEventListener('click', async () => {
     if (!(await confirmar({

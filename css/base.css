@@ -80,7 +80,7 @@ img, svg { max-width: 100%; display: block; }
   height: var(--altura-cabecalho);
   background-color: var(--cor-marinho-elevado);
   border-bottom: 1px solid var(--cor-borda);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--sombra-cabecalho);
   display: flex;
   align-items: center;
 }
@@ -141,15 +141,15 @@ img, svg { max-width: 100%; display: block; }
 
 .btn-primario {
   background-color: var(--cor-dourado-fosco);
-  color: #0a1118;
+  color: var(--cor-texto-sobre-primaria);
   font-weight: var(--peso-negrito);
   border: 1px solid var(--cor-dourado-hover);
 }
 
 .btn-primario:hover {
   background-color: var(--cor-dourado-hover);
-  color: #050a0e;
-  box-shadow: 0 4px 16px rgba(197, 168, 105, 0.35);
+  color: var(--cor-texto-sobre-primaria);
+  box-shadow: 0 4px 16px var(--cor-dourado-brilho);
   text-decoration: none;
 }
 
@@ -163,8 +163,6 @@ img, svg { max-width: 100%; display: block; }
   background-color: var(--cor-verde-militar);
   border-color: var(--cor-dourado-fosco);
   color: var(--cor-dourado-fosco);
-  text-decoration: none;
-}
   text-decoration: none;
 }
 
@@ -524,3 +522,9 @@ img, svg { max-width: 100%; display: block; }
   gap: var(--espaco-sm);
 }
 
+
+/* Seta "para a frente": o ícone arrow-left girado (botões Próxima / Próximo capítulo) */
+.icone-rotacionado { transform: rotate(180deg); }
+
+/* Botão de sol/lua que troca o tema (js/tema.js) */
+.botao-tema { display: inline-flex; align-items: center; justify-content: center; gap: var(--espaco-xs); }

@@ -18,12 +18,13 @@
  *       tentativas: [ { data, idioma, ids, respostas, acertos, total, tempoMs } ]
  *     },
  *     memoria: [   // MEMÓRIA DE ERROS E ACERTOS — só muda quando o aluno marca uma resposta
- *       { q: "<id>", a: "C", ok: true, t: 1730000000000, o: "estudo" | "simulado", s: "<id do simulado>" }
+ *       { q: "<id>", a: "C", ok: true, t: 1730000000000, o: "estudo" | "simulado" | "revisao", s: "<id do simulado>",
+ *         m: "conteudo" | "atencao" | "interpretacao" }   // m: por que errou (diagnostico.js), se o aluno disse
  *     ],
  *     memoriaResetadaEm: 1730000000000,  // ms — quando o administrador zerou a memória (ver definirAluno)
  *     guia: {      // GUIA DE ESTUDOS (ver guia.js)
  *       perfil:  { minutosDia, fimDeSemanaMais, minutosFimDeSemana, bloco: { estudo, pausa },
- *                  dificeis: ["fisica", ...], idioma, meta, provasAnteriores, cursinho, atualizadoEm },
+ *                  dificeis: ["fisica", ...], idioma, notaCorte, provasAnteriores, cursinho, atualizadoEm },
  *       ajustes: { "AAAA-MM-DD": ±minutos },     // "hoje vou estudar mais/menos"
  *       planos:  { "AAAA-MM-DD": { base, minutos, blocos: [...] } }   // plano fixado de cada dia
  *     },
@@ -43,6 +44,16 @@ const vazio = () => ({ respostas: {}, simulado: { atual: null, tentativas: [] },
 
 /**
  * Lê o objeto raiz do storage.
+ * @returns {{ respostas: Object, simulado: Object }}
+ */
+function lerTudo() {
+  try {
+    const raw   = localStorage.getItem(chave);
+    const dados = raw ? JSON.parse(raw) : {};
+    return { ...vazio(), ...dados };
+  } catch {
+    return vazio();
+  }
 }
 
 /**
@@ -216,6 +227,57 @@ export const idDoSimulado = simulado => simulado.id || simulado.criadoEm;
 export function registrarTentativaSimulado(tentativa) {
   const dados = lerTudo();
   dados.simulado = { atual: null, tentativas: [...lerSimulado().tentativas, tentativa] };
+  gravarTudo(dados);
+}
+
+/**
+ * Grava por que o aluno errou uma questão de um simulado finalizado (diagnostico.js):
+ * na tentativa (`motivos`) e na marcação da memória de erros e acertos (campo `m`).
+ * @param {number} indice    - posição da tentativa no histórico
+ * @param {string} questaoId
+ * @param {'conteudo'|'atencao'|'interpretacao'} motivo
+ */
+export function registrarMotivoErro(indice, questaoId, motivo) {
+  const dados = lerTudo();
+  const { atual, tentativas } = lerSimulado();
+  const tentativa = tentativas[indice];
+  if (!tentativa) return;
+  tentativa.motivos = { ...(tentativa.motivos || {}), [questaoId]: motivo };
+  if (tentativa.id) {
+    dados.memoria = (dados.memoria || []).map(m =>
+      (m.s === tentativa.id && m.q === questaoId && !m.ok ? { ...m, m: motivo } : m));
+  }
+  dados.simulado = { atual, tentativas };
+  gravarTudo(dados);
+}
+
+/**
+ * Grava o motivo do erro na última marcação errada de uma questão fora dos simulados
+ * (correção de erros / questões de estudo).
+ */
+export function registrarMotivoNaMemoria(questaoId, motivo) {
+  const dados = lerTudo();
+  const memoria = dados.memoria || [];
+  for (let i = memoria.length - 1; i >= 0; i--) {
+    if (memoria[i].q === questaoId && !memoria[i].ok) { memoria[i] = { ...memoria[i], m: motivo }; break; }
+  }
+  dados.memoria = memoria;
+  gravarTudo(dados);
+}
+
+/**
+ * Apaga de vez uma tentativa finalizada do histórico e, da memória de erros e
+ * acertos, as marcações feitas nela.
+ * @param {number} indice - posição da tentativa no histórico
+ */
+export function excluirTentativaSimulado(indice) {
+  const dados = lerTudo();
+  const { atual, tentativas } = lerSimulado();
+  const tentativa = tentativas[indice];
+  if (!tentativa) return;
+  // tentativas antigas não guardavam o id do simulado: nesse caso não há como achar as marcações
+  if (tentativa.id) dados.memoria = (dados.memoria || []).filter(m => m.s !== tentativa.id);
+  dados.simulado = { atual, tentativas: tentativas.filter((_, i) => i !== indice) };
   gravarTudo(dados);
 }
 

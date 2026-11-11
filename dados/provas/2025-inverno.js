@@ -81,6 +81,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 1,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 01</b><br>
@@ -105,6 +107,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Recursos Linguísticos e Argumentação',
     numeroOriginal: 2,
+    dificuldade: 'dificil',
+    conteudo: 'por-3a6',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 02</b><br>
@@ -126,6 +130,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Coesão Referencial',
     numeroOriginal: 3,
+    dificuldade: 'media',
+    conteudo: 'por-2a3',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 03</b><br>
@@ -146,6 +152,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 4,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 04</b><br>
@@ -166,6 +174,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Vocabulário e Sentido no Texto',
     numeroOriginal: 5,
+    dificuldade: 'facil',
+    conteudo: 'por-1a5',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 05</b><br>
@@ -186,6 +196,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Estrangeirismos e Variação Linguística',
     numeroOriginal: 6,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a2',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 06</b><br>
@@ -212,6 +224,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto (Ideia Principal)',
     numeroOriginal: 7,
+    dificuldade: 'media',
+    conteudo: 'por-3a5',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 07</b><br>
@@ -232,6 +246,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Funções da Linguagem e Argumentação',
     numeroOriginal: 8,
+    dificuldade: 'dificil',
+    conteudo: 'por-3a6',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 08</b><br>
@@ -253,6 +269,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Conectivos e Relações Semânticas',
     numeroOriginal: 9,
+    dificuldade: 'media',
+    conteudo: 'por-2b6',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 09</b><br>
@@ -274,6 +292,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Discurso Direto e Polifonia',
     numeroOriginal: 10,
+    dificuldade: 'facil',
+    conteudo: 'por-4a2',
     textoApoio: TEXTO_ACAFE_2025_INV_1,
     enunciado: `
       <b>QUESTÃO 10</b><br>
@@ -298,6 +318,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Figuras de Linguagem (Crônica)',
     numeroOriginal: 11,
+    dificuldade: 'media',
+    obra: 'exercicio-incerteza',
     enunciado: `
       <b>QUESTÃO 11</b><br>
       “Nos primeiros dias da internação, os enfermeiros que me ajudaram a sair da cama, a ir ao banheiro e a tomar banho me faziam lembrar da segurança que a mão firme de meu pai me transmitia ao atravessar a rua. A delicadeza carinhosa das enfermeiras ao tocar meu corpo me sugeria a sensação dos cuidados maternais que minha mãe não tivera tempo de vida para dar ao filho. A doença nos faz reencontrar a fragilidade da criança que um dia fomos.” <small>VARELLA, Drauzio. As Enfermeiras. In: <i>O exercício da incerteza</i>. São Paulo: Companhia das Letras, 2022.</small><br><br>
@@ -322,6 +344,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (Insubmissas Lágrimas de Mulheres)',
     numeroOriginal: 12,
+    dificuldade: 'media',
+    obra: 'insubmissas',
     enunciado: `
       <b>QUESTÃO 12</b><br>
       O conto "Maria do Rosário Imaculada dos Santos" integra a coletânea <i>Insubmissas lágrimas de mulheres</i>, de Conceição Evaristo, e destaca-se como uma narrativa sobre sequestro e escravidão, que entrelaça memória individual e coletiva.<br><br>
@@ -342,6 +366,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (O Vendedor de Passados)',
     numeroOriginal: 13,
+    dificuldade: 'media',
+    obra: 'vendedor-passados',
     enunciado: `
       <b>QUESTÃO 13</b><br>
       Considerando o romance <i>O Vendedor de Passados</i> de José Eduardo Agualusa, assinale a alternativa <b>CORRETA</b>.
@@ -361,6 +387,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (Memórias Póstumas de Brás Cubas)',
     numeroOriginal: 14,
+    dificuldade: 'media',
+    obra: 'memorias-postumas',
     enunciado: `
       <b>QUESTÃO 14</b><br>
       <i>Memórias Póstumas de Brás Cubas</i>, de Machado de Assis, é uma obra que inaugura o Realismo no Brasil e se consolida como um marco da literatura nacional e universal. Em relação à obra, analise as afirmativas.<br><br>
@@ -389,6 +417,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 15,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2025_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 15</b><br>
@@ -409,6 +438,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2025_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -429,6 +459,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 17,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 17</b><br>
@@ -449,6 +480,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 18,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 18</b><br>
@@ -476,6 +508,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos (Infografía)',
     numeroOriginal: 19,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Con base en la comprensión del Texto 2, analiza las afirmaciones.<br><br>
@@ -503,6 +536,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Estructuras Lingüísticas',
     numeroOriginal: 20,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Analiza las estructuras lingüísticas presentes en el Texto 2 y marca la opción <b>CORRECTA</b>.
@@ -524,6 +558,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Géneros Textuales y Propósito Comunicativo',
     numeroOriginal: 21,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 21</b><br>
@@ -550,6 +585,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Espacial (Calota Esférica)',
     numeroOriginal: 22,
+    dificuldade: 'media',
+    conteudo: 'mat-3a3',
     enunciado: `
       <b>QUESTÃO 22</b><br>
       Uma secção plana de uma superfície esférica divide-a em duas partes denominadas calotas esféricas. Uma lente esférica é aquela que tem uma superfície composta de duas calotas esféricas ou de uma calota esférica e uma parte plana. As lentes de contato são sistemas ópticos de muita importância em nossa vida. A evolução desses sistemas deve muito às contribuições de Carl Friedrich Gauss (1777 – 1855). Suas pesquisas em Ópticas foram marcantes no estudo das lentes que possibilitaram a construção de instrumentos ópticos de alta definição de imagens.<br><br>
@@ -576,6 +613,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções Exponenciais e Logarítmicas',
     numeroOriginal: 23,
+    dificuldade: 'facil',
+    conteudo: 'mat-2a5',
     enunciado: `
       <b>QUESTÃO 23</b><br>
       A aorta é a maior artéria do corpo humano, responsável por transportar o sangue oxigenado do coração para todas as partes do corpo. Ela se origina no ventrículo esquerdo do coração, ascendendo e formando um arco antes de descer pelo tórax e abdómen. A aorta é essencial para a circulação sistêmica, fornecendo sangue para todas as artérias do corpo, com exceção das artérias pulmonares. Quando as válvulas da artéria aorta se fecham, a pressão P, em mmHg (milímetro de mercúrio), no interior dessa artéria durante o fechamento pode ser expressa em função do tempo t, em segundo, por meio da equação P = 95 · e<sup>−0,49t</sup>.<br><br>
@@ -596,6 +635,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções Exponenciais',
     numeroOriginal: 24,
+    dificuldade: 'facil',
+    conteudo: 'mat-2a4',
     enunciado: `
       <b>QUESTÃO 24</b><br>
       Durante um tratamento oncológico, um paciente foi submetido a exames com um isótopo radioativo, que é utilizado tanto para diagnóstico quanto para terapia da glândula da tireoide. A equipe médica precisa monitorar a massa residual do isótopo no corpo do paciente para programar a próxima dose. A massa desse isótopo presente no organismo do paciente, em gramas, varia ao longo do tempo segundo a função m(t) = a · b<sup>−t/2</sup>, em que t é o tempo em semanas após a administração da dose; a e b são constantes positivas com b &gt; 1; m(t) representa a massa do isótopo ainda presente no organismo. Sabendo que no instante t = 0, a massa era de 32 g e, após 1 semana, essa massa passou a ser 16 g,<br><br>
@@ -616,6 +657,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções, Lei dos Senos e Conjuntos',
     numeroOriginal: 25,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a1',
     enunciado: `
       <b>QUESTÃO 25</b><br>
       Analise as afirmações.<br><br>
@@ -639,6 +682,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Sequências, Geometria Plana, Polinômios e Probabilidade',
     numeroOriginal: 26,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2b2',
     enunciado: `
       <b>QUESTÃO 26</b><br>
       Assinale a alternativa <b>CORRETA</b>.
@@ -658,6 +703,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Analítica',
     numeroOriginal: 27,
+    dificuldade: 'media',
+    conteudo: 'mat-4b2',
     enunciado: `
       <b>QUESTÃO 27</b><br>
       Seja a circunferência α: (x − 5)² + (y − 1)² = 4 e a reta r: 5x + 3y − 62 = 0<br><br>
@@ -678,6 +725,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Inequações Modulares',
     numeroOriginal: 28,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a3',
     enunciado: `
       <b>QUESTÃO 28</b><br>
       Seja S o conjunto solução da inequação (|2x + 4| − |x + 4| − 6) / (−x² + 9x − 8) ≥ 0.<br><br>
@@ -702,6 +751,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Gráficos e Grandezas Físicas na Medicina',
     numeroOriginal: 29,
+    dificuldade: 'dificil',
+    conteudo: 'fis-4a1',
     enunciado: `
       <b>QUESTÃO 29</b><br>
       Um feliz candidato, aprovado no vestibular para Medicina, logo se depara com disciplinas que não esperava encontrar em destaque: Física e Matemática. Durante aulas de diagnóstico por imagem e fisiologia cardíaca, percebe que exames como eletrocardiograma (ECG), espirometria e tomografia computadorizada envolvem funções matemáticas e gráficos, que descrevem relações entre grandezas físicas por meio de representações matemáticas.<br>
@@ -729,6 +780,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Hidrostática (Empuxo)',
     numeroOriginal: 30,
+    dificuldade: 'facil',
+    conteudo: 'fis-2a2',
     enunciado: `
       <b>QUESTÃO 30</b><br>
       Durante processos de reabilitação, é comum o uso de terapias aquáticas que exploram propriedades físicas dos fluidos para reduzir impactos sobre o corpo humano. A imersão parcial ou total do corpo em água modifica a percepção de peso e facilita movimentos articulares, o que é amplamente utilizado em sessões de fisioterapia, principalmente para pacientes com restrições motoras ou em recuperação de lesões. Em uma sessão de hidroterapia, um paciente com massa de 75 kg permanece em pé dentro de uma piscina, com o corpo submerso até a altura do abdômen. A fisioterapeuta explica que, devido à força exercida pelo líquido sobre seu corpo, causada pela diferença de pressão entre partes submersas, o paciente sente alívio nas articulações, facilitando os movimentos. Nessa situação, o volume submerso do corpo do paciente é de 1,875 × 10⁴ cm³.<br><br>
@@ -749,6 +802,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Gases Ideais (Clapeyron)',
     numeroOriginal: 31,
+    dificuldade: 'media',
+    conteudo: 'fis-2b3',
     enunciado: `
       <b>QUESTÃO 31</b><br>
       Em 2004, o mergulhador australiano, David Shaw, faleceu durante uma tentativa de resgate no sistema de cavernas submersas Boesmansgat, na África do Sul, onde atingiu profundidades superiores a 270 metros, onde a pressão ultrapassa 28 atm.<br><br>
@@ -777,6 +832,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Energia Mecânica e Calorimetria',
     numeroOriginal: 32,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3b2',
     enunciado: `
       <b>QUESTÃO 32</b><br>
       Durante uma aula experimental, os alunos analisam um sistema inspirado na famosa experiência de Joule, tal experiência demonstrou que o trabalho mecânico pode se transformar em calor, estabelecendo a equivalência entre energia mecânica e energia térmica. Ao usar pás agitadas por massas em queda para aquecer água, Joule provou que o calor é uma forma de energia — e não uma substância, como se pensava antes, conforme ilustração abaixo.<br><br>
@@ -799,6 +856,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Lançamento Oblíquo',
     numeroOriginal: 33,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3a1',
     enunciado: `
       <b>QUESTÃO 33</b><br>
       Durante os treinamentos preparatórios para os Jogos Olímpicos de Paris 2024, a Seleção Brasileira Feminina de Futebol realizou uma atividade técnica, voltada para os chutes de longa distância. Jogadoras como Marta, Kerolin e Gabi Nunes participaram de lançamentos de bola com velocidade inicial de 20 m/s, variando apenas o ângulo de chute, sempre com a bola partindo do solo e retornando ao mesmo nível.<br><br>
@@ -826,6 +885,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Magnetismo e Eletromagnetismo',
     numeroOriginal: 34,
+    dificuldade: 'media',
+    conteudo: 'fis-4b1',
     enunciado: `
       <b>QUESTÃO 34</b><br>
       O estudo do magnetismo remonta à Antiguidade. Segundo relatos lendários, um lavrador chamado Magnes, da região da Magnésia, teria notado que a ponta de seu cajado de ferro e as ferraduras de seus bois ficaram “presas” a certas pedras do solo. Essas pedras continham magnetita, um minério natural de ferro que exibe propriedades magnéticas. Esse fenômeno chamou tanto a atenção que a própria palavra “magnetismo” deriva dessa região. Desde então, o ser humano passou a investigar os efeitos misteriosos dessa força invisível, culminando no desenvolvimento do eletromagnetismo moderno.<br><br>
@@ -853,6 +914,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Propagação de Calor',
     numeroOriginal: 35,
+    dificuldade: 'media',
+    conteudo: 'fis-2b2',
     enunciado: `
       <b>QUESTÃO 35</b><br>
       Durante uma madrugada gelada de julho, em Caxias do Sul (RS), com temperatura ambiente de -1 °C, um morador de rua foi encontrado inconsciente e com sinais de hipotermia. Ele foi imediatamente levado ao pronto-socorro por uma equipe de emergência. No hospital, foi atendido por uma médica plantonista, que também leciona fisiologia para residentes. Ao examinar o paciente, ela verificou que sua temperatura corporal estava em 32 °C, o que indicava um caso moderado de hipotermia. Imediatamente, ela iniciou o protocolo de reaquecimento com cobertores térmicos, infusão de soro aquecido e ar quente úmido direcionado ao rosto.<br><br>
@@ -883,6 +946,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Modelos Atômicos (Teste de Chama)',
     numeroOriginal: 36,
+    dificuldade: 'media',
+    conteudo: 'qui-1a1',
     enunciado: `
       <b>QUESTÃO 36</b><br>
       No início da noite de 23 de abril, os céus de Santa Catarina foram palco de um fenômeno inusitado. Um meteoro pôde ser visto passando pela atmosfera terrestre e surpreendendo astrônomos amadores, por volta das 19h. Durante a entrada na atmosfera, o meteoro foi visto queimando em uma cor azul-esverdeada, semelhante a outro meteoro, visto no final de 2024 em Portugal.<br><br>
@@ -904,6 +969,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Eletroquímica (Oxirredução)',
     numeroOriginal: 37,
+    dificuldade: 'facil',
+    conteudo: 'qui-4b4',
     enunciado: `
       <b>QUESTÃO 37</b><br>
       Em organismos vivos, as reações de oxirredução estão frequentemente envolvidas em processos bioquímicos essenciais, como a produção de energia nas células. Um exemplo clássico ocorre na cadeia respiratória mitocondrial, em que reações redox de transportadores de elétrons estão em equilíbrio para gerar ATP. A reação global da cadeia respiratória pode ser representada pela equação química, balanceada abaixo, com os respectivos valores de potenciais de redução.<br><br>
@@ -927,6 +994,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Estequiometria (Combustão)',
     numeroOriginal: 38,
+    dificuldade: 'dificil',
+    conteudo: 'qui-3a2',
     enunciado: `
       <b>QUESTÃO 38</b><br>
       “O trecho da BR-101 em Palhoça, na Grande Florianópolis foi interditado após um caminhão tombar, explodir e incendiar veículos na tarde de domingo (6), foi liberado na manhã desta segunda-feira (7), após mais de 15 horas de trabalho. O local, conhecido como Morro dos Cavalos, foi interditado para o resgate das vítimas e limpeza do local. Até as 9h40 desta segunda ainda havia fila na região (veja mais abaixo). Cinco pessoas ficaram feridas e 21 carros e três carretas foram atingidos pelo fogo, além do caminhão que provocou o incêndio.”<br>
@@ -951,6 +1020,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Geometria Molecular e Forças Intermoleculares',
     numeroOriginal: 39,
+    dificuldade: 'dificil',
+    conteudo: 'qui-2a1',
     enunciado: `
       <b>QUESTÃO 39</b><br>
       Um grupo de pesquisa do Instituto de Astronomia de Cambridge, estudando a atmosfera do planeta K2-18b com o Telescópio James Webb, encontrou evidências da presença de duas substâncias químicas que dariam indícios de vida. As substâncias em questão são o dimetilsulfeto (DMS) e o dimetil dissulfeto (DMDS). Ambos se apresentam como líquidos inflamáveis e com odores desagradáveis, devido à presença de enxofre em suas estruturas. Essas moléculas seriam evidências de vida, pois, na Terra, elas são produzidas apenas por organismos vivos, principalmente por vida microbiana, como fitoplânctons. As estruturas químicas do DMS e DMDS estão representadas respectivamente abaixo:<br><br>
@@ -971,6 +1042,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Bioquímica (Proteínas)',
     numeroOriginal: 40,
+    dificuldade: 'media',
+    conteudo: 'qui-c1',
     enunciado: `
       <b>QUESTÃO 40</b><br>
       O prêmio Nobel de Química de 2024 foi dado a David Baker, Demis Hassabis e John M. Jumper pelo seu estudo de proteínas por meio de inteligência artificial. A Academia Real das Ciências da Suécia, responsável pelo prêmio, afirmou que estes três cientistas “desvendaram o código que forma as impressionantes estruturas das proteínas”. Os pesquisadores desenvolveram um modelo de inteligência artificial, chamado AlphaFold2, por meio do qual eles conseguiram prever a estrutura de praticamente todas as mais de 200 milhões de proteínas já conhecidas.<br><br>
@@ -997,6 +1070,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Química Orgânica (Funções, Aromaticidade e Hibridização)',
     numeroOriginal: 41,
+    dificuldade: 'dificil',
+    conteudo: 'qui-2b1',
     enunciado: `
       <b>QUESTÃO 41</b><br>
       O uso de medicamentos sedativos e/ou anestésicos é algo comum no dia a dia de um profissional da saúde. Abaixo estão as estruturas químicas de dois medicamentos amplamente utilizados: a lidocaína, um anestésico local, e o midazolam, um benzodiazepínico usado como sedativo de ação rápida.<br><br>
@@ -1022,6 +1097,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Termoquímica (Entalpia de Formação)',
     numeroOriginal: 42,
+    dificuldade: 'media',
+    conteudo: 'qui-4a1',
     enunciado: `
       <b>QUESTÃO 42</b><br>
       O acetileno (etino) é um gás altamente inflamável, usado como combustível em maçaricos de solda. Cilindros de acetileno são vendidos em diferentes tamanhos, com capacidades variadas. Um dos tamanhos mais comuns é capaz de armazenar 1 kg do gás.<br><br>
@@ -1047,6 +1124,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Ecologia (Sustentabilidade e 3Rs)',
     numeroOriginal: 43,
+    dificuldade: 'facil',
+    conteudo: 'bio-4b5',
     enunciado: `
       <b>QUESTÃO 43</b><br>
       Muito comum nas escolas de ensino médio, as campanhas de conscientização sobre o meio ambiente, visam esclarecer e divulgar uma das questões mais importantes para a humanidade: a sustentabilidade. Dessa forma, uma das práticas a serem trabalhadas são os princípios dos 3Rs (Reduzir, Reutilizar, Reciclar).<br><br>
@@ -1068,6 +1147,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Fisiologia Animal (Excretas Nitrogenadas)',
     numeroOriginal: 44,
+    dificuldade: 'facil',
+    conteudo: 'bio-3b5',
     enunciado: `
       <b>QUESTÃO 44</b><br>
       As excretas eliminadas pelo sistema urinário são, predominantemente, nitrogenadas, produzidas durante o metabolismo de proteínas e ácidos nucleicos. Quanto ao tipo de excreção, os animais podem ser divididos em três grupos, dependendo do tipo de excreta liberado.<br><br>
@@ -1088,6 +1169,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Reino Fungi e Relações Ecológicas',
     numeroOriginal: 45,
+    dificuldade: 'media',
+    conteudo: 'bio-2a5',
     enunciado: `
       <b>QUESTÃO 45</b><br>
       “Os fungos se desenvolvem em ambientes que apresentam condições ideais de calor e umidade, e em certas partes do corpo humano, como as unhas, a pele, o couro cabeludo, as regiões genitais e a virilha oferecem essa possibilidade. Quando isso acontece, verificam-se sintomas distintos, dependendo da área afetada”.<br>
@@ -1109,6 +1192,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Sistema Nervoso',
     numeroOriginal: 46,
+    dificuldade: 'facil',
+    conteudo: 'bio-3b8',
     enunciado: `
       <b>QUESTÃO 46</b><br>
       <b>Álcool na adolescência afeta, sim, o desenvolvimento cerebral</b><br>
@@ -1133,6 +1218,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Sistema Imunológico',
     numeroOriginal: 47,
+    dificuldade: 'facil',
+    conteudo: 'bio-3b3',
     enunciado: `
       <b>QUESTÃO 47</b><br>
       Leia o texto:<br><br>
@@ -1155,6 +1242,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Sistema Endócrino',
     numeroOriginal: 48,
+    dificuldade: 'facil',
+    conteudo: 'bio-3b6',
     enunciado: `
       <b>QUESTÃO 48</b><br>
       SAÚDE HORMONAL<br>
@@ -1181,6 +1270,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Parasitologia e Ecologia (Eutrofização)',
     numeroOriginal: 49,
+    dificuldade: 'media',
+    conteudo: 'bio-2a3',
     enunciado: `
       <b>QUESTÃO 49</b><br>
       Leia o texto abaixo:<br><br>
@@ -1211,6 +1302,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Império (Período Regencial)',
     numeroOriginal: 50,
+    dificuldade: 'media',
+    conteudo: 'his-2b5',
     enunciado: `
       <b>QUESTÃO 50</b><br>
       O Período Regencial foi marcado por instabilidade política e revoltas em várias regiões do Brasil.<br><br>
@@ -1231,6 +1324,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Revolução Chinesa',
     numeroOriginal: 51,
+    dificuldade: 'facil',
+    conteudo: 'his-4a5',
     enunciado: `
       <b>QUESTÃO 51</b><br>
       Sobre os acontecimentos que integram a Revolução Chinesa e as suas consequências, assinale a alternativa <b>CORRETA</b>.
@@ -1250,6 +1345,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Império (Leis Abolicionistas)',
     numeroOriginal: 52,
+    dificuldade: 'media',
+    conteudo: 'his-2b6-2',
     enunciado: `
       <b>QUESTÃO 52</b><br>
       Considerando o contexto do Brasil Imperial, associe cada lei sobre a escravidão à sua respectiva característica.<br><br>
@@ -1280,6 +1377,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Regimes Totalitários (Franquismo)',
     numeroOriginal: 53,
+    dificuldade: 'media',
+    conteudo: 'his-4a3',
     enunciado: `
       <b>QUESTÃO 53</b><br>
       O Franquismo foi um regime que marcou a história da Espanha no século XX.<br><br>
@@ -1300,6 +1399,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Iluminismo e História da Medicina',
     numeroOriginal: 54,
+    dificuldade: 'facil',
+    conteudo: 'his-2a6',
     enunciado: `
       <b>QUESTÃO 54</b><br>
       O Iluminismo promoveu mudanças significativas na área da saúde.<br><br>
@@ -1320,6 +1421,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil República (Reformas Urbanas e Revolta da Vacina)',
     numeroOriginal: 55,
+    dificuldade: 'facil',
+    conteudo: 'his-3b3',
     enunciado: `
       <b>QUESTÃO 55</b><br>
       No início do século XX, várias cidades brasileiras passaram por reformas urbanas que impactaram diretamente as condições de saúde da população.<br><br>
@@ -1345,6 +1448,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Império (Saúde no Século XIX)',
     numeroOriginal: 56,
+    dificuldade: 'media',
+    conteudo: 'his-c1',
     enunciado: `
       <b>QUESTÃO 56</b><br>
       Em <i>Memórias Póstumas de Brás Cubas</i>, Machado de Assis critica a elite brasileira do século XIX por meio da sátira à figura do "defunto-autor", que relata sua vida de privilégios e inutilidade.<br><br>
@@ -1369,6 +1474,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Demografia (Pirâmides Etárias)',
     numeroOriginal: 57,
+    dificuldade: 'dificil',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 57</b><br>
       “A estrutura da população mundial deve ser analisada considerando seus diversos aspectos. A distribuição por sexo, número, idade, ocupação, renda, educação, saúde e outros indicadores que expressão os aspectos quantitativos e qualitativos da organização social são importantes para planejamento de investimentos, tanto governamental quanto privado.”<br><br>
@@ -1389,6 +1496,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Cartografia (Coordenadas Geográficas)',
     numeroOriginal: 58,
+    dificuldade: 'media',
+    conteudo: 'geo-1u2',
     enunciado: `
       <b>QUESTÃO 58</b><br>
       O sistema de coordenadas geográficas pode localizar pontos na superfície terrestre, estando presente em diferentes representações cartográficas.<br><br>
@@ -1409,6 +1518,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia de Santa Catarina (Hidrografia)',
     numeroOriginal: 59,
+    dificuldade: 'dificil',
+    conteudo: 'geo-3u3',
     enunciado: `
       <b>QUESTÃO 59</b><br>
       A qualidade da água é fundamental para preservação da saúde, água potável de qualidade contribui para o bom funcionamento de organismos humanos e de animais; por outro, lado a água de má qualidade pode ocasionar doenças, como a cólera. As bacias hidrográficas, historicamente, funcionam não apenas no provimento de água potável para as populações, mas como unidades geográficas, já que, segundo a história a ocupação do território, em alguns casos, está amplamente relacionada ao conjunto de cursos hídricos.<br><br>
@@ -1429,6 +1540,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geopolítica (Estados Unidos)',
     numeroOriginal: 60,
+    dificuldade: 'media',
+    conteudo: 'geo-4u5',
     enunciado: `
       <b>QUESTÃO 60</b><br>
       No dia 05 de novembro de 2024 ocorreu o pleito que reconduziu Donald Trump à presidência estadunidense. Desde 20 de janeiro de 2025, quando tomou posse, o presidente eleito vem colocando em prática medidas como taxação de produtos importados e uma intensa fiscalização em relação a imigração, medidas que trazem os Estados Unidos ao centro do debate midiático internacional.<br><br>
@@ -1455,6 +1568,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Demografia (Taxa de Fecundidade)',
     numeroOriginal: 61,
+    dificuldade: 'facil',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 61</b><br>
       Leia o texto abaixo extraído do site da Agência Brasil de telecomunicação.<br><br>
@@ -1488,6 +1603,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia de Santa Catarina (Transportes)',
     numeroOriginal: 62,
+    dificuldade: 'facil',
+    conteudo: 'geo-4u4',
     enunciado: `
       <b>QUESTÃO 62</b><br>
       “O local, conhecido como Morro dos Cavalos, foi interditado para o resgate das vítimas e da limpeza do local. Até as 9h40 desta segunda, ainda havia fila na região. Cinco pessoas ficaram feridas e 21 carros e três carretas foram atingidos pelo fogo, além do caminhão que provocou o incêndio.”<br>
@@ -1510,6 +1627,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Mudanças Climáticas e Saúde',
     numeroOriginal: 63,
+    dificuldade: 'media',
+    conteudo: 'geo-3u2',
     enunciado: `
       <b>QUESTÃO 63</b><br>
       <i>“Mudanças climáticas são a maior ameaça global à saúde humana”</i><br>
@@ -1537,6 +1656,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Conjunções e Sentido',
     numeroOriginal: 15,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 15</b><br>
       Read Text 1, an excerpt from the article <i>'Microplastics Everywhere: the tiny particles are even in our bodies. What might this mean for our health?'</i> published in <i>Harvard Medicine</i>, a magazine of Harvard Medical School.<br><br>
@@ -1560,6 +1680,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 16,
+    dificuldade: 'dificil',
     textoApoio: TEXTO_ACAFE_2025_INV_ING_2,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -1588,6 +1709,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário (Sinônimos)',
     numeroOriginal: 17,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_INV_ING_2,
     enunciado: `
       <b>QUESTÃO 17</b><br>
@@ -1626,6 +1748,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Usos de "even")',
     numeroOriginal: 18,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 18</b><br>
       The word <b><i>even</i></b> has a few different uses and meanings in English. Mark the alternative in which <b><i>even</i></b> is used <b>incorrectly</b> according to standard English grammar.
@@ -1645,6 +1768,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto (Resumo)',
     numeroOriginal: 19,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Read Text 3, a short real-life story, and follow the instruction.<br><br>
@@ -1669,6 +1793,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Tempos Verbais',
     numeroOriginal: 20,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Analyze the sentences below.<br><br>
@@ -1695,6 +1820,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gênero Textual (Anúncio Publicitário)',
     numeroOriginal: 21,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 21</b><br>
       Below is a vintage cigarette advertisement from a time when it was legal to make claims about cigarettes' supposed health benefits. Analyze it and follow the instruction that provided.<br><br>
