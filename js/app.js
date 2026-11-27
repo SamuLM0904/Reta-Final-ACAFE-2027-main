@@ -37,7 +37,7 @@ import { renderizarPlanos }       from './planos.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { iniciarTemaAutomatico } from './tema.js';
 import { pararCronometro } from './cronometro-questao.js';
-import { definirPlano, temAcesso, abrirJanelaPlanos, planoEmUso, nomeDoPlano } from './acesso.js';
+import { definirPlano, temAcesso, abrirJanelaPlanos } from './acesso.js';
 import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
@@ -71,7 +71,6 @@ const LINKS_MENU = [
   { href: '#/questoes', nome: 'Banco de questões', ativo: h => h === '#/questoes' || h.startsWith('#/questoes/'), recurso: 'banco-questoes' },
   { href: '#/revisao', nome: 'Correção de erros', ativo: h => h === '#/revisao', recurso: 'revisao' },
   { href: '#/em-breve/leituras-obrigatorias', nome: 'Leituras obrigatórias', ativo: h => h === '#/em-breve/leituras-obrigatorias', recurso: 'leituras' },
-  { href: '#/planos',  nome: 'Planos',            ativo: h => h === '#/planos' },
 ];
 
 /** Que recurso (js/acesso.js) cada tela exige; a tela sem recurso é livre. */
@@ -114,8 +113,7 @@ function renderizarCabecalho() {
           <button type="button" class="menu-site__link" id="btn-config">Configurações</button>
         </nav>
         <div class="menu-site__rodape">
-          ${user ? `<p class="menu-site__usuario" title="Usuário: ${usuarioExibido(user)}">${user.displayName || usuarioExibido(user)}</p>
-          <a href="#/planos" class="menu-site__plano" data-menu-link-plano>Plano ${nomeDoPlano(planoEmUso())}</a>` : ''}
+          ${user ? `<p class="menu-site__usuario" title="Usuário: ${usuarioExibido(user)}">${user.displayName || usuarioExibido(user)}</p>` : ''}
           ${htmlContagemCompacta()}
         </div>
       </div>
