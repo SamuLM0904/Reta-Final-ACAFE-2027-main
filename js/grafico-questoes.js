@@ -4,7 +4,7 @@
  * - htmlGraficoBarras: barras empilhadas (certas embaixo, erradas em cima, dois tons de âmbar).
  * - vincularDica: a janelinha com a proporção de certas e erradas ao passar o mouse (ou Tab).
  * - abrirGraficoAmpliado: janela com ~70% da tela (fundo desfocado) e o gráfico por
- *   semana, mês ou ano.
+ *   semana (uma por vez, com setas) ou por mês.
  * Os dados vêm da memória de erros e acertos (lerMemoria): { q, ok, t }.
  */
 
@@ -31,7 +31,7 @@ export function htmlGraficoBarras(valores, { largura = 280, altura = 104, eixo =
   const passo = max <= 10 ? 5 : max <= 50 ? 10 : max <= 200 ? 50 : 100;
   const topo = Math.max(5, Math.ceil(max / passo) * passo);
   const larg = L / valores.length;
-  const barra = Math.max(4, Math.min(larg - 4, larg * 0.72));
+  const barra = Math.max(4, Math.min(larg - 4, larg * 0.72, 48));   // no máximo 48: barras de 7 dias não viram blocos
   const raio = Math.min(4, barra / 2);
   const altura0 = base - alto;
 
@@ -140,12 +140,13 @@ export function porDia(memoria, dias = 14) {
   return chaves.map(c => mapa.get(c));
 }
 
-/** Últimas 12 semanas (segunda a domingo), uma coluna por semana. */
-function porSemana(memoria) {
-  const atual = inicioDaSemana(chaveDia());
-  const chaves = Array.from({ length: 12 }, (_, i) => somarDias(atual, (i - 11) * 7));
-  const mapa = new Map(chaves.map(c => [c, { rotulo: `Semana de ${diaMes(c)} a ${diaMes(somarDias(c, 6))}`, curto: diaMes(c), n: 0, ok: 0 }]));
-  memoria.forEach(m => { const v = mapa.get(inicioDaSemana(chaveDia(new Date(m.t)))); if (v) { v.n++; if (m.ok) v.ok++; } });
+const DIAS_SEMANA = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'];
+
+/** Uma semana (segunda a domingo), uma coluna por dia. `inicio` = segunda-feira "AAAA-MM-DD". */
+function diasDaSemana(memoria, inicio) {
+  const chaves = Array.from({ length: 7 }, (_, i) => somarDias(inicio, i));
+  const mapa = new Map(chaves.map((c, i) => [c, { rotulo: `${DIAS_SEMANA[i]}, ${diaMes(c)}`, curto: `${DIAS_SEMANA[i]} ${diaMes(c)}`, n: 0, ok: 0 }]));
+  memoria.forEach(m => { const v = mapa.get(chaveDia(new Date(m.t))); if (v) { v.n++; if (m.ok) v.ok++; } });
   return chaves.map(c => mapa.get(c));
 }
 
@@ -164,32 +165,27 @@ function porMes(memoria) {
   return chaves.map(c => mapa.get(c));
 }
 
-/** Um ano por coluna, do primeiro ano com respostas (no mínimo os últimos 3) até o atual. */
-function porAno(memoria) {
-  const atual = Number(chaveDia().slice(0, 4));
-  const primeiro = Math.min(atual - 2, ...memoria.map(m => Number(chaveDia(new Date(m.t)).slice(0, 4))));
-  const anos = Array.from({ length: atual - primeiro + 1 }, (_, i) => String(primeiro + i));
-  const mapa = new Map(anos.map(a => [a, { rotulo: a, n: 0, ok: 0 }]));
-  memoria.forEach(m => { const v = mapa.get(chaveDia(new Date(m.t)).slice(0, 4)); if (v) { v.n++; if (m.ok) v.ok++; } });
-  return anos.map(a => mapa.get(a));
-}
-
-const PERIODOS = [
-  { id: 'semana', nome: 'Por semana', titulo: 'Últimas 12 semanas', dados: porSemana, unidade: 'por semana' },
-  { id: 'mes',    nome: 'Por mês',    titulo: 'Últimos 12 meses',   dados: porMes,    unidade: 'por mês' },
-  { id: 'ano',    nome: 'Por ano',    titulo: 'Por ano',            dados: porAno,    unidade: 'por ano' },
-];
+const SEMANAS_ATRAS = 52;   // até quantas semanas dá para voltar
 
 /* ================================================================
    Gráfico ampliado
    ================================================================ */
 
 /**
- * Abre a janela com o gráfico ampliado (~70% da tela, fundo desfocado), com as abas
- * Por semana / Por mês / Por ano. Fecha no X, no Esc ou clicando fora.
+ * Abre a janela com o gráfico ampliado (~70% da tela, fundo desfocado):
+ *   - Semanal: os 7 dias de uma semana, com setas para ir às semanas anteriores e voltar;
+ *   - Mensal: os últimos 12 meses.
+ * Fecha no X, no Esc ou clicando fora.
  * @param {Object[]} memoria
  */
 export function abrirGraficoAmpliado(memoria) {
+  const semanaAtual = inicioDaSemana(chaveDia());
+  // a semana mais antiga a que dá para voltar: a primeira com respostas (no máximo 52 semanas atrás)
+  const maisAntiga = memoria.length ? inicioDaSemana(chaveDia(new Date(Math.min(...memoria.map(m => m.t))))) : semanaAtual;
+  const limite = somarDias(semanaAtual, -7 * SEMANAS_ATRAS);
+  const primeira = maisAntiga < limite ? limite : maisAntiga;
+  let periodo = 'semana', semana = semanaAtual;
+
   const janela = document.createElement('dialog');
   janela.className = 'grafico-ampliado';
   janela.setAttribute('aria-labelledby', 'grafico-ampliado-titulo');
@@ -199,9 +195,16 @@ export function abrirGraficoAmpliado(memoria) {
         <h2 class="grafico-ampliado__titulo" id="grafico-ampliado-titulo">Questões feitas</h2>
         <button type="button" class="grafico-ampliado__fechar" aria-label="Fechar">${icone('x', 20)}</button>
       </header>
-      <div class="grafico-ampliado__abas" role="tablist" aria-label="Período">
-        ${PERIODOS.map((p, i) => `<button type="button" role="tab" class="grafico-ampliado__aba" data-periodo="${p.id}"
-          aria-selected="${i === 0}">${p.nome}</button>`).join('')}
+      <div class="grafico-ampliado__barra">
+        <div class="grafico-ampliado__abas" role="tablist" aria-label="Período">
+          <button type="button" role="tab" class="grafico-ampliado__aba" data-periodo="semana">Semanal</button>
+          <button type="button" role="tab" class="grafico-ampliado__aba" data-periodo="mes">Mensal</button>
+        </div>
+        <div class="grafico-ampliado__navegar" id="grafico-ampliado-navegar">
+          <button type="button" class="grafico-ampliado__seta" data-semana="-1" aria-label="Semana anterior">${icone('arrow-left', 18)}</button>
+          <span class="grafico-ampliado__semana" id="grafico-ampliado-semana" aria-live="polite"></span>
+          <button type="button" class="grafico-ampliado__seta grafico-ampliado__seta--proxima" data-semana="1" aria-label="Próxima semana">${icone('arrow-left', 18)}</button>
+        </div>
       </div>
       <div class="grafico-ampliado__resumo" id="grafico-ampliado-resumo"></div>
       <figure class="inicio-grafico grafico-ampliado__grafico" id="grafico-ampliado-figura"></figure>
@@ -210,11 +213,28 @@ export function abrirGraficoAmpliado(memoria) {
 
   const figura = janela.querySelector('#grafico-ampliado-figura');
   const resumo = janela.querySelector('#grafico-ampliado-resumo');
+  const navegar = janela.querySelector('#grafico-ampliado-navegar');
+  const [anterior, proxima] = navegar.querySelectorAll('[data-semana]');
 
-  const desenhar = id => {
-    const p = PERIODOS.find(x => x.id === id) || PERIODOS[0];
-    janela.querySelectorAll('[data-periodo]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.periodo === p.id)));
-    const valores = p.dados(memoria);
+  const desenhar = () => {
+    janela.querySelectorAll('[data-periodo]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.periodo === periodo)));
+    const semanal = periodo === 'semana';
+    navegar.hidden = !semanal;
+    let valores, titulo, unidade;
+    if (semanal) {
+      valores = diasDaSemana(memoria, semana);
+      const intervalo = `${diaMes(semana)} a ${diaMes(somarDias(semana, 6))}`;
+      const estaSemana = semana === semanaAtual;
+      titulo = estaSemana ? `Esta semana (${intervalo})` : `Semana de ${intervalo}`;
+      janela.querySelector('#grafico-ampliado-semana').textContent = estaSemana ? 'Esta semana' : intervalo;
+      anterior.disabled = semana <= primeira;
+      proxima.disabled = estaSemana;
+      unidade = 'por dia';
+    } else {
+      valores = porMes(memoria);
+      titulo = 'Últimos 12 meses';
+      unidade = 'por mês';
+    }
     const n = valores.reduce((s, v) => s + v.n, 0), ok = valores.reduce((s, v) => s + v.ok, 0);
     resumo.innerHTML = `
       <div class="grafico-ampliado__numero"><span>Feitas</span><strong>${n}</strong></div>
@@ -222,17 +242,21 @@ export function abrirGraficoAmpliado(memoria) {
       <div class="grafico-ampliado__numero"><span class="inicio-legenda inicio-legenda--graf-erradas">Erradas</span><strong>${n - ok}</strong></div>
       <div class="grafico-ampliado__numero"><span>Acerto</span><strong>${n ? `${pct(ok, n)}%` : '—'}</strong></div>`;
     figura.innerHTML = `
-      <figcaption class="inicio-grafico__titulo">${p.titulo}</figcaption>
-      ${htmlGraficoBarras(valores, { largura: 720, altura: 260, eixo: 'todos', unidade: p.unidade })}
+      <figcaption class="inicio-grafico__titulo">${titulo}</figcaption>
+      ${htmlGraficoBarras(valores, { largura: 720, altura: 260, eixo: 'todos', unidade })}
       <div class="inicio-grafico__dica" role="tooltip" hidden></div>
       ${htmlLegenda()}`;
     vincularDica(figura);
   };
 
-  janela.querySelectorAll('[data-periodo]').forEach(b => b.addEventListener('click', () => desenhar(b.dataset.periodo)));
+  janela.querySelectorAll('[data-periodo]').forEach(b => b.addEventListener('click', () => { periodo = b.dataset.periodo; desenhar(); }));
+  navegar.querySelectorAll('[data-semana]').forEach(b => b.addEventListener('click', () => {
+    semana = somarDias(semana, 7 * Number(b.dataset.semana));
+    desenhar();
+  }));
   janela.querySelector('.grafico-ampliado__fechar').addEventListener('click', () => janela.close());
   janela.addEventListener('click', e => { if (e.target === janela) janela.close(); });   // clique no fundo
   janela.addEventListener('close', () => janela.remove());
-  desenhar('semana');
+  desenhar();
   janela.showModal();
 }

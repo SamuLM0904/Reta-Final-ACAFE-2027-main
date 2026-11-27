@@ -619,9 +619,29 @@
 }
 .grafico-ampliado__numero strong { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: 1.5rem; color: var(--cor-texto); }
 .grafico-ampliado__grafico { flex: 1; min-height: 0; margin: 0; }
-.grafico-ampliado__grafico .inicio-grafico__svg { max-height: 100%; }
+
 .grafico-ampliado__grafico .inicio-grafico__eixo { font-size: 11px; }
 @media (max-width: 700px) {
   .grafico-ampliado { width: 94vw; height: 86vh; }
   .grafico-ampliado__caixa { padding: 18px 16px; }
 }
+
+/* Janelinha escondida de verdade (o display: flex dela anulava o atributo hidden) */
+.inicio-grafico__dica[hidden] { display: none; }
+
+/* Gráfico ampliado: abas e navegação entre semanas */
+.grafico-ampliado__barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.grafico-ampliado__navegar { display: inline-flex; align-items: center; gap: 6px; }
+.grafico-ampliado__navegar[hidden] { display: none; }
+.grafico-ampliado__semana { min-width: 9.5rem; text-align: center; font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: var(--tamanho-sm); font-weight: 600; color: var(--cor-texto); }
+.grafico-ampliado__seta {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  border: 1px solid var(--cor-verde-militar-borda);
+  border-radius: 10px;
+  background: transparent; color: var(--cor-texto); cursor: pointer;
+}
+.grafico-ampliado__seta:hover:not(:disabled) { background: var(--cor-verde-militar); }
+.grafico-ampliado__seta:disabled { opacity: 0.35; cursor: default; }
+.grafico-ampliado__seta:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+.grafico-ampliado__seta--proxima svg { transform: rotate(180deg); }
