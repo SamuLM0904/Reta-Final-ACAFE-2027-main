@@ -1,4 +1,4 @@
-// Servidor HTTP local simples para o Reta Final ACAFE 2027
+// Servidor HTTP local simples para o Sapiens Med
 const http = require('http');
 const fs   = require('fs');
 const path = require('path');

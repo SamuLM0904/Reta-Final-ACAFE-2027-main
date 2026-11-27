@@ -1,4 +1,4 @@
-# Reta Final ACAFE 2027
+# Sapiens Med
 
 Plataforma de estudos para o vestibular de **Medicina da ACAFE 2027**.  
 **Simulados** gerados a partir das provas anteriores da ACAFE (formato da prova real, Espanhol ou Inglês) e **módulos de estudo por matéria** (com questões de outras provas, a cadastrar).

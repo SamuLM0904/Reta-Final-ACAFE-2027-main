@@ -77,10 +77,10 @@ function renderizarCabecalho() {
   elCabecalho.innerHTML = `
     <header class="menu-site" role="banner">
       <div class="menu-site__barra">
-        <a href="#/" class="menu-site__logo" aria-label="Reta Final ACAFE 2027 — Início">
+        <a href="#/" class="menu-site__logo" aria-label="Sapiens Med — Início">
           ${htmlLogo(36)}
           <span class="menu-site__marca">
-            <span class="cabecalho-titulo">RETA FINAL</span>
+            <span class="cabecalho-titulo">SAPIENS MED</span>
             <span class="cabecalho-subtitulo">ACAFE 2027 · Medicina</span>
           </span>
         </a>
@@ -144,21 +144,21 @@ function roteador() {
 
   // Com o banco de dados ativo, é preciso entrar
   if (nuvemAtiva() && !usuarioAtual()) {
-    document.title = 'Entrar — Reta Final ACAFE 2027';
+    document.title = 'Entrar — Sapiens Med';
     renderizarLogin(elApp);
     return;
   }
 
   // Rota: administração do banco de questões
   if (hash === '#/admin') {
-    document.title = 'Administração — Reta Final ACAFE 2027';
+    document.title = 'Administração — Sapiens Med';
     renderizarAdmin();
     return;
   }
 
   // Rota: dashboard
   if (hash === '#/' || hash === '') {
-    document.title = 'Reta Final ACAFE 2027';
+    document.title = 'Sapiens Med';
     renderizarDashboard(elApp, todasQuestoes, questoesProvas);
     return;
   }
@@ -174,7 +174,7 @@ function roteador() {
       return;
     }
 
-    document.title = `${modulo.titulo} — Reta Final ACAFE 2027`;
+    document.title = `${modulo.titulo} — Sapiens Med`;
     if (matchQuestoes[2]) iniciarSessaoQuestoes(elApp, todasQuestoes, { ...modulo, conteudo: decodeURIComponent(matchQuestoes[2]) });
     else renderizarConteudosModulo(elApp, todasQuestoes, modulo);
     return;
@@ -182,44 +182,44 @@ function roteador() {
 
   // Rotas: simulados
   if (hash === '#/simulados') {
-    document.title = 'Simulados — Reta Final ACAFE 2027';
+    document.title = 'Simulados — Sapiens Med';
     renderizarTelaSimulados(elApp, questoesProvas);
     return;
   }
   if (hash === '#/simulados/feitas') {
-    document.title = 'Questões feitas nos simulados — Reta Final ACAFE 2027';
+    document.title = 'Questões feitas nos simulados — Sapiens Med';
     renderizarQuestoesFeitas(elApp, questoesProvas);
     return;
   }
   if (hash === '#/simulado') {
-    document.title = 'Simulado em andamento — Reta Final ACAFE 2027';
+    document.title = 'Simulado em andamento — Sapiens Med';
     iniciarSimulado(elApp, questoesProvas);
     return;
   }
   const matchResultado = hash.match(/^#\/simulado\/resultado\/(\d+)$/);
   if (matchResultado) {
-    document.title = 'Resultado do simulado — Reta Final ACAFE 2027';
+    document.title = 'Resultado do simulado — Sapiens Med';
     if (!renderizarResultadoSimulado(elApp, questoesProvas, Number(matchResultado[1]))) renderizarNaoEncontrado();
     return;
   }
 
   // Rota: correção de erros (bloco do guia)
   if (hash === '#/revisao') {
-    document.title = 'Correção de erros — Reta Final ACAFE 2027';
+    document.title = 'Correção de erros — Sapiens Med';
     renderizarRevisao(elApp, questoesProvas, todasQuestoes);
     return;
   }
 
   // Rota: guia de estudos
   if (hash === '#/guia') {
-    document.title = 'Guia de Estudos — Reta Final ACAFE 2027';
+    document.title = 'Guia de Estudos — Sapiens Med';
     renderizarGuia(elApp, questoesProvas, todasQuestoes);
     return;
   }
 
   // Rota: planos (temporária)
   if (hash === '#/planos') {
-    document.title = 'Planos — Reta Final ACAFE 2027';
+    document.title = 'Planos — Sapiens Med';
     renderizarPlanos(elApp);
     return;
   }
@@ -231,7 +231,7 @@ function roteador() {
     const modulo   = MODULOS.find(m => m.id === idModulo);
     const titulo   = modulo ? modulo.titulo : 'Este módulo';
 
-    document.title = `Em breve — Reta Final ACAFE 2027`;
+    document.title = `Em breve — Sapiens Med`;
     renderizarEmBreve(titulo);
     return;
   }
@@ -312,7 +312,7 @@ async function renderizarAdmin() {
    ================================================================ */
 
 function renderizarNaoEncontrado() {
-  document.title = 'Página não encontrada — Reta Final ACAFE 2027';
+  document.title = 'Página não encontrada — Sapiens Med';
   elApp.innerHTML = `
     <main class="tela-em-breve" role="main">
       <div class="tela-em-breve__icone">

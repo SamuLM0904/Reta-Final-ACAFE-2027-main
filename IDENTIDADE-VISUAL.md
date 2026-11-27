@@ -1,6 +1,6 @@
 # Identidade visual — Direção B "Plantão"
 
-Especificação para reestilizar o Reta Final ACAFE 2027. Escolhida em 26/11/2026 entre três propostas.
+Especificação para reestilizar o Sapiens Med. Escolhida em 26/11/2026 entre três propostas.
 Conceito: tema escuro para estudar à noite, **um único destaque** (âmbar), azul só para informação e links.
 Sai o trio marinho + verde militar + dourado.
 
@@ -188,7 +188,7 @@ Sombras e cores de ajuda do tema claro: manter as atuais.
 
 ## 3. Logo
 
-Círculo com traçado de batimento cardíaco (ECG), em âmbar, com o nome ao lado em Space Grotesk 700, caixa alta: **RETA FINAL**. Subtítulo em Inter 500, texto fraco: "ACAFE 2027 · Medicina".
+Círculo com traçado de batimento cardíaco (ECG), em âmbar, com o nome ao lado em Space Grotesk 700, caixa alta: **SAPIENS MED**. Subtítulo em Inter 500, texto fraco: "ACAFE 2027 · Medicina".
 
 ```html
 <svg width="36" height="36" viewBox="0 0 56 56" aria-hidden="true">

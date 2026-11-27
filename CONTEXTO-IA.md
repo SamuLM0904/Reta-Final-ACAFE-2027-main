@@ -4,7 +4,7 @@ Cole este arquivo no início da conversa com outra IA para ela entender o projet
 
 ## O que é
 
-**Reta Final ACAFE 2027**: site de estudos para o vestibular de Medicina da ACAFE (Santa Catarina).
+**Sapiens Med** (antes "Reta Final ACAFE 2027"): site de estudos para o vestibular de Medicina da ACAFE (Santa Catarina).
 Feito por um aluno, em português do Brasil. Publicado na Vercel a partir da branch `main` do GitHub.
 
 - **Simulados** montados com as questões das provas anteriores da ACAFE (63 questões, com Espanhol ou Inglês).
