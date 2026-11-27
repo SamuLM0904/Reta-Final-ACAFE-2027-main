@@ -22,7 +22,7 @@ import { icone } from './icones.js';
 /** Temas disponíveis, na ordem do botão. O primeiro é o padrão. */
 export const TEMAS = [
   { id: 'escuro', nome: 'Escuro', icone: 'moon', corBarra: '#0E1116' },
-  { id: 'claro',  nome: 'Claro',  icone: 'sun',  corBarra: '#F5F6F8' },
+  { id: 'claro',  nome: 'Claro',  icone: 'sun',  corBarra: '#F6F7F9' },
 ];
 
 const CHAVE = 'acafe2027:tema';   // mesma chave lida pelo <head> do index.html

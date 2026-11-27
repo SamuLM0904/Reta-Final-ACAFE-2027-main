@@ -128,16 +128,16 @@
    copie este bloco, troque o id e as cores, e registre o tema em js/tema.js.
    ============================================================ */
 :root[data-tema="claro"] {
-  --cor-marinho-base:       #F5F6F8;
+  --cor-marinho-base:       #E9ECEF;
   --cor-marinho-card:       #FFFFFF;
   --cor-marinho-elevado:    #FFFFFF;
-  --cor-marinho-borda:      #D8DDE3;
+  --cor-marinho-borda:      #C6CCD4;
   --cor-marinho-borda-leve: rgba(138, 90, 0, 0.18);
 
-  --cor-verde-militar:       #EEF1F4;
-  --cor-verde-militar-hover: #E4E8ED;
+  --cor-verde-militar:       #E2E6EB;
+  --cor-verde-militar-hover: #D5DAE0;
   --cor-verde-militar-suave: rgba(31, 111, 184, 0.08);
-  --cor-verde-militar-borda: #C3CBD4;
+  --cor-verde-militar-borda: #A9B2BD;
 
   --cor-dourado-fosco:       #8A5A00;
   --cor-dourado-hover:       #704900;
@@ -151,13 +151,13 @@
   --cor-acento:              #1F6FB8;
   --cor-acento-hover:        #185A96;
 
-  --cor-fundo:               #F5F6F8;
+  --cor-fundo:               #E9ECEF;
   --cor-fundo-card:          #FFFFFF;
-  --cor-borda:               #D8DDE3;
+  --cor-borda:               #C6CCD4;
 
-  --cor-texto:               #14181F;
-  --cor-texto-suave:         #333B46;
-  --cor-texto-fraco:         #5B6470;
+  --cor-texto:               #0F1216;
+  --cor-texto-suave:         #2B323B;
+  --cor-texto-fraco:         #525B66;
 
   --cor-certa:               #1E7F4F;
   --cor-certa-fundo:         #E7F5EC;
@@ -167,18 +167,18 @@
   --cor-errada-borda:        #C0392B;
   --cor-progresso:           #8A5A00;
 
-  --sombra-sm:               0 1px 3px rgba(15, 25, 35, 0.12);
+  --sombra-sm:               0 1px 2px rgba(15, 18, 22, 0.08);
   --sombra-md:               0 4px 14px rgba(15, 25, 35, 0.12);
   --sombra-lg:               0 10px 28px rgba(15, 25, 35, 0.16);
   --sombra-hover:            0 12px 30px rgba(15, 25, 35, 0.18), 0 0 12px rgba(138, 106, 40, 0.15);
 
   --cor-texto-sobre-primaria: #FFFFFF;
-  --cor-card-hover:          #F0F2F5;
+  --cor-card-hover:          #F2F4F6;
   --cor-alternativa-marcada: #FBF1DC;
   --gradiente-destaque:      #FFFFFF;
-  --sombra-destaque:         0 0 0 1px #D8DDE3;
+  --sombra-destaque:         0 0 0 1px #C6CCD4;
   --sombra-cabecalho:        0 2px 10px rgba(15, 25, 35, 0.08);
-  --cor-menu-lateral:        #FFFFFF;
+  --cor-menu-lateral:        #F6F7F9;
   --cor-caixa-numero:        #FFFFFF;
   --cor-ajuda:               #d3d7da;
   --cor-ajuda-texto:         #5f686e;
