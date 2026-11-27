@@ -18,14 +18,17 @@
 
 import { icone } from './icones.js';
 
+// DATA DE TESTE (26/11/2026): a ACAFE Inverno 2027 ainda não tem data oficial. 20/06/2027 foi
+// escolhida só para o Guia de Estudos funcionar; os horários repetem os da prova de Verão 2027.
+// Trocar pela data oficial quando sair o edital (ver PENDENCIAS.md).
 export const PROVA = {
-  nome: 'Vestibular de Medicina ACAFE Verão 2027',
-  dataExtenso: '22 de novembro de 2026',
+  nome: 'Vestibular de Medicina ACAFE Inverno 2027',
+  dataExtenso: '20 de junho de 2027',
   // Datas com fuso explícito (−03:00 = Brasília), corretas em qualquer fuso do aparelho
-  portoesFecham: new Date('2026-11-22T13:00:00-03:00'),
-  inicio:        new Date('2026-11-22T13:20:00-03:00'),
-  termino:       new Date('2026-11-22T18:20:00-03:00'),
-  gabarito:      'O gabarito preliminar sai em 23/11, a partir das 10h, em acafe.org.br/vestibular.',
+  portoesFecham: new Date('2027-06-20T13:00:00-03:00'),
+  inicio:        new Date('2027-06-20T13:20:00-03:00'),
+  termino:       new Date('2027-06-20T18:20:00-03:00'),
+  gabarito:      'O gabarito preliminar sai no dia seguinte à prova, em acafe.org.br/vestibular.',
 };
 
 /** Divide um intervalo em milissegundos em dias, horas, minutos e segundos. */

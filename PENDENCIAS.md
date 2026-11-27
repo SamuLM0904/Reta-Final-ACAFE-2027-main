@@ -11,7 +11,7 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 | Desde | Pergunta | Como está hoje |
 |---|---|---|
 | 26/11/2026 | Gemini Flash no chat do Guia: criar a chave em aistudio.google.com, restringir ao endereço do site no Google Cloud Console e colocar em `js/ia-config.js` (ou me passar para eu colocar). | Código pronto; sem chave, o chat usa só as regras. |
-| 26/11/2026 | A data da prova em `js/contagem.js` é 22/11/2026, que já passou. Qual é a próxima prova (data e nome)? | Contagem e Guia ainda usam 22/11/2026. |
+| 26/11/2026 | Data oficial da ACAFE Inverno 2027 (quando sair o edital). | **Data de teste:** 20/06/2027, 13h20 (portões 13h), em `js/contagem.js`, para o Guia funcionar. |
 
 ## Depende de você (fora do código)
 
