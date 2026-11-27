@@ -999,3 +999,6 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .plano--destaque.inclinavel:hover { box-shadow: 0 0 0 1px var(--cor-primaria), 0 0 24px var(--cor-dourado-brilho); }
 .simulado-modo__opcao.inclinavel { position: relative; }
 .simulado-modo__opcao.inclinavel:hover { box-shadow: 0 0 0 1px var(--cor-primaria), 0 0 20px var(--cor-dourado-suave); }
+/* O ::after desses cartões é o check de selecionado: sem o reflexo de luz, para o check não sair do lugar */
+.simulado-modo__opcao.inclinavel--ativo:not(:has(input:checked))::after { content: none; }
+.simulado-modo__opcao.inclinavel--ativo:has(input:checked)::after { inset: auto; top: var(--espaco-sm); right: var(--espaco-sm); background: var(--cor-primaria); border-radius: var(--raio-pill); }
