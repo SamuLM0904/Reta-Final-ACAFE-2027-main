@@ -21,6 +21,8 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 ## Para fazer depois (já combinado)
 
+- **Perguntas iniciais do Guia (27/11/2026):** revisar o questionário do Guia (as 9 perguntas, inclusive a nova sobre o horário de começo dos estudos, e o visual, que ainda é o antigo). Você pediu para resolver em outro momento.
+
 - **Chat do Guia (27/11/2026):** melhorar o que ele entende e ligar o Gemini Flash (a chave está na tabela acima). Você pediu para deixar para depois.
 
 - Escrever os resumos das obras literárias (capítulos do livro das obras). Hoje cada capítulo mostra "em preparação". Adiado por você em 26/11/2026.
