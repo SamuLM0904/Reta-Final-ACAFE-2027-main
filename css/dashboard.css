@@ -74,7 +74,7 @@
     background-color var(--transicao);
   /* Garante que o texto não vaze */
   overflow: hidden;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Hover: leve elevação com brilho dourado sutil e fundo militar */

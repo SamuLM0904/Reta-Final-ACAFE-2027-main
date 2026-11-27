@@ -661,7 +661,7 @@ img, svg { max-width: 100%; display: block; }
 
 .campo-senha__olho:hover,
 .campo-senha__olho[aria-pressed="true"] { color: var(--cor-primaria); }
-.configuracoes__dados dd { margin: 0; font-weight: var(--peso-medio); color: var(--cor-texto); word-break: break-all; }
+.configuracoes__dados dd { margin: 0; font-weight: var(--peso-medio); color: var(--cor-texto); overflow-wrap: break-word; }
 
 .configuracoes__linha {
   display: flex;
@@ -888,3 +888,14 @@ img, svg { max-width: 100%; display: block; }
 .configuracoes__aba[hidden], [data-painel-config][hidden] { display: none; }
 .configuracoes__aba:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
 .configuracoes__plano { font-weight: 700; color: var(--cor-primaria); }
+
+/* Palavras nunca são cortadas no meio: o texto quebra entre palavras (só uma palavra maior que a
+   linha inteira, como um e-mail comprido, quebra) */
+body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
+
+/* Conta: no celular, cada dado fica embaixo do nome dele, usando a largura toda */
+@media (max-width: 600px) {
+  .configuracoes__dados { grid-template-columns: 1fr; gap: 2px; }
+  .configuracoes__dados dd { margin-bottom: var(--espaco-sm); }
+}
+.configuracoes__abas { border-bottom: 0; }

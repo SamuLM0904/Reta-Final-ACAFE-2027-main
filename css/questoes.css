@@ -145,7 +145,7 @@
   color: var(--cor-texto-suave);
   text-align: center;
   line-height: 1.5;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 /* Legenda acima da imagem (ex.: "FIGURA 1", "Tipo I: ..."), como na prova:

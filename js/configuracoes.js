@@ -54,7 +54,6 @@ export async function abrirConfiguracoes() {
           ${htmlBotaoTema({ texto: true })}
         </div>
         ${htmlTemaAutomatico()}
-        <p class="configuracoes__info">Vale para este navegador. Com o automático ligado, o tema troca sozinho no horário escolhido; mexer no interruptor desliga o automático.</p>
       </section>
 
       ${user ? `
