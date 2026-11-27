@@ -100,7 +100,7 @@
   --transicao-md:            300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* --- Layout --- */
-  --max-conteudo:            1200px;
+  --max-conteudo:            1250px;   /* largura das telas (a mesma da tela inicial) */
   --padding-lateral:         clamp(var(--espaco-md), 4vw, var(--espaco-xl));
 
   /* --- Cabeçalho --- */

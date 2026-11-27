@@ -709,7 +709,7 @@
 
 /* Banco de questões (#/questoes) */
 .banco {
-  max-width: 1040px;
+  max-width: var(--max-conteudo);   /* a mesma largura da tela inicial */
   margin-inline: auto;
   padding: var(--espaco-xl) var(--padding-lateral) var(--espaco-2xl);
   display: flex;
