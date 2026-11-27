@@ -435,18 +435,19 @@ window.addEventListener('hashchange', () => {
    esquerda mostra o menu por cima da tela; clicar no ícone fixa o menu (e clicar de
    novo recolhe). A escolha fica guardada neste navegador.
    ================================================================ */
-const CHAVE_MENU_FIXO = 'sapiens-menu-fixo';
-const ICONE_BARRA_LATERAL = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>`;
+// (funções, e não constantes: o menu é montado antes de o arquivo terminar de carregar)
+function CHAVE_MENU_FIXO() { return 'sapiens-menu-fixo'; }
+function ICONE_BARRA_LATERAL() { return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>`; }
 
 function menuFixo() {
-  try { return localStorage.getItem(CHAVE_MENU_FIXO) === '1'; } catch { return false; }
+  try { return localStorage.getItem(CHAVE_MENU_FIXO()) === '1'; } catch { return false; }
 }
 
 function aplicarMenuFixo(fixo) {
   document.documentElement.classList.toggle('menu-recolhido', !fixo);
   const btn = document.getElementById('btn-fixar-menu');
   if (!btn) return;
-  btn.innerHTML = ICONE_BARRA_LATERAL;
+  btn.innerHTML = ICONE_BARRA_LATERAL();
   btn.setAttribute('aria-pressed', String(fixo));
   btn.setAttribute('aria-label', fixo ? 'Recolher o menu lateral' : 'Fixar o menu lateral');
   btn.title = fixo ? 'Recolher menu' : 'Fixar menu';
@@ -467,7 +468,7 @@ function ligarMenuRecolhivel() {
   });
   btn.addEventListener('click', () => {
     const fixo = raiz.classList.contains('menu-recolhido');
-    try { localStorage.setItem(CHAVE_MENU_FIXO, fixo ? '1' : '0'); } catch {}
+    try { localStorage.setItem(CHAVE_MENU_FIXO(), fixo ? '1' : '0'); } catch {}
     raiz.classList.remove('menu-espiando');
     aplicarMenuFixo(fixo);
   });
