@@ -503,7 +503,7 @@ export function renderizarTelaSimulados(container, questoesProvas) {
             <div class="simulado-card__corpo">
               <fieldset class="simulado-modo">
                 <legend>Tipo de simulado</legend>
-                <label class="simulado-modo__opcao">
+                <label class="simulado-modo__opcao" data-inclinar="3">
                   <input type="radio" name="modo" value="aleatorio" ${modoPadrao === 'aleatorio' ? 'checked' : ''}>
                   <span class="simulado-modo__icone" aria-hidden="true">${icone('refresh-cw', 26)}</span>
                   <span class="simulado-modo__texto">
@@ -511,7 +511,7 @@ export function renderizarTelaSimulados(container, questoesProvas) {
                     <span class="simulado-modo__descricao">Questões sorteadas e misturadas das provas anteriores, no formato da ACAFE</span>
                   </span>
                 </label>
-                <label class="simulado-modo__opcao">
+                <label class="simulado-modo__opcao" data-inclinar="3">
                   <input type="radio" name="modo" value="prova" ${modoPadrao === 'prova' ? 'checked' : ''}>
                   <span class="simulado-modo__icone" aria-hidden="true">${icone('clipboard-list', 26)}</span>
                   <span class="simulado-modo__texto">

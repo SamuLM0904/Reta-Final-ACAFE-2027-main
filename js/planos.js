@@ -94,7 +94,7 @@ export function renderizarPlanos(container) {
       const mensal = d.precos[p.id];
       const economia = DURACOES[0].precos[p.id] - mensal;
       return `
-        <article class="plano${p.destaque ? ' plano--destaque' : ''}">
+        <article class="plano${p.destaque ? ' plano--destaque' : ''}" data-inclinar>
           ${p.destaque ? '<span class="plano__selo">Mais escolhido</span>' : ''}
           <h3 class="plano__nome">${p.nome}</h3>
           <p class="plano__resumo">${p.resumo}</p>

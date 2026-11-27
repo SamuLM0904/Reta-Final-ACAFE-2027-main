@@ -227,7 +227,7 @@ function htmlMaterias(questoesProvas, questoesEstudo, memoria) {
     const detalhe = feitas ? `${plural(certas, 'certa', 'certas')} e ${plural(erradas, 'errada', 'erradas')}` : 'nenhuma feita';
     return `
       <li>
-        <a href="${modulo ? `#/questoes/${modulo}` : '#/simulados'}" class="inicio-materia"
+        <a href="${modulo ? `#/questoes/${modulo}` : '#/simulados'}" class="inicio-materia" data-inclinar="1"
           aria-label="${nome}: ${feitas} de ${total} questões feitas, ${detalhe}" title="${feitas} de ${total} feitas: ${detalhe}">
           <span class="inicio-materia__nome">${nome}</span>
           <span class="inicio-materia__barra" aria-hidden="true">

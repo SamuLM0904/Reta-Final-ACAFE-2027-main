@@ -97,7 +97,7 @@ export function renderizarConteudosModulo(container, todasQuestoes, modulo) {
             Elas não aparecem nos simulados.</p>
         </header>
 
-        <a href="${hashModulo(modulo, 'todas')}" class="conteudo-item conteudo-item--todas">
+        <a href="${hashModulo(modulo, 'todas')}" class="conteudo-item conteudo-item--todas" data-inclinar="1">
           <span class="conteudo-item__nome">Todas as questões de ${modulo.disciplina}</span>
           ${htmlProgressoConteudo(estatisticasModulo(questoes))}
         </a>
@@ -131,7 +131,7 @@ export function renderizarConteudosModulo(container, todasQuestoes, modulo) {
     const visiveis = itens.filter(i => !termo || semAcentos(i.nome).includes(termo)).sort(criterio.comparar);
     lista.innerHTML = visiveis.map(item => `
       <li>
-        <a href="${hashModulo(modulo, item.chave)}" class="conteudo-item">
+        <a href="${hashModulo(modulo, item.chave)}" class="conteudo-item" data-inclinar="1">
           <span class="conteudo-item__nome">${escaparHtml(item.nome)}</span>
           ${htmlProgressoConteudo(item)}
         </a>
@@ -684,7 +684,7 @@ export function renderizarBancoQuestoes(container, todasQuestoes, modulos) {
     const pct = total ? Math.round((respondidas / total) * 100) : 0;
     return `
       <li>
-        <a href="#/questoes/${modulo.id}" class="banco-materia" aria-label="${escaparHtml(nome)}: ${respondidas} de ${total} questões feitas">
+        <a href="#/questoes/${modulo.id}" class="banco-materia" data-inclinar="3" aria-label="${escaparHtml(nome)}: ${respondidas} de ${total} questões feitas">
           <span class="banco-materia__icone" aria-hidden="true">${icone(modulo.icone, 20)}</span>
           <span class="banco-materia__nome">${escaparHtml(nome)}</span>
           <span class="banco-materia__barra" aria-hidden="true"><span style="width: ${pct}%"></span></span>

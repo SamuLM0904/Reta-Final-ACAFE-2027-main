@@ -990,3 +990,12 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .inicio-atalho.inclinavel { position: relative; transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow var(--transicao), border-color var(--transicao); }
 .inicio-atalho.inclinavel:hover { box-shadow: 0 0 0 1px var(--cor-verde-militar-borda), 0 0 18px var(--cor-dourado-suave); transform: perspective(600px) rotateX(var(--inclinar-x)) rotateY(var(--inclinar-y)) translateY(-1px); }
 .inicio-atalho:active { transform: translateY(0) scale(0.98); }
+
+/* Cartões e linhas clicáveis com o efeito: brilho em volta + inclinação (data-inclinar) */
+.banco-materia.inclinavel, .plano.inclinavel, .conteudo-item.inclinavel, .inicio-materia.inclinavel { position: relative; }
+.banco-materia.inclinavel:hover, .plano.inclinavel:hover, .conteudo-item.inclinavel:hover {
+  box-shadow: 0 0 0 1px var(--cor-verde-militar-borda), 0 0 18px var(--cor-dourado-suave);
+}
+.plano--destaque.inclinavel:hover { box-shadow: 0 0 0 1px var(--cor-primaria), 0 0 24px var(--cor-dourado-brilho); }
+.simulado-modo__opcao.inclinavel { position: relative; }
+.simulado-modo__opcao.inclinavel:hover { box-shadow: 0 0 0 1px var(--cor-primaria), 0 0 20px var(--cor-dourado-suave); }
