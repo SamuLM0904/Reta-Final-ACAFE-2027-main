@@ -160,8 +160,8 @@ img, svg { max-width: 100%; display: block; }
   text-decoration: none;
   cursor: pointer;
 }
-.menu-site__link:hover { background-color: var(--cor-marinho-elevado); color: var(--cor-texto); text-decoration: none; }
-.menu-site__link[aria-current="page"] { background-color: var(--cor-marinho-elevado); color: var(--cor-texto); font-weight: 600; }
+.menu-site__link:hover { background-color: var(--cor-verde-militar); color: var(--cor-texto); text-decoration: none; }
+.menu-site__link[aria-current="page"] { background-color: var(--cor-verde-militar); color: var(--cor-texto); font-weight: 600; }
 
 .menu-site__rodape { display: flex; flex-direction: column; gap: var(--espaco-sm); }
 .menu-site__usuario {

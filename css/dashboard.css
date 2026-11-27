@@ -343,3 +343,156 @@
 }
 
 .contagem__aviso:empty { display: none; }
+
+/* ================================================================
+   Tela inicial — identidade visual B (IDENTIDADE-VISUAL.md, 5.2)
+   ================================================================ */
+.inicio {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding: var(--espaco-xl) var(--padding-lateral) var(--espaco-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+
+.inicio__contagem .contagem-compacta { flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 12px; }
+@media (min-width: 1024px) { .inicio__contagem { display: none; } }   /* no desktop ela fica no menu */
+
+.inicio__saudacao { display: flex; flex-direction: column; gap: 6px; }
+.inicio__data { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-fraco); }
+.inicio__titulo {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.125rem);   /* 34 px no desktop */
+  font-weight: var(--peso-negrito);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* Card grande "Próximo bloco" */
+.inicio-bloco {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-lg);
+  padding: 28px 32px;
+  background: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+}
+.inicio-bloco__texto { flex: 1 1 22rem; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.inicio-bloco__rotulo {
+  margin: 0;
+  font-size: var(--tamanho-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-primaria);
+}
+.inicio-bloco__titulo {
+  margin: 0;
+  font-size: clamp(1.375rem, 3vw, 1.75rem);   /* 28 px no desktop */
+  font-weight: var(--peso-negrito);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.inicio-bloco__descricao { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.inicio-bloco__acoes { flex: 0 1 15rem; display: flex; flex-direction: column; gap: 10px; }
+.inicio-bloco__acoes .btn { min-height: 44px; width: 100%; }
+.inicio-bloco__principal { min-height: 48px !important; font-size: 1rem; }
+
+/* Os dois cards de baixo */
+.inicio__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--espaco-lg);
+  align-items: start;
+}
+.inicio-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 24px;
+  background: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  min-width: 0;
+}
+.inicio-card__cabecalho { display: flex; align-items: baseline; justify-content: space-between; gap: var(--espaco-sm); }
+.inicio-card__titulo { margin: 0; font-size: 1.125rem; font-weight: var(--peso-negrito); }
+.inicio-card__link { font-size: var(--tamanho-sm); font-weight: 600; color: var(--cor-acento); text-decoration: underline; text-underline-offset: 3px; }
+.inicio-card__link:hover { color: var(--cor-acento-hover); }
+.inicio-card__legenda { font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.inicio-card__nota { margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+
+.inicio-atalhos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.inicio-atalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: var(--raio-md);
+  background: var(--cor-verde-militar);   /* neutro elevado (escuro #1D242E, claro #EEF1F4) */
+  color: var(--cor-texto);
+  font-weight: 600;
+  text-decoration: none;
+}
+.inicio-atalho:hover { background: var(--cor-verde-militar-hover); text-decoration: none; }
+.inicio-atalho--andamento { border: 1px solid var(--cor-primaria); }
+.inicio-atalho__info {
+  font-family: var(--fonte-numero);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--tamanho-xs);
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-fraco);
+  white-space: nowrap;
+}
+
+/* Gráfico de questões por dia */
+.inicio-grafico { margin: 4px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.inicio-grafico__titulo { display: flex; justify-content: space-between; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.inicio-grafico__total { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; color: var(--cor-texto); }
+.inicio-grafico__svg { width: 100%; height: auto; overflow: visible; }
+.inicio-grafico__barra { fill: var(--cor-primaria); }
+.inicio-grafico__coluna:hover .inicio-grafico__barra { fill: var(--cor-primaria-hover); }
+.inicio-grafico__grade { stroke: var(--cor-borda); stroke-width: 1; stroke-dasharray: 2 3; }
+.inicio-grafico__base { stroke: var(--cor-marinho-borda); stroke-width: 1; }
+.inicio-grafico__eixo { fill: var(--cor-texto-fraco); font-family: var(--fonte-numero); font-size: 9px; }
+
+/* Lista compacta de matérias */
+.inicio-materias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.inicio-materia {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 3.5rem;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  padding: 0 8px;
+  margin-inline: -8px;
+  border-radius: 10px;
+  color: var(--cor-texto);
+  font-size: var(--tamanho-sm);
+  text-decoration: none;
+}
+.inicio-materia:hover { background: var(--cor-verde-militar); text-decoration: none; }
+.inicio-materia__nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inicio-materia__barra { display: block; height: 6px; border-radius: 3px; background: var(--cor-marinho-borda); overflow: hidden; }
+.inicio-materia__barra span { display: block; height: 100%; border-radius: 3px; background: var(--cor-progresso); }
+.inicio-materia__n {
+  text-align: right;
+  font-family: var(--fonte-numero);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 600px) {
+  .inicio { padding-top: var(--espaco-lg); }
+  .inicio-bloco { padding: 22px 20px; }
+  .inicio-bloco__acoes { flex-basis: 100%; }
+  .inicio-card { padding: 18px 16px; }
+  .inicio-materia { grid-template-columns: 6.5rem 1fr 3.25rem; gap: 10px; }
+}

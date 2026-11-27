@@ -113,6 +113,38 @@ export function renderizarGuia(container, questoesProvas, questoesEstudo) {
   renderizarPainel(container, questoesProvas, questoesEstudo);
 }
 
+/**
+ * Próximo bloco de hoje para a tela inicial (o mesmo plano do Guia, sem refazer nada).
+ * @returns {null | { hoje, total, feitos, posicao, bloco, materia, titulo, assunto, atividade, href, rotuloAcao } | { hoje, vazio: string }}
+ *   null = o aluno ainda não montou o guia; `vazio` = não há bloco a fazer hoje (texto explica).
+ */
+export function proximoBlocoDeHoje(questoesProvas, questoesEstudo) {
+  const guia = lerGuia();
+  if (!guia?.perfil) return null;
+  const ctx = montarContexto(questoesProvas, questoesEstudo);
+  const hoje = ctx.hoje;
+  if (hoje >= DIA_PROVA) return { hoje, vazio: hoje === DIA_PROVA ? 'Hoje é o dia da prova. Boa prova!' : 'A prova já aconteceu.' };
+  const plano = planoDeHoje(ctx);
+  const total = plano.blocos.length;
+  if (!total) return { hoje, vazio: 'Hoje está livre no seu cronograma.' };
+  const feitos = new Set(plano.feitos || []);
+  const i = plano.blocos.findIndex((_, k) => !feitos.has(k));
+  if (i < 0) return { hoje, total, feitos: feitos.size, vazio: 'Você fez todos os blocos de hoje.' };
+  const bloco = plano.blocos[i];
+  const materia = MATERIAS.find(m => m.id === bloco.materia);
+  let titulo, href = '#/guia', rotuloAcao = 'Começar bloco';
+  if (bloco.tipo === 'simulado') { titulo = bloco.nome || 'Simulado completo'; if (ctx.atual) { href = '#/simulado'; rotuloAcao = 'Continuar simulado'; } }
+  else if (bloco.tipo === 'externo') titulo = 'Simulado externo';
+  else if (bloco.tipo === 'revisao') { titulo = 'Correção de erros'; href = '#/revisao'; }
+  else {
+    titulo = nomeMateria(materia, guia.perfil);
+    const modulo = moduloMateria(materia, guia.perfil);
+    if (modulo && ctx.materiasComQuestoes.has(materia.id)) href = `#/questoes/${modulo}`;
+  }
+  return { hoje, total, feitos: feitos.size, posicao: i + 1, bloco, materia, titulo,
+    assunto: bloco.foco?.[0] || null, atividade: bloco.atividade, href, rotuloAcao };
+}
+
 /** Texto do card do guia na tela inicial. */
 export function resumoGuia() {
   const guia = lerGuia();

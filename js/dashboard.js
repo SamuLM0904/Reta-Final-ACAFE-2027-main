@@ -1,152 +1,231 @@
 /**
- * dashboard.js — Renderiza o grid de módulos na tela inicial.
+ * dashboard.js — Tela inicial (#/), no formato da identidade visual B (IDENTIDADE-VISUAL.md, 5.2).
  *
- * Lê os módulos de js/modulos.js, cruza com as questões em dados/questoes.js
- * e o progresso salvo (localStorage) para montar os cards.
+ * De cima para baixo:
+ *   1. Saudação e data ("Sábado, 7 de novembro · bloco 3 de 5" / "Boa noite, Samuel").
+ *   2. Card "Próximo bloco": o próximo bloco de HOJE do Guia de Estudos (o mesmo plano do
+ *      #/guia). Sem guia montado, o card convida a montar o guia.
+ *   3. Dois cards lado a lado:
+ *      - Simulados: atalhos (prova completa, mini, por matéria), os simulados já feitos e um
+ *        gráfico das questões feitas nos últimos 14 dias.
+ *      - Matérias: uma linha por matéria com as questões das provas da ACAFE já feitas.
+ * As outras telas (guia, correção de erros, leituras) ficam no menu lateral.
  */
 
-import { MODULOS } from './modulos.js';
-import { icone }   from './icones.js';
-import { estatisticasModulo } from './armazenamento.js';
-import { slugify }  from './utils.js';
-import { htmlContagem, iniciarContagem } from './contagem.js';
-import { resumoSimulados } from './simulado.js';
-import { resumoGuia } from './guia.js';
+import { escaparHtml } from './utils.js';
+import { lerMemoria, lerSimulado, lerGuia } from './armazenamento.js';
+import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
+import { proximoBlocoDeHoje } from './guia.js';
+import { MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, formatarHoras } from './guia-plano.js';
+import { usuarioAtual } from './nuvem.js';
 
-/**
- * Filtra as questões pertencentes a uma disciplina,
- * comparando por slug para tolerância a acentos/maiúsculas.
- * @param {Object[]} todasQuestoes
- * @param {string}   disciplina
- * @returns {Object[]}
- */
-function questoesDaDisciplina(todasQuestoes, disciplina) {
-  const alvo = slugify(disciplina);
-  return todasQuestoes.filter(q => slugify(q.disciplina) === alvo);
+const DIA_MS = 86400000;
+const DIAS_GRAFICO = 14;
+
+/* ================================================================
+   Saudação
+   ================================================================ */
+
+function saudacao(agora = new Date()) {
+  const hora = Number(agora.toLocaleString('pt-BR', { hour: 'numeric', hour12: false, timeZone: 'America/Sao_Paulo' }));
+  return hora < 5 ? 'Boa noite' : hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
 }
 
-/**
- * Gera o HTML da linha de informações secundárias do card.
- * @param {Object}   modulo
- * @param {Object[]} todasQuestoes
- * @returns {string}
- */
-function htmlInfoCard(modulo, todasQuestoes, questoesProvas) {
-  if (modulo.status === 'em-breve') {
-    return `<span class="selo-em-breve">Em breve</span>`;
+function dataPorExtenso(agora = new Date()) {
+  const t = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' })
+    .replace('-feira', '');
+  return t.charAt(0).toUpperCase() + t.slice(1).replace(/,/, ',');
+}
+
+function primeiroNome() {
+  const u = usuarioAtual();
+  const nome = (u?.displayName || '').trim().split(/\s+/)[0];
+  return nome || null;
+}
+
+/* ================================================================
+   Card "Próximo bloco"
+   ================================================================ */
+
+function htmlProximoBloco(prox) {
+  if (!prox) {
+    return `
+      <section class="inicio-bloco" aria-labelledby="inicio-bloco-titulo">
+        <div class="inicio-bloco__texto">
+          <p class="inicio-bloco__rotulo">Comece por aqui</p>
+          <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">Monte seu guia de estudos</h2>
+          <p class="inicio-bloco__descricao">Responda 8 perguntas e receba um cronograma diário com os blocos de estudo, simulados e correção de erros.</p>
+        </div>
+        <div class="inicio-bloco__acoes">
+          <a href="#/guia" class="btn btn-primario inicio-bloco__principal">Montar meu guia</a>
+        </div>
+      </section>`;
   }
-
-  if (modulo.tipo === 'simulados') {
-    return `<span class="card-modulo__info">${resumoSimulados(questoesProvas)}</span>`;
+  if (prox.vazio) {
+    return `
+      <section class="inicio-bloco" aria-labelledby="inicio-bloco-titulo">
+        <div class="inicio-bloco__texto">
+          <p class="inicio-bloco__rotulo">Hoje</p>
+          <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">${prox.vazio}</h2>
+          ${prox.total ? `<p class="inicio-bloco__descricao">${prox.feitos} de ${prox.total} blocos feitos.</p>` : ''}
+        </div>
+        <div class="inicio-bloco__acoes">
+          <a href="#/guia" class="btn btn-secundario">Ver o guia</a>
+        </div>
+      </section>`;
   }
+  const titulo = prox.assunto ? `${escaparHtml(prox.titulo)} — ${escaparHtml(prox.assunto)}` : escaparHtml(prox.titulo);
+  return `
+    <section class="inicio-bloco" aria-labelledby="inicio-bloco-titulo">
+      <div class="inicio-bloco__texto">
+        <p class="inicio-bloco__rotulo">Próximo bloco · ${formatarHoras(prox.bloco.minutos).toUpperCase()}</p>
+        <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">${titulo}</h2>
+        <p class="inicio-bloco__descricao">${prox.atividade}</p>
+      </div>
+      <div class="inicio-bloco__acoes">
+        <a href="${prox.href}" class="btn btn-primario inicio-bloco__principal">${prox.rotuloAcao}</a>
+        <a href="#/guia" class="btn btn-secundario">Ver o dia todo</a>
+      </div>
+    </section>`;
+}
 
-  if (modulo.tipo === 'guia') {
-    return `<span class="card-modulo__info">${resumoGuia()}</span>`;
-  }
+/* ================================================================
+   Card "Simulados"
+   ================================================================ */
 
-  const questoes = questoesDaDisciplina(todasQuestoes, modulo.disciplina);
-  const { total, respondidas } = estatisticasModulo(questoes);
+const ATALHOS = [
+  { nome: 'Prova completa · 63 questões', info: '5h00' },
+  { nome: 'Mini simulado · 14 questões', info: '42 min' },
+  { nome: 'Por matéria', info: '3 min/questão' },
+];
 
-  if (total === 0) {
-    return `<span class="card-modulo__info">Nenhuma questão ainda</span>`;
-  }
+function htmlSimulados(memoria) {
+  const { atual, tentativas } = lerSimulado();
+  const ultimo = tentativas.at(-1);
+  const feitos = tentativas.length
+    ? `${tentativas.length} ${tentativas.length === 1 ? 'simulado feito' : 'simulados feitos'} · último: ${ultimo.acertos}/${ultimo.total} acertos`
+    : 'Nenhum simulado feito ainda.';
+  return `
+    <section class="inicio-card" aria-labelledby="inicio-simulados-titulo">
+      <header class="inicio-card__cabecalho">
+        <h2 class="inicio-card__titulo" id="inicio-simulados-titulo">Simulados</h2>
+        <a href="#/simulados" class="inicio-card__link">Ver resultados</a>
+      </header>
+      ${atual ? `<a href="#/simulado" class="inicio-atalho inicio-atalho--andamento">
+          <span>Continuar simulado em andamento</span><span class="inicio-atalho__info">${Object.keys(atual.respostas || {}).length}/${atual.ids.length}</span></a>` : ''}
+      <ul class="inicio-atalhos" role="list">
+        ${ATALHOS.map(a => `<li><a href="#/simulados" class="inicio-atalho"><span>${a.nome}</span><span class="inicio-atalho__info">${a.info}</span></a></li>`).join('')}
+      </ul>
+      <p class="inicio-card__nota">${feitos}</p>
+      ${htmlGraficoQuestoes(memoria)}
+    </section>`;
+}
 
-  const pct = total > 0 ? Math.round((respondidas / total) * 100) : 0;
+/** Barras: questões respondidas por dia nos últimos 14 dias (uma série, sem legenda). */
+function htmlGraficoQuestoes(memoria) {
+  const hoje = chaveDia();
+  const dias = Array.from({ length: DIAS_GRAFICO }, (_, i) => somarDias(hoje, i - DIAS_GRAFICO + 1));
+  const porDia = new Map(dias.map(d => [d, { n: 0, ok: 0 }]));
+  const limite = Date.now() - (DIAS_GRAFICO + 1) * DIA_MS;
+  memoria.forEach(m => {
+    if (m.t < limite) return;
+    const d = porDia.get(chaveDia(new Date(m.t)));
+    if (d) { d.n++; if (m.ok) d.ok++; }
+  });
+  const valores = dias.map(d => porDia.get(d));
+  const total = valores.reduce((s, v) => s + v.n, 0);
+  const max = Math.max(...valores.map(v => v.n), 1);
+  const topo = Math.max(5, Math.ceil(max / 5) * 5);
+
+  const L = 280, A = 104, base = 88, colunas = DIAS_GRAFICO;
+  const larg = L / colunas, barra = larg - 4;
+  const rotulo = d => { const [, mes, dia] = d.split('-'); return `${dia}/${mes}`; };
+  const barras = valores.map((v, i) => {
+    const h = v.n ? Math.max(4, (v.n / topo) * (base - 8)) : 0;
+    const x = i * larg + 2, y = base - h;
+    const dica = `${rotulo(dias[i])}: ${v.n} ${v.n === 1 ? 'questão' : 'questões'}${v.n ? `, ${v.ok} certa${v.ok === 1 ? '' : 's'}` : ''}`;
+    return `<g class="inicio-grafico__coluna"><title>${dica}</title>
+      <rect x="${i * larg}" y="0" width="${larg}" height="${A}" fill="transparent"/>
+      ${h ? `<path class="inicio-grafico__barra" d="M${x},${base} V${y + 4} Q${x},${y} ${x + 4},${y} H${x + barra - 4} Q${x + barra},${y} ${x + barra},${y + 4} V${base} Z"/>` : ''}</g>`;
+  }).join('');
 
   return `
-    <span class="card-modulo__info">${total} questão${total !== 1 ? 's' : ''} • ${respondidas} respondida${respondidas !== 1 ? 's' : ''}</span>
-    <div class="card-progresso" aria-hidden="true">
-      <div class="card-progresso__barra">
-        <div class="card-progresso__preenchimento" style="width: ${pct}%"></div>
-      </div>
-    </div>
-  `;
+    <figure class="inicio-grafico">
+      <figcaption class="inicio-grafico__titulo">Questões feitas nos últimos 14 dias <span class="inicio-grafico__total">${total} no total</span></figcaption>
+      <svg viewBox="0 0 ${L} ${A}" class="inicio-grafico__svg" role="img"
+        aria-label="Questões feitas por dia nos últimos 14 dias: ${total} no total">
+        <line x1="0" y1="${base - (base - 8)}" x2="${L}" y2="${base - (base - 8)}" class="inicio-grafico__grade"/>
+        <text x="0" y="${base - (base - 8) - 3}" class="inicio-grafico__eixo">${topo} por dia</text>
+        <line x1="0" y1="${base}" x2="${L}" y2="${base}" class="inicio-grafico__base"/>
+        ${barras}
+        <text x="0" y="${A - 2}" class="inicio-grafico__eixo">${rotulo(dias[0])}</text>
+        <text x="${L}" y="${A - 2}" text-anchor="end" class="inicio-grafico__eixo">hoje</text>
+      </svg>
+    </figure>`;
 }
 
-/**
- * Gera o HTML de um card de módulo.
- * @param {Object}   modulo
- * @param {Object[]} todasQuestoes
- * @returns {string}
- */
-function htmlCard(modulo, todasQuestoes, questoesProvas) {
-  const estaAtivo = modulo.status === 'ativo';
-  const eSimulados = modulo.tipo === 'simulados';
-  const eGuia = modulo.tipo === 'guia';
+/* ================================================================
+   Card "Matérias"
+   ================================================================ */
 
-  // Destino do link
-  const href = !estaAtivo ? `#/em-breve/${modulo.id}`
-    : eSimulados ? '#/simulados'
-    : eGuia ? '#/guia'
-    : `#/questoes/${modulo.id}`;
-
-  const classeExtra = estaAtivo ? '' : ' card-modulo--em-breve';
-
-  // Label de acessibilidade
-  const questoes = estaAtivo && !eSimulados && !eGuia
-    ? questoesDaDisciplina(todasQuestoes, modulo.disciplina)
-    : [];
-  const { total, respondidas } = estaAtivo && !eSimulados && !eGuia
-    ? estatisticasModulo(questoes)
-    : { total: 0, respondidas: 0 };
-
-  const ariaLabel = eSimulados
-    ? `${modulo.titulo}: ${resumoSimulados(questoesProvas)}`
-    : eGuia
-    ? `${modulo.titulo}: ${resumoGuia()}`
-    : estaAtivo
-    ? `${modulo.titulo}: ${total} questões, ${respondidas} respondidas`
-    : `${modulo.titulo}: em breve`;
-
+function htmlMaterias(questoesProvas, memoria) {
+  const perfil = lerGuia()?.perfil;
+  const idioma = perfil?.idioma || 'Espanhol';
+  const feitas = new Set(memoria.map(m => m.q));
+  const linhas = MATERIAS.map(materia => {
+    const doBanco = questoesProvas.filter(q => materiaDaDisciplina(q.disciplina)?.id === materia.id
+      && (materia.id !== 'lingua' || q.disciplina === idioma));
+    const total = doBanco.length;
+    const n = doBanco.filter(q => feitas.has(q.id)).length;
+    const nome = materia.id === 'lingua' ? idioma : nomeMateria(materia, perfil);
+    const modulo = materia.id === 'lingua' ? (idioma === 'Inglês' ? 'ingles' : 'espanhol') : moduloMateria(materia, perfil);
+    const pct = total ? Math.round((n / total) * 100) : 0;
+    return `
+      <li>
+        <a href="${modulo ? `#/questoes/${modulo}` : '#/simulados'}" class="inicio-materia" aria-label="${nome}: ${n} de ${total} questões feitas">
+          <span class="inicio-materia__nome">${nome}</span>
+          <span class="inicio-materia__barra" aria-hidden="true"><span style="width: ${pct}%"></span></span>
+          <span class="inicio-materia__n">${n}/${total}</span>
+        </a>
+      </li>`;
+  }).join('');
   return `
-    <a
-      href="${href}"
-      class="card-modulo${classeExtra}"
-      aria-label="${ariaLabel}"
-    >
-      <div class="card-modulo__icone" aria-hidden="true">
-        ${icone(modulo.icone, 22)}
-      </div>
-      <div class="card-modulo__corpo">
-        <span class="card-modulo__titulo">${modulo.titulo}</span>
-        ${htmlInfoCard(modulo, todasQuestoes, questoesProvas)}
-      </div>
-    </a>
-  `;
+    <section class="inicio-card" aria-labelledby="inicio-materias-titulo">
+      <header class="inicio-card__cabecalho">
+        <h2 class="inicio-card__titulo" id="inicio-materias-titulo">Matérias</h2>
+        <span class="inicio-card__legenda">questões feitas</span>
+      </header>
+      <ul class="inicio-materias" role="list">${linhas}</ul>
+    </section>`;
 }
 
+/* ================================================================
+   Tela
+   ================================================================ */
+
 /**
- * Renderiza o dashboard completo no elemento fornecido.
- * @param {HTMLElement} container   - elemento onde o HTML será inserido
- * @param {Object[]}    todasQuestoes  - questões de estudo (por matéria)
- * @param {Object[]}    questoesProvas - questões das provas anteriores (simulados)
+ * @param {HTMLElement} container
+ * @param {Object[]} todasQuestoes  - questões de estudo (por matéria)
+ * @param {Object[]} questoesProvas - questões das provas anteriores (simulados)
  */
 export function renderizarDashboard(container, todasQuestoes, questoesProvas = []) {
-  const cardsHtml = MODULOS.map(m => htmlCard(m, todasQuestoes, questoesProvas)).join('\n');
+  const prox = proximoBlocoDeHoje(questoesProvas, todasQuestoes);
+  const memoria = lerMemoria();
+  const nome = primeiroNome();
+  const linhaData = `${dataPorExtenso()}${prox?.posicao ? ` · bloco ${prox.posicao} de ${prox.total}` : ''}`;
 
   container.innerHTML = `
-    <section class="dashboard" aria-label="Módulos de estudo">
-      <div class="container">
-        ${htmlContagem()}
-        <div class="dashboard__intro">
-          <p class="dashboard__saudacao">Selecione um módulo</p>
-          <h2 class="dashboard__titulo-secao">O que vamos estudar hoje?</h2>
-          <p class="dashboard__subtitulo-secao">
-            Faça simulados com as provas anteriores da ACAFE ou estude cada matéria.
-          </p>
-        </div>
-        <div class="grid-modulos" role="list">
-          ${cardsHtml}
-        </div>
+    <div class="inicio">
+      <div class="inicio__contagem">${htmlContagemCompacta()}</div>
+      <header class="inicio__saudacao">
+        <p class="inicio__data">${linhaData}</p>
+        <h1 class="inicio__titulo">${saudacao()}${nome ? `, ${escaparHtml(nome)}` : ''}</h1>
+      </header>
+      ${htmlProximoBloco(prox)}
+      <div class="inicio__grade">
+        ${htmlSimulados(memoria)}
+        ${htmlMaterias(questoesProvas, memoria)}
       </div>
-    </section>
-  `;
-
-  iniciarContagem(container);
-
-  // Torna cada card acessível como item de lista (role já herdado)
-  container.querySelectorAll('.card-modulo').forEach(card => {
-    card.setAttribute('role', 'listitem');
-  });
+    </div>`;
+  iniciarContagemCompacta(container);
 }
-
