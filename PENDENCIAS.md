@@ -21,6 +21,8 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 ## Para fazer depois (já combinado)
 
+- **Dificuldade das questões em 5 níveis (27/11/2026):** classificar cada questão em muito fácil, fácil, médio, difícil ou muito difícil, analisando a taxa de acerto, o tempo médio de resposta e o motivo dos erros de cada aluno (hoje há 3 níveis, marcados à mão, e a conferência em Configurações). Precisa começar a guardar o tempo de resposta de cada questão. Depois, o tempo estimado por questão nos blocos do Guia passa a seguir a dificuldade: a estrutura já está pronta em `js/guia-plano.js` (`MINUTOS_POR_DIFICULDADE` e `minutosPorQuestao`).
+
 - **Celular, no sistema todo (27/11/2026):** analisar e resolver a visualização de todas as telas no celular (menu, tela inicial, Guia e calendário, simulados, banco de questões, janelas). Pendência geral, para fazer principalmente quando estivermos finalizando o projeto.
 
 - **Perguntas iniciais do Guia (27/11/2026):** revisar o questionário do Guia (as 9 perguntas, inclusive a nova sobre o horário de começo dos estudos, e o visual, que ainda é o antigo). Você pediu para resolver em outro momento.

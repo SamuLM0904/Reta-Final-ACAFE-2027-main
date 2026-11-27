@@ -416,15 +416,47 @@ export function distribuirMaterias(n, prioridades, historico = {}) {
 /** O que fazer no bloco, conforme a fase da preparação e o perfil do aluno. */
 /** Parte do bloco que vai para a teoria, conforme a fase (o resto é para as questões). */
 const PARTE_TEORIA = { base: 0.4, intensiva: 0.3, reta: 0.2 };
-/** Minutos por questão na parte de questões do bloco. */
-export const MINUTOS_POR_QUESTAO = 3;
+/* ---------------- Tempo estimado por questão ----------------
+   Hoje todo bloco usa o tempo médio (3 min por questão; 3,5 na correção de erros, por causa
+   da leitura da explicação). Está pronto para variar com a DIFICULDADE da questão: quando a
+   classificação em 5 níveis existir (pendência: taxa de acerto, tempo médio de resposta e
+   motivo dos erros de cada aluno), basta passar as dificuldades das questões do bloco para
+   minutosPorQuestao(); dividirBloco() e questoesNoBlocoDeRevisao() já recebem esse tempo. */
 
-/** Divide um bloco de matéria em teoria e questões (em múltiplos de 5 min) e diz quantas questões fazer. */
-export function dividirBloco(minutos, fase, faseFinal) {
+/** Minutos estimados por questão em cada nível de dificuldade (os 3 níveis de hoje e os 5 previstos). */
+export const MINUTOS_POR_DIFICULDADE = {
+  'muito-facil': 2,
+  facil: 2.5,
+  media: 3,
+  dificil: 3.5,
+  'muito-dificil': 4.5,
+};
+
+/** Minutos por questão na parte de questões do bloco (o tempo médio, de uma questão "média"). */
+export const MINUTOS_POR_QUESTAO = MINUTOS_POR_DIFICULDADE.media;
+
+/** Leitura da explicação a mais por questão, na correção de erros. */
+const MINUTOS_EXPLICACAO = 0.5;
+
+/**
+ * Tempo médio por questão de um grupo de questões, pela dificuldade de cada uma.
+ * Sem dificuldades (ou com níveis desconhecidos), vale o tempo médio.
+ * @param {string[]} [dificuldades] - ex.: ['facil', 'dificil', 'media']
+ */
+export function minutosPorQuestao(dificuldades = []) {
+  const tempos = dificuldades.map(d => MINUTOS_POR_DIFICULDADE[d]).filter(Boolean);
+  return tempos.length ? tempos.reduce((a, b) => a + b, 0) / tempos.length : MINUTOS_POR_QUESTAO;
+}
+
+/**
+ * Divide um bloco de matéria em teoria e questões (em múltiplos de 5 min) e diz quantas questões fazer.
+ * @param {number} [minPorQuestao] - tempo por questão (ver minutosPorQuestao); padrão, o tempo médio
+ */
+export function dividirBloco(minutos, fase, faseFinal, minPorQuestao = MINUTOS_POR_QUESTAO) {
   const parte = faseFinal ? PARTE_TEORIA.reta : (PARTE_TEORIA[fase?.id] ?? 0.3);
   const teoria = Math.max(5, Math.round((minutos * parte) / 5) * 5);
   const questoes = Math.max(0, minutos - teoria);
-  return { teoria, questoes, alvo: Math.max(3, Math.floor(questoes / MINUTOS_POR_QUESTAO)) };
+  return { teoria, questoes, alvo: Math.max(3, Math.floor(questoes / minPorQuestao)) };
 }
 
 function atividade({ foco, faseFinal, vespera, cursinho, temQuestoes, fase, divisao }) {
@@ -545,8 +577,13 @@ export function montarDia({ perfil, chave, minutos, simulado = null,
   return { chave, minutos, blocos };
 }
 
-/** Quantas questões erradas cabem num bloco de correção de erros (~3,5 min cada, no mínimo 5). */
-export const questoesNoBlocoDeRevisao = minutos => Math.max(5, Math.floor(minutos / 3.5));
+/**
+ * Quantas questões erradas cabem num bloco de correção de erros (no mínimo 5): o tempo de
+ * cada questão mais a leitura da explicação (~3,5 min com o tempo médio).
+ * @param {number} [minPorQuestao] - tempo por questão (ver minutosPorQuestao); padrão, o tempo médio
+ */
+export const questoesNoBlocoDeRevisao = (minutos, minPorQuestao = MINUTOS_POR_QUESTAO) =>
+  Math.max(5, Math.floor(minutos / (minPorQuestao + MINUTOS_EXPLICACAO)));
 
 /** Blocos de cada matéria em uma lista de planos de dias. */
 export function contarBlocos(planos) {
