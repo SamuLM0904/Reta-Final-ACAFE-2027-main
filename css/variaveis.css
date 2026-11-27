@@ -116,6 +116,8 @@
   --cor-menu-lateral:        #12161C;   /* fundo do menu (base.css) */
   --cor-grafico-certas:      #F2B13E;   /* gráfico da tela inicial: dois tons de âmbar (conferidos para daltonismo) */
   --cor-grafico-erradas:     #8A5F1E;
+  --fundo-janela:            rgba(8, 10, 14, 0.45);   /* fundo atrás de qualquer janela, com desfoque */
+  --desfoque-janela:         8px;
   --cor-caixa-numero:        #0E1116;
   --cor-ajuda:               #2A323D;
   --cor-ajuda-texto:         #C9D1DA;

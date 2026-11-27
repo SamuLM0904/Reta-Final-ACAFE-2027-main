@@ -407,9 +407,14 @@ img, svg { max-width: 100%; display: block; }
   animation: confirmacao-entrada var(--transicao-md);
 }
 
-.confirmacao::backdrop {
-  background-color: rgba(10, 20, 18, 0.6);
-  backdrop-filter: blur(2px);
+/* Fundo de TODAS as janelas (confirmações, Configurações, livro das obras, gráfico ampliado,
+   imagem ampliada): o mesmo escurecido com desfoque — ver --fundo-janela em variaveis.css */
+.confirmacao::backdrop,
+.grafico-ampliado::backdrop,
+.visualizador-imagem::backdrop {
+  background-color: var(--fundo-janela);
+  backdrop-filter: blur(var(--desfoque-janela));
+  -webkit-backdrop-filter: blur(var(--desfoque-janela));
 }
 
 .confirmacao__caixa {

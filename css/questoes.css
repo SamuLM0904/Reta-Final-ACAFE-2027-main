@@ -562,8 +562,7 @@
 .visualizador-imagem:not([open]) { display: none; }
 
 .visualizador-imagem::backdrop {
-  background-color: rgba(10, 20, 18, 0.72);
-  backdrop-filter: blur(3px);
+  /* cor e desfoque: os mesmos de todas as janelas (base.css) */
   animation: visualizador-fundo var(--transicao-md);
 }
 

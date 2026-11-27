@@ -571,11 +571,6 @@
   box-shadow: var(--sombra-lg);
   overflow: hidden;
 }
-.grafico-ampliado::backdrop {
-  background: rgba(8, 10, 14, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
 .grafico-ampliado__caixa {
   height: 100%;
   display: flex;
