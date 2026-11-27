@@ -869,3 +869,10 @@
 .guia-cal__agora { position: absolute; left: 0; right: 0; height: 2px; background: var(--cor-errada); z-index: 2; }
 .guia-cal__agora::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--cor-errada); }
 .guia-cal__nota { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+
+/* Blocos de hoje: conteúdos do foco como links e progresso das questões do dia */
+.guia-painel a.guia-chip--link { text-decoration: none; }
+.guia-painel a.guia-chip--link:hover { text-decoration: underline; text-underline-offset: 2px; }
+.guia-painel .guia-bloco__progresso { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-suave); font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; }
+.guia-painel .guia-bloco__progresso strong { color: var(--cor-texto); }
+.guia-painel .guia-bloco--feito .guia-bloco__progresso { text-decoration: none; }

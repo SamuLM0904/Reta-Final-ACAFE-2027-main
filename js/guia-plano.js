@@ -414,8 +414,30 @@ export function distribuirMaterias(n, prioridades, historico = {}) {
 }
 
 /** O que fazer no bloco, conforme a fase da preparação e o perfil do aluno. */
-function atividade({ foco, faseFinal, vespera, cursinho, temQuestoes, fase }) {
+/** Parte do bloco que vai para a teoria, conforme a fase (o resto é para as questões). */
+const PARTE_TEORIA = { base: 0.4, intensiva: 0.3, reta: 0.2 };
+/** Minutos por questão na parte de questões do bloco. */
+export const MINUTOS_POR_QUESTAO = 3;
+
+/** Divide um bloco de matéria em teoria e questões (em múltiplos de 5 min) e diz quantas questões fazer. */
+export function dividirBloco(minutos, fase, faseFinal) {
+  const parte = faseFinal ? PARTE_TEORIA.reta : (PARTE_TEORIA[fase?.id] ?? 0.3);
+  const teoria = Math.max(5, Math.round((minutos * parte) / 5) * 5);
+  const questoes = Math.max(0, minutos - teoria);
+  return { teoria, questoes, alvo: Math.max(3, Math.floor(questoes / MINUTOS_POR_QUESTAO)) };
+}
+
+function atividade({ foco, faseFinal, vespera, cursinho, temQuestoes, fase, divisao }) {
   if (vespera) return 'Revisão leve: releia seus resumos e anotações. Nada de conteúdo novo; descanse bem.';
+  if (divisao) {
+    const { teoria, questoes, alvo } = divisao;
+    const deQue = foco.length ? (foco.length > 1 ? ' desses conteúdos' : ' desse conteúdo') : '';
+    const onde = temQuestoes ? ' do banco de questões' : '';
+    const fim = faseFinal ? ' Reta final: priorize as questões e revise o que errar.'
+      : fase?.id === 'base' ? ' Na fase de base, vá com calma: faça seus resumos.'
+      : cursinho && !foco.length ? ' Aproveite a matéria que está vendo no cursinho.' : '';
+    return `${teoria} min de teoria${deQue} e ${questoes} min de questões (cerca de ${alvo}${onde}).${fim}`;
+  }
   const praticar = temQuestoes ? 'faça as questões da matéria' : 'faça exercícios';
   if (fase?.id === 'base' && !foco.length) return `Fase de base: estude a teoria com calma, faça seus resumos e ${praticar}.`;
   if (faseFinal) return foco.length
@@ -480,19 +502,25 @@ export function montarDia({ perfil, chave, minutos, simulado = null,
   duracoes.forEach((min, i) => {
     const id = materias[i];
     const materia = MATERIAS.find(m => m.id === id);
-    const fracos = conteudosFracos(analise, id).map(c => c.nome);
+    const fracos = conteudosFracos(analise, id);
     const inicio = usados[id] || 0;
-    const foco = fracos.slice(inicio, inicio + 2);
+    const escolhidos = fracos.slice(inicio, inicio + 2);
+    const foco = escolhidos.map(c => c.nome);
     usados[id] = inicio + foco.length;
+    const faseFinal = diasParaProva <= 7;
+    const divisao = diasParaProva === 1 ? null : dividirBloco(min, fase, faseFinal);
     blocos.push({
       tipo: 'materia',
       minutos: min,
       materia: id,
       nome: nomeMateria(materia, perfil),
       foco,
+      focoChaves: escolhidos.map(c => c.chave),   // ids dos conteúdos (para abrir direto no banco de questões)
+      ...(divisao || {}),                           // teoria, questoes (minutos) e alvo (nº de questões)
       atividade: atividade({
         foco,
-        faseFinal: diasParaProva <= 7,
+        divisao,
+        faseFinal,
         vespera: diasParaProva === 1,
         cursinho: perfil.cursinho,
         temQuestoes: materiasComQuestoes.has(id),

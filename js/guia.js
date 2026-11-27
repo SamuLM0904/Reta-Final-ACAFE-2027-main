@@ -30,6 +30,7 @@ import {
   faseDaPreparacao, valeComoSimuladoDaSemana, errosPendentes,
 } from './guia-plano.js';
 import { criarSimuladoAleatorio } from './simulado.js';
+import { conteudosDa } from './conteudos.js';
 import { interpretarPedido, interpretarComIA, iaDisponivel } from './guia-chat.js';
 
 const DIA_PROVA = chaveDia(PROVA.inicio);
@@ -71,6 +72,12 @@ function montarContexto(questoesProvas, questoesEstudo) {
     // só simulados completos contam como "o simulado da semana" (os menores são treino)
     semanasComSimuladoFeito: new Set(completos.map(t => inicioDaSemana(chaveDia(new Date(t.data))))),
     simuladoFeitoHoje: completos.some(t => chaveDia(new Date(t.data)) === hoje),
+    indice,
+    // "<matéria>|<conteúdo>" dos conteúdos que têm questões no banco de questões (para os links dos blocos)
+    conteudosComQuestoes: new Set(questoesEstudo.flatMap(q => {
+      const m = materiaDaDisciplina(q.disciplina)?.id;
+      return m ? conteudosDa(q).map(c => `${m}|${c}`) : [];
+    })),
   };
   ctx.planosFixos = guia ? Object.fromEntries(Object.entries(guia.planos || {}).filter(([d]) => d < hoje)) : {};
   return ctx;
@@ -88,7 +95,7 @@ function planoDeHoje(ctx) {
   const base = baseDoPlano(guia, ctx);
   const salvo = guia.planos?.[hoje];
   // um simulado finalizado hoje não deve sumir do plano já fixado
-  if (salvo && (salvo.base === base || (ctx.simuladoFeitoHoje && salvo.base?.split('|')[1] === base.split('|')[1]))) return salvo;
+  if (salvo && (salvo.base === base || (ctx.simuladoFeitoHoje && salvo.base?.split('|')[1] === base.split('|')[1]))) return marcarFeitosSozinho(salvo, ctx);
   const [plano] = planejarPeriodo(guia, { ...ctx, de: hoje, ate: hoje });
   const novo = { ...plano, base, feitos: [] };
   const limite = somarDias(hoje, -DIAS_GUARDADOS);
@@ -96,7 +103,65 @@ function planoDeHoje(ctx) {
   planos[hoje] = novo;
   salvarGuia({ ...guia, planos });
   ctx.guia = lerGuia();
-  return novo;
+  return marcarFeitosSozinho(novo, ctx);
+}
+
+/**
+ * Marca sozinho os blocos de hoje que o aluno já cumpriu e guarda o progresso de cada um em
+ * ctx.progressoHoje (índice do bloco → { feitas, alvo }):
+ *   - matéria: as questões da matéria respondidas hoje (no banco, nos simulados ou na correção)
+ *     chegam ao número do bloco; dois blocos da mesma matéria contam em sequência;
+ *   - correção de erros: as questões refeitas hoje chegam ao número do bloco;
+ *   - simulado: o simulado do dia foi finalizado.
+ * Um bloco desmarcado à mão não volta a ser marcado sozinho (plano.desmarcados).
+ */
+function marcarFeitosSozinho(plano, ctx) {
+  const hoje = ctx.hoje;
+  const doDia = lerMemoria().filter(m => chaveDia(new Date(m.t)) === hoje);
+  const porMateria = {};
+  doDia.forEach(m => {
+    const id = materiaDaDisciplina(ctx.indice.get(m.q)?.disciplina)?.id;
+    if (id) porMateria[id] = (porMateria[id] || 0) + 1;
+  });
+  const refeitas = doDia.filter(m => m.o === 'revisao').length;
+  const usadas = {};
+  const progresso = {};
+  const feitos = new Set(plano.feitos || []);
+  const desmarcados = new Set(plano.desmarcados || []);
+  let mudou = false;
+  plano.blocos.forEach((b, i) => {
+    let cumprido = false;
+    if (b.tipo === 'materia' && b.alvo) {
+      const disponiveis = Math.max(0, (porMateria[b.materia] || 0) - (usadas[b.materia] || 0));
+      const feitas = Math.min(b.alvo, disponiveis);
+      usadas[b.materia] = (usadas[b.materia] || 0) + feitas;
+      progresso[i] = { feitas, alvo: b.alvo };
+      cumprido = feitas >= b.alvo;
+    } else if (b.tipo === 'revisao' && b.quantidade) {
+      progresso[i] = { feitas: Math.min(refeitas, b.quantidade), alvo: b.quantidade };
+      cumprido = refeitas >= b.quantidade;
+    } else if (b.tipo === 'simulado') {
+      cumprido = ctx.simuladoFeitoHoje;
+    }
+    if (cumprido && !feitos.has(i) && !desmarcados.has(i)) { feitos.add(i); mudou = true; }
+  });
+  ctx.progressoHoje = progresso;
+  if (!mudou) return plano;
+  const atualizado = { ...plano, feitos: [...feitos].sort((a, b) => a - b) };
+  const g = lerGuia();
+  if (g?.planos?.[hoje]) { g.planos[hoje] = atualizado; salvarGuia(g); ctx.guia = g; }
+  return atualizado;
+}
+
+/** Link do bloco de matéria: o primeiro conteúdo do foco que tem questões no banco; senão, a matéria. */
+function linkDoBloco(bloco, ctx, perfil) {
+  const materia = MATERIAS.find(m => m.id === bloco.materia);
+  const modulo = moduloMateria(materia, perfil);
+  if (!modulo || !ctx.materiasComQuestoes.has(bloco.materia)) return null;
+  const k = (bloco.focoChaves || []).findIndex(c => ctx.conteudosComQuestoes.has(`${bloco.materia}|${c}`));
+  return k >= 0
+    ? { href: `#/questoes/${modulo}/${encodeURIComponent(bloco.focoChaves[k])}`, conteudo: bloco.foco[k] }
+    : { href: `#/questoes/${modulo}`, conteudo: null };
 }
 
 /* ================================================================
@@ -143,8 +208,8 @@ export function proximoBlocoDeHoje(questoesProvas, questoesEstudo) {
   else if (bloco.tipo === 'revisao') { titulo = 'Correção de erros'; href = '#/revisao'; }
   else {
     titulo = nomeMateria(materia, guia.perfil);
-    const modulo = moduloMateria(materia, guia.perfil);
-    if (modulo && ctx.materiasComQuestoes.has(materia.id)) href = `#/questoes/${modulo}`;
+    const link = linkDoBloco(bloco, ctx, guia.perfil);
+    if (link) href = link.href;
   }
   return { hoje, total, feitos: feitos.size, posicao: i + 1, bloco, materia, titulo,
     assunto: bloco.foco?.[0] || null, atividade: bloco.atividade, href, rotuloAcao };
@@ -432,6 +497,7 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
     const p = g.planos[hoje];
     const i = Number(caixa.dataset.blocoFeito);
     p.feitos = caixa.checked ? [...new Set([...(p.feitos || []), i])] : (p.feitos || []).filter(x => x !== i);
+    p.desmarcados = caixa.checked ? (p.desmarcados || []).filter(x => x !== i) : [...new Set([...(p.desmarcados || []), i])];
     salvarGuia(g);
     caixa.closest('.guia-bloco').classList.toggle('guia-bloco--feito', caixa.checked);
     atualizarResumoFeitos(container);
@@ -507,9 +573,11 @@ function htmlBloco(bloco, i, ctx, feito) {
       : `<span class="guia-selo guia-selo--ok">${icone('check', 14)} Nenhuma questão para refazer agora</span>`;
   } else {
     titulo = nomeMateria(materia, ctx.guia.perfil);
-    const modulo = moduloMateria(materia, ctx.guia.perfil);
-    if (modulo && ctx.materiasComQuestoes.has(materia.id)) acao = `<a href="#/questoes/${modulo}" class="btn btn-secundario btn-pequeno">Praticar questões</a>`;
+    const link = linkDoBloco(bloco, ctx, ctx.guia.perfil);
+    if (link) acao = `<a href="${link.href}" class="btn btn-secundario btn-pequeno">Praticar questões${link.conteudo ? ` de ${escaparHtml(link.conteudo)}` : ''}</a>`;
   }
+  const prog = ctx.progressoHoje?.[i];
+  const progresso = prog ? `<p class="guia-bloco__progresso">${icone('check', 12)} Questões de hoje: <strong>${prog.feitas} de ${prog.alvo}</strong>${prog.feitas >= prog.alvo ? ' · meta cumprida' : ''}</p>` : '';
   return `
     <li class="guia-bloco${feito ? ' guia-bloco--feito' : ''}${bloco.tipo !== 'materia' && bloco.tipo !== 'revisao' ? ' guia-bloco--simulado' : ''}${bloco.tipo === 'revisao' ? ' guia-bloco--revisao' : ''}">
       <label class="guia-bloco__marcar" title="Marcar como feito">
@@ -517,8 +585,15 @@ function htmlBloco(bloco, i, ctx, feito) {
       </label>
       <div class="guia-bloco__corpo">
         <p class="guia-bloco__titulo"><span class="guia-bloco__tempo">${formatarHoras(bloco.minutos)}</span> ${titulo}${bloco.editado ? ' <span class="guia-selo">alterado por você</span>' : ''}</p>
-        ${bloco.foco?.length ? `<p class="guia-bloco__foco">Foco: ${bloco.foco.map(f => `<span class="guia-chip">${escaparHtml(f)}</span>`).join(' ')}</p>` : ''}
+        ${bloco.foco?.length ? `<p class="guia-bloco__foco">Foco: ${bloco.foco.map((f, k) => {
+          const chave = bloco.focoChaves?.[k];
+          const modulo = bloco.tipo === 'materia' && moduloMateria(MATERIAS.find(m => m.id === bloco.materia), ctx.guia.perfil);
+          return chave && modulo && ctx.conteudosComQuestoes.has(`${bloco.materia}|${chave}`)
+            ? `<a class="guia-chip guia-chip--link" href="#/questoes/${modulo}/${encodeURIComponent(chave)}" title="Abrir as questões de ${escaparHtml(f)}">${escaparHtml(f)}</a>`
+            : `<span class="guia-chip">${escaparHtml(f)}</span>`;
+        }).join(' ')}</p>` : ''}
         <p class="guia-bloco__atividade">${bloco.atividade}</p>
+        ${progresso}
         ${acao}
       </div>
     </li>`;
