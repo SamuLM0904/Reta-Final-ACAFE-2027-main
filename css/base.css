@@ -1117,3 +1117,10 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .acessos .grafico-ampliado__caixa { height: auto; max-height: 92vh; }
 .acessos .grafico-ampliado__grafico { flex: none; }
 .acessos__svg { display: block; width: 100%; height: auto; max-height: 52vh; }
+.acessos__topo-acoes { display: flex; align-items: center; gap: var(--espaco-sm); }
+.acessos__vistas { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--cor-borda); border-radius: var(--raio-pill); }
+.acessos__vistas[hidden] { display: none; }
+.acessos__vista { border: 0; background: transparent; color: var(--cor-texto-fraco); font: inherit; font-size: var(--tamanho-xs); font-weight: 600; padding: 5px 12px; border-radius: var(--raio-pill); cursor: pointer; }
+.acessos__vista[aria-pressed="true"] { background: var(--cor-verde-militar); color: var(--cor-texto); }
+.acessos__aviso { margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); min-height: 1em; }
+.acessos__comparar[hidden] { display: none; }

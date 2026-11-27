@@ -10,6 +10,7 @@
   //   alunos/{usuario}   → dados do aluno (ID = nome de usuário, para achar fácil no Console)
   //   admins/{uid}       → administradores (ID = UID da conta); primeiro criado pelo Console
   //   resumos/{usuario}  → números de cada conta para a lista de Usuários (só informação)
+  //   aoVivo, atividade, atividadeMes → acessos (gráfico de usuários ativos, só admins leem)
   service cloud.firestore {
     match /databases/{banco}/documents {
 
@@ -114,10 +115,11 @@
       }
 
       // Acessos (gráfico de usuários ativos na Administração). Só administradores leem.
-      // presenca: cada aluno grava só o próprio sinal de "online".
-      match /presenca/{usuario} {
-        allow write: if eDono(usuario);
-        allow read: if admin();
+      // aoVivo/{AAAA-MM-DDTHH_N}: sinal de vida minuto a minuto (campos e00..e59, s00..s59 e
+      // expiraEm), guardado por 24 horas. Os administradores apagam o que passou disso.
+      match /aoVivo/{hora} {
+        allow read, delete: if admin();
+        allow create, update: if logado() && request.resource.data.keys().size() <= 121;
       }
       // atividade (por dia: usuarios + h00..h23) e atividadeMes (usuarios): o site grava com
       // arrayUnion, só acrescentando o próprio usuário. Só esses campos são aceitos.

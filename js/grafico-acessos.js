@@ -17,7 +17,8 @@
 
 import { icone } from './icones.js';
 import { somarDias, diaDaSemana } from './guia-plano.js';
-import { ouvirPresenca, lerAtividade, chavesDeAtividade } from './nuvem.js';
+import { ouvirPresenca, lerAtividade, chavesDeAtividade, lerUltimas24h, limparAoVivoAntigo, listarUsuarios } from './nuvem.js';
+import { baixarRelatorio } from './relatorio-acessos.js';
 import { escaparHtml } from './utils.js';
 
 const DIAS_SEMANA = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
@@ -96,6 +97,7 @@ const PERIODOS = {
       return {
         rotulos: HORAS.map(h => `${Number(h.slice(1))}h`),
         valores: HORAS.map(h => (doc[h] || []).length),
+        quem: HORAS.map(h => doc[h] || []),
         dicas: HORAS.map(h => `${Number(h.slice(1))}h às ${Number(h.slice(1))}h59: ${plural((doc[h] || []).length, 'usuário', 'usuários')}`),
         total: (doc.usuarios || []).length,
         textoTotal: 'usaram neste dia',
@@ -115,6 +117,7 @@ const PERIODOS = {
       return {
         rotulos: dias.map((d, i) => `${DIAS_SEMANA[i]} ${diaMes(d)}`),
         valores: listas.map(l => l.length),
+        quem: listas,
         dicas: dias.map((d, i) => `${DIAS_SEMANA[i]}, ${diaMes(d)}: ${plural(listas[i].length, 'usuário', 'usuários')}`),
         total: uniao(listas),
         textoTotal: 'usaram na semana',
@@ -134,6 +137,7 @@ const PERIODOS = {
       return {
         rotulos: dias.map(d => diaMes(d)),
         valores: listas.map(l => l.length),
+        quem: listas,
         dicas: dias.map((d, i) => `${diaMes(d)}: ${plural(listas[i].length, 'usuário', 'usuários')}`),
         total: (mes.get(r)?.usuarios || []).length || uniao(listas),
         textoTotal: 'usaram no mês',
@@ -153,6 +157,7 @@ const PERIODOS = {
       return {
         rotulos: MESES,
         valores: listas.map(l => l.length),
+        quem: listas,
         dicas: meses.map((m, i) => `${MESES_EXTENSO[i]}: ${plural(listas[i].length, 'usuário', 'usuários')}`),
         total: uniao(listas),
         textoTotal: 'usaram no ano',
@@ -165,15 +170,25 @@ const PERIODOS = {
    Janela
    ================================================================ */
 
+const VISTAS_AO_VIVO = {
+  '5min': { nome: '5 min', titulo: 'Ao vivo · últimos 5 minutos' },
+  '1h': { nome: '1 hora', titulo: 'Última hora (minuto a minuto)' },
+  '24h': { nome: '24 horas', titulo: 'Últimas 24 horas (de 5 em 5 minutos)' },
+};
+
 /** Abre a janela do gráfico de acessos (só administradores). */
 export function abrirGraficoAcessos() {
   const hoje = chavesDeAtividade().dia;
   let aba = 'vivo';
+  let vista = '5min';
   let comparar = false;
   const ref = Object.fromEntries(Object.entries(PERIODOS).map(([id, p]) => [id, p.atual(hoje)]));
   let online = [];
+  const nomes = new Map();   // usuário → nome completo
   const amostras = [];       // linha ao vivo: { t, n }
   let pico = 0;
+  let ultimoPeriodo = null;  // o que está na tela (para o relatório)
+  let cache24h = null;       // { em, minutos }
 
   const janela = document.createElement('dialog');
   janela.className = 'grafico-ampliado acessos';
@@ -182,7 +197,10 @@ export function abrirGraficoAcessos() {
     <div class="grafico-ampliado__caixa">
       <header class="grafico-ampliado__topo">
         <h2 class="grafico-ampliado__titulo" id="acessos-titulo">Usuários ativos</h2>
-        <button type="button" class="grafico-ampliado__fechar" aria-label="Fechar">${icone('x', 20)}</button>
+        <div class="acessos__topo-acoes">
+          <button type="button" class="btn btn-secundario btn-pequeno" id="acessos-relatorio" title="Baixar um relatório deste gráfico">${icone('file-text', 16)} Relatório</button>
+          <button type="button" class="grafico-ampliado__fechar" aria-label="Fechar">${icone('x', 20)}</button>
+        </div>
       </header>
       <div class="acessos__agora" aria-live="polite">
         <span class="acessos__bolinha" aria-hidden="true"></span>
@@ -194,6 +212,9 @@ export function abrirGraficoAcessos() {
         <div class="grafico-ampliado__abas" role="tablist" aria-label="Período">
           <button type="button" role="tab" class="grafico-ampliado__aba" data-aba="vivo">Ao vivo</button>
           ${Object.entries(PERIODOS).map(([id, p]) => `<button type="button" role="tab" class="grafico-ampliado__aba" data-aba="${id}">${p.nome}</button>`).join('')}
+        </div>
+        <div class="acessos__vistas" id="acessos-vistas" role="group" aria-label="Quanto tempo mostrar">
+          ${Object.entries(VISTAS_AO_VIVO).map(([id, v]) => `<button type="button" class="acessos__vista" data-vista="${id}">${v.nome}</button>`).join('')}
         </div>
         <div class="grafico-ampliado__navegar" id="acessos-navegar">
           <button type="button" class="grafico-ampliado__seta" data-andar="-1" aria-label="Anterior">${icone('arrow-left', 18)}</button>
@@ -207,19 +228,26 @@ export function abrirGraficoAcessos() {
         <label class="acessos__comparar" id="acessos-comparar-rotulo"><input type="checkbox" id="acessos-comparar"> Comparar com o período anterior</label>
         <p class="acessos__legenda" id="acessos-legenda"></p>
       </div>
+      <p class="acessos__aviso" id="acessos-aviso"></p>
     </div>`;
   document.body.appendChild(janela);
 
   const $ = s => janela.querySelector(s);
   const figura = $('#acessos-figura'), resumo = $('#acessos-resumo');
   const [anterior, proximo] = janela.querySelectorAll('[data-andar]');
+  const aviso = texto => { $('#acessos-aviso').textContent = texto || ''; };
+  const erroTexto = e => (e?.code === 'permission-denied' ? 'publique o firestore.rules novo no Console do Firebase.' : escaparHtml(e?.message || ''));
+
+  // nomes completos (para "ver quem" e o relatório) e limpeza do ao vivo com mais de 24 h
+  listarUsuarios().then(lst => { lst.forEach(c => nomes.set(c.usuario, c.nome)); desenharQuem(); }).catch(() => {});
+  limparAoVivoAntigo().catch(() => {});
 
   // ---- online agora (tempo real) ----
   const desenharQuem = () => {
     $('#acessos-online').textContent = online.length;
     $('#acessos-online-texto').textContent = online.length === 1 ? 'usuário online agora' : 'usuários online agora';
     $('#acessos-quem').innerHTML = online.length
-      ? [...online].sort((a, b) => a.usuario.localeCompare(b.usuario)).map(o => `<li><strong>${escaparHtml(o.nome || o.usuario)}</strong> <span class="usuarios__usuario">${escaparHtml(o.usuario)}</span></li>`).join('')
+      ? [...online].sort((a, b) => a.usuario.localeCompare(b.usuario)).map(o => `<li><strong>${escaparHtml(nomes.get(o.usuario) || o.usuario)}</strong> <span class="usuarios__usuario">${escaparHtml(o.usuario)}</span></li>`).join('')
       : '<li class="usuarios__fraco">Ninguém online agora.</li>';
   };
   const pararPresenca = ouvirPresenca(lista => { online = lista; desenharQuem(); });
@@ -231,24 +259,61 @@ export function abrirGraficoAcessos() {
   });
 
   // ---- ao vivo: uma amostra a cada 3 s ----
+  const hora = t => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const horaMin = t => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   const amostrar = () => {
     amostras.push({ t: Date.now(), n: online.length });
     if (amostras.length > AO_VIVO_PONTOS) amostras.shift();
     pico = Math.max(pico, online.length);
-    if (aba === 'vivo') desenharVivo();
+    if (aba === 'vivo' && vista === '5min') desenharVivo();
   };
-  const hora = t => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const desenharVivo = () => {
-    const vals = amostras.map(a => a.n);
-    const pontos = vals.length >= 2 ? amostras : [{ t: Date.now() - AO_VIVO_PASSO, n: online.length }, ...amostras];
-    resumo.innerHTML = `
-      <div class="grafico-ampliado__numero"><span>Agora</span><strong>${online.length}</strong></div>
-      <div class="grafico-ampliado__numero"><span>Pico desde que abriu</span><strong>${pico}</strong></div>
-      <div class="grafico-ampliado__numero"><span>Acompanhando há</span><strong>${Math.max(0, Math.round((Date.now() - (amostras[0]?.t || Date.now())) / 60000))} min</strong></div>`;
-    figura.innerHTML = htmlGraficoLinha(
-      [{ valores: pontos.map(a => a.n), classe: 'acessos__linha--principal', nome: 'Online' }],
-      pontos.map(a => hora(a.t)), { marcar: false });
-    $('#acessos-legenda').innerHTML = `<span class="acessos__chave acessos__chave--principal"></span> online · a linha anda a cada 3 segundos (últimos ~5 minutos)`;
+
+  /** As últimas 24 h do banco (guarda por 1 minuto para não ler de novo a cada clique). */
+  const ler24h = async () => {
+    if (!cache24h || Date.now() - cache24h.em > 60000) cache24h = { em: Date.now(), minutos: await lerUltimas24h() };
+    return cache24h.minutos;
+  };
+
+  const desenharVivo = async () => {
+    janela.querySelectorAll('[data-vista]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vista === vista)));
+    if (vista === '5min') {
+      const pontos = amostras.length >= 2 ? amostras : [{ t: Date.now() - AO_VIVO_PASSO, n: online.length }, ...amostras];
+      resumo.innerHTML = `
+        <div class="grafico-ampliado__numero"><span>Agora</span><strong>${online.length}</strong></div>
+        <div class="grafico-ampliado__numero"><span>Pico desde que abriu</span><strong>${pico}</strong></div>
+        <div class="grafico-ampliado__numero"><span>Acompanhando há</span><strong>${Math.max(0, Math.round((Date.now() - (amostras[0]?.t || Date.now())) / 60000))} min</strong></div>`;
+      figura.innerHTML = htmlGraficoLinha(
+        [{ valores: pontos.map(a => a.n), classe: 'acessos__linha--principal', nome: 'Online' }],
+        pontos.map(a => hora(a.t)), { marcar: false });
+      $('#acessos-legenda').innerHTML = '<span class="acessos__chave acessos__chave--principal"></span> online · a linha anda a cada 3 segundos';
+      return;
+    }
+    const minha = vista;
+    figura.innerHTML = '<p class="configuracoes__info">Carregando...</p>';
+    try {
+      const todos = await ler24h();
+      if (aba !== 'vivo' || vista !== minha) return;
+      const minutos = vista === '1h' ? todos.slice(-60) : todos;
+      const passo = vista === '1h' ? 1 : 5;
+      const blocos = [];
+      for (let i = 0; i < minutos.length; i += passo) {
+        const b = minutos.slice(i, i + passo);
+        blocos.push({ t: b[0].t, n: Math.max(...b.map(m => m.online)), entraram: new Set(b.flatMap(m => m.entraram)).size });
+      }
+      const picoM = minutos.reduce((a, b) => (b.online > a.online ? b : a), minutos[0] || { online: 0, t: 0 });
+      const diferentes = new Set(minutos.flatMap(m => m.quem)).size;
+      resumo.innerHTML = `
+        <div class="grafico-ampliado__numero"><span>Usuários diferentes</span><strong>${diferentes}</strong></div>
+        <div class="grafico-ampliado__numero"><span>Pico</span><strong>${picoM.online}${picoM.online ? ` · ${horaMin(picoM.t)}` : ''}</strong></div>
+        <div class="grafico-ampliado__numero"><span>Agora</span><strong>${online.length}</strong></div>`;
+      figura.innerHTML = htmlGraficoLinha(
+        [{ valores: blocos.map(b => b.n), classe: 'acessos__linha--principal', nome: 'Online' }],
+        blocos.map(b => horaMin(b.t)),
+        { marcar: vista === '1h', dicas: blocos.map(b => `${horaMin(b.t)}: ${plural(b.n, 'online', 'online')}${b.entraram ? ` · ${b.entraram} entrou(aram)` : ''}`) });
+      $('#acessos-legenda').innerHTML = `<span class="acessos__chave acessos__chave--principal"></span> ${VISTAS_AO_VIVO[vista].titulo}`;
+    } catch (e) {
+      figura.innerHTML = `<p class="configuracoes__info">Não foi possível ler o ao vivo: ${erroTexto(e)}</p>`;
+    }
   };
   amostrar();
   const relogio = setInterval(amostrar, AO_VIVO_PASSO);
@@ -259,17 +324,17 @@ export function abrirGraficoAcessos() {
     const p = PERIODOS[aba], atual = p.atual(hoje), r = ref[aba];
     $('#acessos-periodo').textContent = p.rotulo(r, atual);
     proximo.disabled = r >= atual;
-    anterior.disabled = false;
     const meu = ++pedido;
     figura.innerHTML = '<p class="configuracoes__info">Carregando...</p>';
     try {
       const [dados, antes] = await Promise.all([p.ler(r), comparar ? p.ler(p.anterior(r)) : null]);
       if (meu !== pedido) return;   // trocou de aba ou de período no meio
-      const pico = Math.max(...dados.valores);
-      const ondePico = dados.valores.indexOf(pico);
+      ultimoPeriodo = { aba, r, titulo: p.rotulo(r, atual), dados };
+      const picoP = Math.max(...dados.valores);
+      const ondePico = dados.valores.indexOf(picoP);
       resumo.innerHTML = `
         <div class="grafico-ampliado__numero"><span>Usuários diferentes</span><strong>${dados.total}</strong></div>
-        <div class="grafico-ampliado__numero"><span>Pico</span><strong>${pico ? `${pico} · ${dados.rotulos[ondePico]}` : '—'}</strong></div>
+        <div class="grafico-ampliado__numero"><span>Pico</span><strong>${picoP ? `${picoP} · ${dados.rotulos[ondePico]}` : '—'}</strong></div>
         ${antes ? `<div class="grafico-ampliado__numero"><span>Período anterior</span><strong>${antes.total}</strong></div>` : ''}`;
       const series = [{ valores: dados.valores, classe: 'acessos__linha--principal', nome: p.rotulo(r, atual) }];
       if (antes) series.push({ valores: dados.valores.map((_, i) => antes.valores[i] ?? 0), classe: 'acessos__linha--anterior', nome: 'Período anterior' });
@@ -277,7 +342,8 @@ export function abrirGraficoAcessos() {
       $('#acessos-legenda').innerHTML = `<span class="acessos__chave acessos__chave--principal"></span> ${dados.textoTotal}${antes ? ' · <span class="acessos__chave acessos__chave--anterior"></span> período anterior' : ''}`;
     } catch (e) {
       if (meu !== pedido) return;
-      figura.innerHTML = `<p class="configuracoes__info">Não foi possível ler os acessos: ${e.code === 'permission-denied' ? 'publique o firestore.rules novo no Console do Firebase.' : escaparHtml(e.message)}</p>`;
+      ultimoPeriodo = null;
+      figura.innerHTML = `<p class="configuracoes__info">Não foi possível ler os acessos: ${erroTexto(e)}</p>`;
     }
   };
 
@@ -285,11 +351,56 @@ export function abrirGraficoAcessos() {
     janela.querySelectorAll('[data-aba]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.aba === aba)));
     const vivo = aba === 'vivo';
     $('#acessos-navegar').hidden = vivo;
+    $('#acessos-vistas').hidden = !vivo;
     $('#acessos-comparar-rotulo').hidden = vivo;
+    aviso(vivo ? 'O ao vivo fica guardado por 24 horas. Para guardar mais que isso, baixe o relatório.' : '');
     if (vivo) desenharVivo(); else desenharPeriodo();
   };
 
+  // ---- relatório ----
+  const comNomes = lista => lista.map(u => (nomes.get(u) ? `${nomes.get(u)} (${u})` : u));
+  $('#acessos-relatorio').addEventListener('click', async ev => {
+    const btn = ev.currentTarget;
+    btn.disabled = true;
+    aviso('Montando o relatório...');
+    try {
+      const agora = new Date();
+      const carimbo = `${chavesDeAtividade(agora).dia}_${String(agora.getHours()).padStart(2, '0')}h${String(agora.getMinutes()).padStart(2, '0')}`;
+      if (aba === 'vivo') {
+        const minutos = (await ler24h()).map(m => ({ ...m, quem: comNomes(m.quem), entraram: comNomes(m.entraram), sairam: comNomes(m.sairam) }));
+        baixarRelatorio({
+          titulo: 'Acessos · últimas 24 horas',
+          subtitulo: `Usuários online minuto a minuto, de ${minutos[0] ? new Date(minutos[0].t).toLocaleString('pt-BR') : '—'} até ${agora.toLocaleString('pt-BR')}.`,
+          nomeArquivo: `acessos-24h_${carimbo}.html`,
+          minutos,
+        });
+      } else {
+        if (!ultimoPeriodo) throw new Error('espere o gráfico carregar.');
+        const { dados, titulo } = ultimoPeriodo;
+        // no Diário de hoje ou de ontem, junta o minuto a minuto que ainda está guardado
+        let minutos;
+        if (aba === 'dia') {
+          const [a, m, d] = ultimoPeriodo.r.split('-').map(Number);
+          const ini = new Date(a, m - 1, d).getTime(), fim = ini + 24 * 3600 * 1000;
+          minutos = (await ler24h()).filter(x => x.t >= ini && x.t < fim)
+            .map(x => ({ ...x, quem: comNomes(x.quem), entraram: comNomes(x.entraram), sairam: comNomes(x.sairam) }));
+        }
+        baixarRelatorio({
+          titulo: `Acessos · ${PERIODOS[aba].nome} · ${titulo}`,
+          subtitulo: `${dados.total} usuário(s) diferente(s) ${dados.textoTotal}.${minutos?.length ? ' Inclui o minuto a minuto das horas que ainda estão guardadas (últimas 24 h).' : ''}`,
+          nomeArquivo: `acessos-${aba}_${ultimoPeriodo.r}_${carimbo}.html`,
+          periodo: { ...dados, quem: dados.quem.map(comNomes) },
+          minutos,
+        });
+      }
+      aviso('Relatório baixado. Abra o arquivo no navegador; dentro dele há o botão para baixar a planilha (CSV).');
+    } catch (e) {
+      aviso('Não foi possível montar o relatório: ' + (e?.code === 'permission-denied' ? 'publique o firestore.rules novo no Console do Firebase.' : (e?.message || '')));
+    } finally { btn.disabled = false; }
+  });
+
   janela.querySelectorAll('[data-aba]').forEach(b => b.addEventListener('click', () => { aba = b.dataset.aba; desenhar(); }));
+  janela.querySelectorAll('[data-vista]').forEach(b => b.addEventListener('click', () => { vista = b.dataset.vista; desenharVivo(); }));
   janela.querySelectorAll('[data-andar]').forEach(b => b.addEventListener('click', () => {
     ref[aba] = PERIODOS[aba].andar(ref[aba], Number(b.dataset.andar));
     desenhar();

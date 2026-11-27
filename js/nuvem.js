@@ -684,17 +684,22 @@ export async function recalcularUsuarios() {
 
 /* ================================================================
    Acessos: quem está online agora e o histórico de uso
-   - presenca/{usuario} → { usuario, nome, t }: o site do aluno "dá sinal" a cada 2 minutos
-     enquanto a página está à vista, e zera o t ao esconder ou fechar a aba. Online = sinal
-     nos últimos 5 minutos.
+   - aoVivo/{AAAA-MM-DDTHH_N} → { e05: [...], s07: [...], expiraEm }: o "sinal de vida" de
+     cada aluno, minuto a minuto. O site dá sinal a cada 3 minutos enquanto a página está à
+     vista (eMM = estava aqui no minuto MM) e marca a saída ao esconder ou fechar a aba
+     (sMM). Online = sinal nos últimos 7 minutos, sem saída depois. Fica guardado só 24 horas
+     (o painel do admin apaga o que passou disso). N = 0..3 divide os alunos em 4 documentos
+     por hora, para muitos alunos não gravarem todos no mesmo documento ao mesmo tempo.
    - atividade/{AAAA-MM-DD} → { usuarios: [...], h00..h23: [...] }: quem usou no dia e em
-     cada hora. Cada aluno grava no máximo uma vez por hora (arrayUnion, sem repetir nome).
+     cada hora (fica para sempre). Cada aluno grava no máximo uma vez por hora.
    - atividadeMes/{AAAA-MM} → { usuarios: [...] }: quem usou no mês (uma vez por dia).
-   Custo baixo: ~30 gravações por aluno por dia de uso. Só administradores leem.
+   Custo: ~20 gravações por hora de uso de cada aluno. Só administradores leem.
    ================================================================ */
 
-export const SINAL_PRESENCA = 2 * 60 * 1000;
-export const ONLINE_ATE = 5 * 60 * 1000;
+export const SINAL_PRESENCA = 3 * 60 * 1000;
+export const ONLINE_MINUTOS = 7;
+export const GUARDAR_AO_VIVO_HORAS = 24;
+const PARTES_AO_VIVO = 4;
 let presencaIniciada = false;
 let ultimaHoraGravada = '', ultimoDiaGravado = '';
 
@@ -704,12 +709,24 @@ export function chavesDeAtividade(data = new Date()) {
   const dia = `${data.getFullYear()}-${doisDig(data.getMonth() + 1)}-${doisDig(data.getDate())}`;
   return { dia, mes: dia.slice(0, 7), hora: `h${doisDig(data.getHours())}` };
 }
+/** Chave da hora no aoVivo: "AAAA-MM-DDTHH". */
+export const chaveHoraAoVivo = (data = new Date()) => `${chavesDeAtividade(data).dia}T${doisDig(data.getHours())}`;
+/** Em qual das 4 partes da hora o aluno grava (sempre a mesma para o mesmo usuário). */
+const parteDo = u => [...u].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % PARTES_AO_VIVO;
+
+function marcarAoVivo(u, tipo) {
+  const agora = new Date();
+  const ref = fb.f.doc(fb.db, 'aoVivo', `${chaveHoraAoVivo(agora)}_${parteDo(u)}`);
+  return fb.f.setDoc(ref, {
+    [`${tipo}${doisDig(agora.getMinutes())}`]: fb.f.arrayUnion(u),
+    expiraEm: fb.f.Timestamp.fromMillis(agora.getTime() + (GUARDAR_AO_VIVO_HORAS + 2) * 3600 * 1000),
+  }, { merge: true }).catch(() => {});
+}
 
 function darSinal() {
   if (!usuario || !fb || document.hidden) return;
   const u = usuarioExibido(usuario);
-  const nome = nomeDoPerfil || usuario.displayName || '';
-  fb.f.setDoc(fb.f.doc(fb.db, 'presenca', u), { usuario: u, nome, t: Date.now() }).catch(() => {});
+  marcarAoVivo(u, 'e');
   const { dia, mes, hora } = chavesDeAtividade();
   if (`${dia}${hora}` !== ultimaHoraGravada) {
     ultimaHoraGravada = `${dia}${hora}`;
@@ -721,31 +738,130 @@ function darSinal() {
   }
 }
 
+let temporizadorSinal = null;
 function sairDaPresenca() {
   if (!usuario || !fb) return;
-  fb.f.setDoc(fb.f.doc(fb.db, 'presenca', usuarioExibido(usuario)), { t: 0 }, { merge: true }).catch(() => {});
+  marcarAoVivo(usuarioExibido(usuario), 's');
 }
 
 function iniciarPresenca() {
   if (presencaIniciada || !usuario || !fb) return;
   presencaIniciada = true;
   darSinal();
-  setInterval(darSinal, SINAL_PRESENCA);
-  document.addEventListener('visibilitychange', () => (document.hidden ? sairDaPresenca() : darSinal()));
+  temporizadorSinal = setInterval(darSinal, SINAL_PRESENCA);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { sairDaPresenca(); return; }
+    darSinal();
+    clearInterval(temporizadorSinal);
+    temporizadorSinal = setInterval(darSinal, SINAL_PRESENCA);
+  });
   window.addEventListener('pagehide', sairDaPresenca);
 }
 
 /**
- * Acompanha em tempo real quem está online (só administradores).
- * @param {(online: { usuario, nome, t }[]) => void} aoMudar - chamado a cada mudança
- * @returns {() => void} função que para de acompanhar
+ * Transforma os documentos aoVivo em eventos por usuário: Map(u → [{ t, tipo: 'e'|'s' }]).
+ * @param {Map<string, Object>} docs - id → dados
+ */
+function eventosAoVivo(docs) {
+  const porUsuario = new Map();
+  docs.forEach((dados, id) => {
+    const [dia, hh] = id.split('_')[0].split('T');
+    const [a, m, d] = dia.split('-').map(Number);
+    Object.entries(dados).forEach(([campo, lista]) => {
+      const tipo = campo[0];
+      if ((tipo !== 'e' && tipo !== 's') || !Array.isArray(lista)) return;
+      const t = new Date(a, m - 1, d, Number(hh), Number(campo.slice(1))).getTime();
+      lista.forEach(u => { if (!porUsuario.has(u)) porUsuario.set(u, []); porUsuario.get(u).push({ t, tipo }); });
+    });
+  });
+  // no mesmo minuto, a saída vale depois do sinal
+  porUsuario.forEach(ev => ev.sort((x, y) => x.t - y.t || (x.tipo === 'e' ? -1 : 1)));
+  return porUsuario;
+}
+
+/**
+ * Quem estava online em cada minuto entre `de` e `ate` (ms).
+ * @returns {{ t: number, online: number, quem: string[], entraram: string[], sairam: string[] }[]}
+ */
+export function linhaDoTempoAoVivo(eventos, de, ate) {
+  const MIN = 60000, janela = ONLINE_MINUTOS * MIN;
+  const minutos = [];
+  let antes = new Set();
+  for (let t = Math.floor(de / MIN) * MIN; t <= ate; t += MIN) {
+    const quem = [];
+    eventos.forEach((ev, u) => {
+      let ultimo = null;   // último evento até o fim deste minuto
+      for (const x of ev) { if (x.t <= t) ultimo = x; else break; }
+      if (ultimo && ultimo.tipo === 'e' && t - ultimo.t < janela) quem.push(u);
+    });
+    const agora = new Set(quem);
+    minutos.push({ t, online: quem.length, quem, entraram: quem.filter(u => !antes.has(u)), sairam: [...antes].filter(u => !agora.has(u)) });
+    antes = agora;
+  }
+  if (minutos.length) minutos[0].entraram = [];   // o primeiro minuto não conta como "entrada"
+  return minutos;
+}
+
+/** Documentos aoVivo das últimas `horas` horas. */
+async function lerAoVivo(horas) {
+  const de = chaveHoraAoVivo(new Date(Date.now() - horas * 3600 * 1000));
+  const q = fb.f.query(fb.f.collection(fb.db, 'aoVivo'), fb.f.where(fb.f.documentId(), '>=', de));
+  const snap = await fb.f.getDocs(q);
+  return new Map(snap.docs.map(d => [d.id, d.data()]));
+}
+
+/** As últimas 24 horas, minuto a minuto (só administradores). */
+export async function lerUltimas24h() {
+  const ate = Date.now(), de = ate - GUARDAR_AO_VIVO_HORAS * 3600 * 1000;
+  return linhaDoTempoAoVivo(eventosAoVivo(await lerAoVivo(GUARDAR_AO_VIVO_HORAS + 1)), de, ate);
+}
+
+/** Apaga o ao vivo com mais de 24 horas (chamado quando um admin abre o gráfico). */
+export async function limparAoVivoAntigo() {
+  const ate = chaveHoraAoVivo(new Date(Date.now() - (GUARDAR_AO_VIVO_HORAS + 1) * 3600 * 1000));
+  const q = fb.f.query(fb.f.collection(fb.db, 'aoVivo'), fb.f.where(fb.f.documentId(), '<', ate));
+  const snap = await fb.f.getDocs(q);
+  await Promise.all(snap.docs.map(d => fb.f.deleteDoc(d.ref)));
+  return snap.size;
+}
+
+/**
+ * Acompanha em tempo real quem está online (só administradores): ouve os documentos aoVivo
+ * da hora atual e da anterior (8 documentos pequenos).
+ * @param {(online: { usuario: string }[]) => void} aoMudar
+ * @returns {() => void} para de acompanhar
  */
 export function ouvirPresenca(aoMudar) {
-  let docs = [];
-  const avisar = () => { const agora = Date.now(); aoMudar(docs.filter(d => d.t && agora - d.t < ONLINE_ATE)); };
-  const parar = fb.f.onSnapshot(fb.f.collection(fb.db, 'presenca'), snap => { docs = snap.docs.map(d => d.data()); avisar(); }, () => {});
-  const relogio = setInterval(avisar, 15000);   // quem parou de dar sinal sai da lista sozinho
-  return () => { parar(); clearInterval(relogio); };
+  const docs = new Map();
+  let ouvintes = [], horaOuvida = '';
+  const avisar = () => {
+    const agora = Date.now();
+    const m = linhaDoTempoAoVivo(eventosAoVivo(docs), agora, agora).at(-1);
+    aoMudar((m?.quem || []).map(u => ({ usuario: u })));
+  };
+  const ouvirHoras = () => {
+    const agora = new Date();
+    const hora = chaveHoraAoVivo(agora);
+    if (hora === horaOuvida) return;
+    horaOuvida = hora;
+    ouvintes.forEach(parar => parar());
+    ouvintes = [];
+    docs.clear();
+    const horas = [chaveHoraAoVivo(new Date(agora.getTime() - 3600 * 1000)), hora];
+    horas.forEach(h => {
+      for (let n = 0; n < PARTES_AO_VIVO; n++) {
+        const id = `${h}_${n}`;
+        ouvintes.push(fb.f.onSnapshot(fb.f.doc(fb.db, 'aoVivo', id), snap => {
+          if (snap.exists()) docs.set(id, snap.data()); else docs.delete(id);
+          avisar();
+        }, () => {}));
+      }
+    });
+  };
+  ouvirHoras();
+  // a cada 15 s: quem parou de dar sinal sai sozinho, e na virada da hora passa a ouvir a nova
+  const relogio = setInterval(() => { ouvirHoras(); avisar(); }, 15000);
+  return () => { ouvintes.forEach(parar => parar()); clearInterval(relogio); };
 }
 
 /** Documentos de atividade entre duas chaves (inclusive), de 'atividade' ou 'atividadeMes'. */
