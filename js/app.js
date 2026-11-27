@@ -35,6 +35,7 @@ import { icone }                  from './icones.js';
 import { abrirConfiguracoes }     from './configuracoes.js';
 import { renderizarPlanos }       from './planos.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
+import { iniciarTemaAutomatico } from './tema.js';
 import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
@@ -372,6 +373,7 @@ async function aoMudarUsuario(user) {
 
 // Renderiza o cabeçalho e a rota inicial
 renderizarCabecalho();
+iniciarTemaAutomatico();   // tema claro/escuro pelo horário, se o aluno ligou (Configurações › Aparência)
 if (nuvemAtiva()) {
   renderizarCarregando(elApp, 'Conectando...');
   iniciarNuvem(aoMudarUsuario).catch(e => {

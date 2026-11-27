@@ -17,7 +17,7 @@ import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
 import { resetarMemoriaLocal } from './armazenamento.js';
-import { htmlBotaoTema, vincularBotoesTema } from './tema.js';
+import { htmlBotaoTema, vincularBotoesTema, htmlTemaAutomatico, vincularTemaAutomatico } from './tema.js';
 import {
   eAdmin, listarAdministradores, adicionarAdministrador, removerAdministrador,
   listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, gravarDadosDeTeste, usuarioAtual, usuarioExibido, sair, trocarSenha,
@@ -46,7 +46,8 @@ export async function abrirConfiguracoes() {
         <div class="configuracoes__linha">
           ${htmlBotaoTema({ texto: true })}
         </div>
-        <p class="configuracoes__info">Vale para este navegador.</p>
+        ${htmlTemaAutomatico()}
+        <p class="configuracoes__info">Vale para este navegador. Com o automático ligado, o tema troca sozinho no horário escolhido; mexer no interruptor desliga o automático.</p>
       </section>
 
       ${user ? `
@@ -108,6 +109,7 @@ export async function abrirConfiguracoes() {
   dialogo.showModal();
 
   vincularBotoesTema(dialogo);
+  vincularTemaAutomatico(dialogo);
   if (!user) return;   // sem login (modo local): só a aparência
 
   dialogo.querySelector('#config-sair').addEventListener('click', async () => {

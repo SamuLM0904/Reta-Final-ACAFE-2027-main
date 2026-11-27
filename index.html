@@ -14,6 +14,17 @@
       var barras = { escuro: '#0E1116', claro: '#F6F7F9' };
       var tema = null;
       try { tema = localStorage.getItem('acafe2027:tema'); } catch (e) { /* ignora */ }
+      // tema automático por horário (claro das X às Y, escuro no resto) — ver js/tema.js
+      try {
+        var auto = JSON.parse(localStorage.getItem('acafe2027:tema-auto') || 'null');
+        if (auto && auto.ativo) {
+          var min = function (h) { var p = h.split(':'); return p[0] * 60 + +p[1]; };
+          var agora = new Date(), m = agora.getHours() * 60 + agora.getMinutes();
+          var ini = min(auto.claro), fim = min(auto.escuro);
+          var claro = ini === fim || (ini < fim ? (m >= ini && m < fim) : (m >= ini || m < fim));
+          tema = claro ? 'claro' : 'escuro';
+        }
+      } catch (e) { /* ignora */ }
       if (!barras[tema]) tema = 'escuro';
       document.documentElement.dataset.tema = tema;
       document.querySelector('meta[name="theme-color"]').setAttribute('content', barras[tema]);
@@ -27,7 +38,7 @@
 
   <!-- Estilos — ordem importa: variáveis → base → telas -->
   <link rel="stylesheet" href="css/variaveis.css?v=134">
-  <link rel="stylesheet" href="css/base.css?v=141">
+  <link rel="stylesheet" href="css/base.css?v=142">
   <link rel="stylesheet" href="css/dashboard.css?v=138">
   <link rel="stylesheet" href="css/questoes.css?v=136">
   <link rel="stylesheet" href="css/simulado.css?v=133">

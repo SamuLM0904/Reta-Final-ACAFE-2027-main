@@ -88,3 +88,99 @@ export function vincularBotoesTema(raiz) {
   raiz.querySelectorAll('[data-botao-tema]').forEach(btn =>
     btn.addEventListener('click', () => aplicarTema(proximoTema().id)));
 }
+
+/* ================================================================
+   Tema automático por horário
+   O tema claro vale das `claro` às `escuro` (ex.: 07:00 às 19:00); no resto do dia,
+   o escuro. Os horários andam de meia em meia hora. Se o início do claro for depois do
+   fim (ex.: 22:00 às 06:00), o claro atravessa a meia-noite. Fica neste navegador, na
+   chave acafe2027:tema-auto (o <head> do index.html também lê, para não piscar).
+   ================================================================ */
+
+const CHAVE_AUTO = 'acafe2027:tema-auto';
+const PADRAO_AUTO = { ativo: false, claro: '07:00', escuro: '19:00' };
+
+/** Horários de meia em meia hora: "00:00", "00:30", ..., "23:30". */
+const HORARIOS = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`);
+
+/** Configuração do tema automático deste navegador. */
+export function lerTemaAutomatico() {
+  try {
+    const c = JSON.parse(localStorage.getItem(CHAVE_AUTO) || 'null');
+    if (c && HORARIOS.includes(c.claro) && HORARIOS.includes(c.escuro)) return { ...PADRAO_AUTO, ...c, ativo: Boolean(c.ativo) };
+  } catch { /* ignora */ }
+  return { ...PADRAO_AUTO };
+}
+
+function salvarTemaAutomatico(c) {
+  try { localStorage.setItem(CHAVE_AUTO, JSON.stringify(c)); } catch { /* ignora */ }
+}
+
+const minutosDe = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+
+/** Tema que vale agora pelo horário ("claro" ou "escuro"). */
+export function temaDoHorario(c = lerTemaAutomatico(), agora = new Date()) {
+  const m = agora.getHours() * 60 + agora.getMinutes();
+  const ini = minutosDe(c.claro), fim = minutosDe(c.escuro);
+  if (ini === fim) return 'claro';
+  const claro = ini < fim ? (m >= ini && m < fim) : (m >= ini || m < fim);
+  return claro ? 'claro' : 'escuro';
+}
+
+/** Aplica o tema do horário, se o automático estiver ligado. */
+function aplicarTemaDoHorario() {
+  const c = lerTemaAutomatico();
+  if (c.ativo && temaAtual() !== temaDoHorario(c)) aplicarTema(temaDoHorario(c));
+}
+
+/** Liga a troca automática (confere a cada 30 s; chamar uma vez, ao abrir o site). */
+export function iniciarTemaAutomatico() {
+  aplicarTemaDoHorario();
+  setInterval(aplicarTemaDoHorario, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) aplicarTemaDoHorario(); });
+}
+
+/** Controles do tema automático (Configurações › Aparência). Ligue com vincularTemaAutomatico. */
+export function htmlTemaAutomatico() {
+  const c = lerTemaAutomatico();
+  const opcoes = sel => HORARIOS.map(h => `<option value="${h}"${h === sel ? ' selected' : ''}>${h}</option>`).join('');
+  return `
+    <div class="tema-auto" data-tema-auto>
+      <label class="tema-auto__ligar">
+        <input type="checkbox" data-tema-auto-ativo${c.ativo ? ' checked' : ''}>
+        <span>Automático por horário</span>
+      </label>
+      <div class="tema-auto__horarios"${c.ativo ? '' : ' data-desligado'}>
+        <span>Claro das</span>
+        <select class="tema-auto__hora" data-tema-auto-claro aria-label="Início do tema claro"${c.ativo ? '' : ' disabled'}>${opcoes(c.claro)}</select>
+        <span>às</span>
+        <select class="tema-auto__hora" data-tema-auto-escuro aria-label="Início do tema escuro"${c.ativo ? '' : ' disabled'}>${opcoes(c.escuro)}</select>
+        <span class="tema-auto__resto">e escuro no resto do dia.</span>
+      </div>
+    </div>`;
+}
+
+/** Liga os controles do tema automático e o interruptor (mexer no interruptor desliga o automático). */
+export function vincularTemaAutomatico(raiz) {
+  const caixa = raiz.querySelector('[data-tema-auto]');
+  if (!caixa) return;
+  const ativo = caixa.querySelector('[data-tema-auto-ativo]');
+  const claro = caixa.querySelector('[data-tema-auto-claro]');
+  const escuro = caixa.querySelector('[data-tema-auto-escuro]');
+  const horarios = caixa.querySelector('.tema-auto__horarios');
+
+  const salvar = () => {
+    salvarTemaAutomatico({ ativo: ativo.checked, claro: claro.value, escuro: escuro.value });
+    claro.disabled = escuro.disabled = !ativo.checked;
+    horarios.toggleAttribute('data-desligado', !ativo.checked);
+    aplicarTemaDoHorario();
+  };
+  [ativo, claro, escuro].forEach(el => el.addEventListener('change', salvar));
+
+  // escolher o tema na mão desliga o automático
+  raiz.querySelectorAll('[data-botao-tema]').forEach(btn => btn.addEventListener('click', () => {
+    if (!ativo.checked) return;
+    ativo.checked = false;
+    salvar();
+  }));
+}

@@ -756,3 +756,22 @@ img, svg { max-width: 100%; display: block; }
 @supports not selector(::-webkit-scrollbar) {
   * { scrollbar-width: thin; scrollbar-color: var(--cor-verde-militar-borda) transparent; }
 }
+
+/* Tema automático por horário (Configurações › Aparência; js/tema.js) */
+.tema-auto { display: flex; flex-direction: column; gap: 10px; }
+.tema-auto__ligar { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: var(--tamanho-sm); font-weight: 600; color: var(--cor-texto); cursor: pointer; }
+.tema-auto__ligar input { width: 18px; height: 18px; accent-color: var(--cor-primaria); }
+.tema-auto__horarios { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.tema-auto__horarios[data-desligado] { opacity: 0.5; }
+.tema-auto__hora {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font-family: var(--fonte-numero);
+  font-variant-numeric: tabular-nums;
+}
+.tema-auto__hora:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+.tema-auto__resto { color: var(--cor-texto-fraco); }
