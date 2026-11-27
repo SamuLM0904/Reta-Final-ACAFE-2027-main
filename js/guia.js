@@ -24,7 +24,7 @@ import { PROVA } from './contagem.js';
 import { lerGuia, salvarGuia, lerMemoria, lerSimulado } from './armazenamento.js';
 import {
   MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, diasEntre,
-  inicioDaSemana, minutosDoDia, simuladoDoDia, indexarQuestoes, analisarMemoria, calcularPrioridades,
+  inicioDaSemana, minutosDoDia, MAX_MINUTOS_DIA, simuladoDoDia, indexarQuestoes, analisarMemoria, calcularPrioridades,
   conteudosFracos, taxaErro, planejarPeriodo, aplicarMudancas, avaliarMudancas, projetarAcertos,
   formatarHoras, dataCurta, notaCorteDoPerfil, acertosParaNota, escoreDosAcertos, NOTAS_CORTE_2024,
   faseDaPreparacao, valeComoSimuladoDaSemana, errosPendentes,
@@ -425,7 +425,7 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
     else {
       const atual = minutosDoDia(g, dia, DIA_PROVA);
       const delta = Number(btn.dataset.ajuste);
-      if (atual + delta < 0) return;
+      if (atual + delta < 0 || atual + delta > MAX_MINUTOS_DIA) return;   // um dia tem no máximo 24h
       if (g.fixos?.[dia] !== undefined) g.fixos[dia] = Math.max(0, g.fixos[dia] + delta);
       else g.ajustes = { ...g.ajustes, [dia]: (g.ajustes?.[dia] || 0) + delta };
     }
@@ -592,11 +592,12 @@ function htmlBlocoCompacto(b, guia, feito) {
 
 function htmlAjusteDoDia(guia, chave, ehHoje) {
   const mudado = guia.fixos?.[chave] !== undefined || guia.ajustes?.[chave];
+  const noLimite = minutosDoDia(guia, chave, DIA_PROVA) + PASSO_AJUSTE > MAX_MINUTOS_DIA;
   return `
     <div class="guia-ajuste" role="group" aria-label="Ajustar o tempo de ${dataCurta(chave)}">
       <span>${ehHoje ? 'Hoje vou estudar' : 'Neste dia'}:</span>
       <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="-${PASSO_AJUSTE}" data-dia="${chave}" aria-label="${PASSO_AJUSTE} minutos a menos em ${dataCurta(chave)}">− ${PASSO_AJUSTE} min</button>
-      <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="${PASSO_AJUSTE}" data-dia="${chave}" aria-label="${PASSO_AJUSTE} minutos a mais em ${dataCurta(chave)}">+ ${PASSO_AJUSTE} min</button>
+      <button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="${PASSO_AJUSTE}" data-dia="${chave}" aria-label="${PASSO_AJUSTE} minutos a mais em ${dataCurta(chave)}"${noLimite ? ' disabled title="Um dia tem no máximo 24 horas"' : ''}>+ ${PASSO_AJUSTE} min</button>
       ${mudado ? `<button type="button" class="btn btn-secundario btn-pequeno" data-ajuste="0" data-dia="${chave}">Tempo normal</button>` : ''}
     </div>`;
 }

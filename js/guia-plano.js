@@ -138,16 +138,20 @@ export const diasEntre = (a, b) => Math.round((meioDia(b) - meioDia(a)) / DIA_MS
  * @param {string} chave
  * @param {string} diaProva - "AAAA-MM-DD"
  */
+/** Um dia tem 24 horas: o tempo de estudo de um dia nunca passa disso. */
+export const MAX_MINUTOS_DIA = 24 * 60;
+
+/** Tempo pedido para o dia, antes dos limites (tempo fixado, ou o normal + ajustes). */
+export function minutosPedidosNoDia(guia, chave) {
+  const { perfil } = guia;
+  if (guia.fixos?.[chave] !== undefined) return guia.fixos[chave];
+  const base = eFimDeSemana(chave) && perfil.fimDeSemanaMais ? perfil.minutosFimDeSemana : perfil.minutosDia;
+  return (base || 0) + (guia.ajustes?.[chave] || 0);
+}
+
 export function minutosDoDia(guia, chave, diaProva) {
   if (chave >= diaProva) return 0;
-  const { perfil } = guia;
-  let minutos;
-  if (guia.fixos?.[chave] !== undefined) minutos = guia.fixos[chave];
-  else {
-    const base = eFimDeSemana(chave) && perfil.fimDeSemanaMais ? perfil.minutosFimDeSemana : perfil.minutosDia;
-    minutos = (base || 0) + (guia.ajustes?.[chave] || 0);
-  }
-  minutos = Math.max(0, minutos);
+  let minutos = Math.min(MAX_MINUTOS_DIA, Math.max(0, minutosPedidosNoDia(guia, chave)));
   if (somarDias(chave, 1) === diaProva) minutos = Math.min(minutos, 120);   // véspera: revisão leve
   return minutos;
 }
@@ -782,6 +786,11 @@ export function avaliarMudancas(guia, mudancas, ctx) {
     if (total > 16 * 60) erros.push(`${dataCurta(d)} ficaria com ${h(total)} de estudo; mais de 16 horas não é realista.`);
   });
   const guiaNovo = aplicarMudancas(guia, resolvidas);
+  // "estudar mais X horas": o dia não pode passar do realista (16h) nem, claro, de 24h
+  resolvidas.filter(m => m.tipo === 'ajuste').forEach(m => m.dias.forEach(d => {
+    const total = minutosPedidosNoDia(guiaNovo, d);
+    if (total > 16 * 60) erros.push(`${dataCurta(d)} ficaria com ${h(Math.min(total, MAX_MINUTOS_DIA))}${total > MAX_MINUTOS_DIA ? ' (o dia tem 24 horas)' : ''}; mais de 16 horas de estudo não é realista.`);
+  }));
   if (erros.length) return { veredito: 'invalida', erros, avisos, consequencias: [], compensacao: null, guiaNovo, mudancas: resolvidas };
 
   // Depois: hoje continua o plano fixado (com as edições pedidas), a não ser que o tempo do dia mude
