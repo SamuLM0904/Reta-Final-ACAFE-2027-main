@@ -662,8 +662,64 @@ img, svg { max-width: 100%; display: block; }
 /* Seta "para a frente": o ícone arrow-left girado (botões Próxima / Próximo capítulo) */
 .icone-rotacionado { transform: rotate(180deg); }
 
-/* Botão de sol/lua que troca o tema (js/tema.js) */
-.botao-tema { display: inline-flex; align-items: center; justify-content: center; gap: var(--espaco-xs); }
+/* Interruptor de tema claro/escuro (js/tema.js). As cores são as dos próprios temas,
+   fixas: o trilho claro mostra o sol, o escuro mostra a lua. */
+.interruptor-tema__grupo { display: inline-flex; align-items: center; gap: 12px; }
+.interruptor-tema__texto { font-size: var(--tamanho-sm); font-weight: 600; color: var(--cor-texto); }
+.interruptor-tema {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.interruptor-tema:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 3px; }
+.interruptor-tema__trilho {
+  position: relative;
+  display: block;
+  width: 92px;
+  height: 46px;
+  border-radius: 999px;
+  background: #ECECE9;
+  border: 1px solid #D4D4CF;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12), inset 0 -1px 1px rgba(255, 255, 255, 0.7);
+  transition: background-color var(--transicao-md), border-color var(--transicao-md);
+}
+.interruptor-tema[aria-checked="true"] .interruptor-tema__trilho {
+  background: #2B3038;
+  border-color: #1F2329;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+.interruptor-tema__bolinha {
+  position: absolute;
+  top: 4px;
+  left: 50px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #E9E9E6;
+  border: 1px solid #CFCFCA;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: left var(--transicao-md);
+}
+.interruptor-tema[aria-checked="true"] .interruptor-tema__bolinha { left: 4px; }
+.interruptor-tema__icone {
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  color: #F2B13E;
+  transition: opacity var(--transicao-md);
+}
+.interruptor-tema__sol { left: 14px; }
+.interruptor-tema__lua { right: 14px; opacity: 0; }
+.interruptor-tema[aria-checked="true"] .interruptor-tema__sol { opacity: 0; }
+.interruptor-tema[aria-checked="true"] .interruptor-tema__lua { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .interruptor-tema__bolinha, .interruptor-tema__icone, .interruptor-tema__trilho { transition: none; }
+}
 
 /* Tabela da conferência de dificuldade (Configurações › administrador) */
 .configuracoes__tabela { overflow-x: auto; margin-block: var(--espaco-sm); }

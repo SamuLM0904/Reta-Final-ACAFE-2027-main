@@ -44,7 +44,7 @@ export async function abrirConfiguracoes() {
       <section class="configuracoes__secao" aria-label="Aparência">
         <h3 class="configuracoes__subtitulo">Aparência</h3>
         <div class="configuracoes__linha">
-          ${htmlBotaoTema({ texto: true, classe: 'btn btn-secundario' })}
+          ${htmlBotaoTema({ texto: true })}
         </div>
         <p class="configuracoes__info">Vale para este navegador.</p>
       </section>
