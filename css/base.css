@@ -980,3 +980,8 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .btn-secundario:not(.btn-pequeno):not(:disabled):hover { box-shadow: 0 0 0 1px var(--cor-verde-militar-borda), 0 0 18px var(--cor-dourado-suave); transform: translateY(-1px); }
 .btn:not(.btn-pequeno):active { transform: translateY(0) scale(0.98); }
 @media (prefers-reduced-motion: reduce) { .btn:not(.btn-pequeno):hover { transform: none; } }
+
+/* Botões com inclinação: o brilho do hover continua, e o "levantar" entra junto com a inclinação */
+.btn.inclinavel { position: relative; }
+.btn.inclinavel:not(:disabled):hover { transform: perspective(600px) rotateX(var(--inclinar-x)) rotateY(var(--inclinar-y)) translateY(-1px); }
+.btn.inclinavel--ativo::after { border-radius: inherit; }
