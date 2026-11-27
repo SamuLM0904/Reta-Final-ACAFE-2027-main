@@ -153,7 +153,7 @@ export function proximoBlocoDeHoje(questoesProvas, questoesEstudo) {
 /** Texto do card do guia na tela inicial. */
 export function resumoGuia() {
   const guia = lerGuia();
-  if (!guia?.perfil) return 'Responda 8 perguntas e receba seu cronograma diário';
+  if (!guia?.perfil) return 'Responda 9 perguntas e receba seu cronograma diário';
   const hoje = chaveDia();
   if (hoje >= DIA_PROVA) return hoje === DIA_PROVA ? 'Hoje é o dia da prova. Boa prova! 🍀' : 'A prova já aconteceu';
   const minutos = minutosDoDia(guia, hoje, DIA_PROVA);
@@ -225,7 +225,16 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>3. Como você prefere dividir o estudo?</legend>
+            <legend>3. Em que horário você costuma começar a estudar?</legend>
+            <div class="guia-linha">
+              <label>Segunda a sexta <select name="inicioSemana" class="guia-select" aria-label="Começo dos estudos de segunda a sexta">${HORARIOS_INICIO.map(h => `<option value="${h}"${h === (p.horarios?.semana || PADRAO_INICIO.semana) ? ' selected' : ''}>${h}</option>`).join('')}</select></label>
+              <label>Sábado e domingo <select name="inicioFds" class="guia-select" aria-label="Começo dos estudos no sábado e no domingo">${HORARIOS_INICIO.map(h => `<option value="${h}"${h === (p.horarios?.fimDeSemana || PADRAO_INICIO.fimDeSemana) ? ' selected' : ''}>${h}</option>`).join('')}</select></label>
+            </div>
+            <p class="guia-dica">O calendário do guia encaixa os blocos a partir desse horário, um atrás do outro, com as pausas.</p>
+          </fieldset>
+
+          <fieldset class="guia-pergunta">
+            <legend>4. Como você prefere dividir o estudo?</legend>
             <div class="guia-linha">
               ${BLOCOS_PRONTOS.map(b => radio('bloco', b.valor, b.rotulo, blocoAtual === b.valor)).join('')}
               ${radio('bloco', 'outro', 'Outro', !blocoPronto)}
@@ -237,14 +246,14 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>4. Em quais matérias você tem mais dificuldade?</legend>
+            <legend>5. Em quais matérias você tem mais dificuldade?</legend>
             <div class="guia-linha">
               ${MATERIAS.map(m => `<label class="simulado-idioma__opcao"><input type="checkbox" name="dificeis" value="${m.id}"${dificeis.has(m.id) ? ' checked' : ''}> ${m.nome || 'Língua estrangeira'}</label>`).join('')}
             </div>
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>5. Qual língua estrangeira você vai fazer na prova?</legend>
+            <legend>6. Qual língua estrangeira você vai fazer na prova?</legend>
             <div class="guia-linha">
               ${radio('idioma', 'Espanhol', 'Espanhol', (p.idioma || 'Espanhol') === 'Espanhol')}
               ${radio('idioma', 'Inglês', 'Inglês', p.idioma === 'Inglês')}
@@ -252,7 +261,7 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>6. Qual a nota de corte do curso que você quer?</legend>
+            <legend>7. Qual a nota de corte do curso que você quer?</legend>
             <div class="guia-linha">
               <input type="number" name="notaCorte" min="4000" max="5500" step="any" class="guia-numero guia-numero--largo"
                 value="${notaCorteDoPerfil(p) ?? ''}" placeholder="ex.: 4589,37" aria-label="Nota de corte (escore ACAFE)">
@@ -266,7 +275,7 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>7. Você já fez as provas anteriores da ACAFE?</legend>
+            <legend>8. Você já fez as provas anteriores da ACAFE?</legend>
             <div class="guia-linha">
               ${radio('provas', 'todas', 'Sim, várias', p.provasAnteriores === 'todas')}
               ${radio('provas', 'algumas', 'Algumas', p.provasAnteriores === 'algumas')}
@@ -275,7 +284,7 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
           </fieldset>
 
           <fieldset class="guia-pergunta">
-            <legend>8. Você faz cursinho?</legend>
+            <legend>9. Você faz cursinho?</legend>
             <div class="guia-linha">
               ${radio('cursinho', 'sim', 'Sim', p.cursinho)}
               ${radio('cursinho', 'nao', 'Não', !p.cursinho)}
@@ -331,6 +340,7 @@ function renderizarQuestionario(container, perfil, aoSalvar) {
       notaCorte,
       provasAnteriores: form.provas.value,
       cursinho: form.cursinho.value === 'sim',
+      horarios: { semana: form.inicioSemana.value, fimDeSemana: form.inicioFds.value },
       atualizadoEm: Date.now(),
     };
     const atual = lerGuia() || {};
@@ -411,14 +421,6 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
     try { localStorage.setItem(CHAVE_VISAO, btn.dataset.visaoGuia); } catch { /* ignora */ }
     redesenhar();
   }));
-  // Calendário: horário de começo dos estudos (dias úteis / fim de semana)
-  container.querySelectorAll('[data-inicio-estudo]').forEach(sel => sel.addEventListener('change', () => {
-    const g = lerGuia();
-    g.horarios = { ...PADRAO_INICIO, ...(g.horarios || {}), [sel.dataset.inicioEstudo]: sel.value };
-    salvarGuia(g);
-    redesenhar();
-  }));
-
   // Correção de erros do bloco: abre só as questões que cabem nele
   container.querySelectorAll('[data-revisao-limite]').forEach(link => link.addEventListener('click', () => {
     try { sessionStorage.setItem('acafe2027:revisao-limite', link.dataset.revisaoLimite); } catch { /* ignora */ }
@@ -775,8 +777,9 @@ const PADRAO_INICIO = { semana: '14:00', fimDeSemana: '09:00' };
 const PX_POR_HORA = 48;
 
 /** Horário de começo dos estudos de um dia ("HH:MM"), do guia (dias úteis × fim de semana). */
+const horariosDoGuia = guia => ({ ...PADRAO_INICIO, ...(guia.horarios || {}), ...(guia.perfil?.horarios || {}) });
 const inicioDoDia = (guia, chave) => {
-  const h = { ...PADRAO_INICIO, ...(guia.horarios || {}) };
+  const h = horariosDoGuia(guia);
   const d = new Date(`${chave}T12:00:00-03:00`).getUTCDay();
   return d === 0 || d === 6 ? h.fimDeSemana : h.semana;
 };
@@ -858,14 +861,10 @@ function htmlCalendario(ctx, dias) {
     return `<div class="guia-cal__coluna${d.chave === hoje ? ' guia-cal__coluna--hoje' : ''}" style="height: ${altura}px">${especial}${blocos}${linhaAgora}</div>`;
   }).join('');
 
-  const opcoes = sel => HORARIOS_INICIO.map(h => `<option value="${h}"${h === sel ? ' selected' : ''}>${h}</option>`).join('');
-  const h = { ...PADRAO_INICIO, ...(guia.horarios || {}) };
+  const h = horariosDoGuia(guia);
   return `
-    <div class="guia-cal__ajustes">
-      <span>Começo dos estudos:</span>
-      <label>dias úteis <select class="tema-auto__hora" data-inicio-estudo="semana" aria-label="Começo dos estudos nos dias úteis">${opcoes(h.semana)}</select></label>
-      <label>fim de semana <select class="tema-auto__hora" data-inicio-estudo="fimDeSemana" aria-label="Começo dos estudos no fim de semana">${opcoes(h.fimDeSemana)}</select></label>
-    </div>
+    <p class="guia-cal__nota">Os estudos começam às <strong>${h.semana}</strong> de segunda a sexta e às <strong>${h.fimDeSemana}</strong>
+      no fim de semana. Para mudar, use “Editar minhas respostas”.</p>
     <div class="guia-cal" role="img" aria-label="Calendário da semana com os blocos de estudo">
       <div class="guia-cal__grade">
         <div class="guia-cal__canto"></div>
@@ -876,8 +875,8 @@ function htmlCalendario(ctx, dias) {
         <div class="guia-cal__colunas" style="--px-hora: ${PX_POR_HORA}px">${colunas}</div>
       </div>
     </div>
-    <p class="guia-dica">Os blocos começam no horário escolhido e seguem um atrás do outro, com a pausa entre eles.
-      Para marcar um bloco como feito, use o card de hoje (ou a lista).</p>`;
+    <p class="guia-dica">Os blocos seguem um atrás do outro, com a pausa entre eles. Para marcar um bloco como feito,
+      use o card de hoje (ou a lista).</p>`;
 }
 
 /** Uma linha da semana. */

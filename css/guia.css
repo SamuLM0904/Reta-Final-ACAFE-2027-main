@@ -868,3 +868,4 @@
 .guia-cal__aviso--prova { background: var(--cor-primaria); color: var(--cor-texto-sobre-primaria); font-weight: 700; }
 .guia-cal__agora { position: absolute; left: 0; right: 0; height: 2px; background: var(--cor-errada); z-index: 2; }
 .guia-cal__agora::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--cor-errada); }
+.guia-cal__nota { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }

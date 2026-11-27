@@ -56,7 +56,7 @@ function htmlProximoBloco(prox) {
         <div class="inicio-bloco__texto">
           <p class="inicio-bloco__rotulo">Comece por aqui</p>
           <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">Monte seu guia de estudos</h2>
-          <p class="inicio-bloco__descricao">Responda 8 perguntas e receba um cronograma diário com os blocos de estudo, simulados e correção de erros.</p>
+          <p class="inicio-bloco__descricao">Responda 9 perguntas e receba um cronograma diário com os blocos de estudo, simulados e correção de erros.</p>
         </div>
         <div class="inicio-bloco__acoes">
           <a href="#/guia" class="btn btn-primario inicio-bloco__principal">Montar meu guia</a>
