@@ -909,3 +909,15 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 @media (max-width: 600px) {
   .configuracoes__aba { padding: 0 10px; font-size: var(--tamanho-xs); }
 }
+
+/* Nada dentro das janelas encolhe para caber (as abas sumiam quando o conteúdo era longo) */
+.confirmacao__caixa > * { flex-shrink: 0; }
+/* As abas das Configurações ficam presas no topo enquanto rola */
+.configuracoes__abas {
+  position: sticky;
+  top: calc(-1 * var(--espaco-lg));
+  z-index: 2;
+  margin-top: calc(-1 * var(--espaco-xs));
+  padding-top: var(--espaco-sm);
+  background: var(--cor-fundo-card);
+}
