@@ -421,16 +421,9 @@ img, svg { max-width: 100%; display: block; }
   max-height: calc(90vh - 2px);   /* 2px = bordas da janela */
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cor-verde-militar-borda) transparent;
 }
-.confirmacao__caixa::-webkit-scrollbar { width: 10px; }
-.confirmacao__caixa::-webkit-scrollbar-track { background: transparent; margin-block: var(--raio-lg); }
-.confirmacao__caixa::-webkit-scrollbar-thumb {
-  background-color: var(--cor-verde-militar-borda);
-  border: 3px solid var(--cor-fundo-card);
-  border-radius: 999px;
-}
+/* Dentro das janelas, a barra começa e termina longe dos cantos arredondados */
+.confirmacao__caixa::-webkit-scrollbar-track { margin-block: 18px; }
 
 .confirmacao__icone {
   display: inline-flex;
@@ -737,3 +730,23 @@ img, svg { max-width: 100%; display: block; }
 .configuracoes__tabela { overflow-x: auto; margin-block: var(--espaco-sm); }
 .configuracoes__tabela table { border-collapse: collapse; font-size: var(--tamanho-xs); font-variant-numeric: tabular-nums; }
 .configuracoes__tabela th, .configuracoes__tabela td { padding: 4px 8px; border-bottom: 1px solid var(--cor-borda); text-align: left; white-space: nowrap; }
+
+/* ================================================================
+   Barra de rolagem do site: fina, afastada da borda e na cor neutra do tema.
+   Chrome/Edge/Safari usam ::-webkit-scrollbar (14 px de área, 4 px de barra visível:
+   a borda transparente afasta a barra da borda da caixa). O Firefox usa a barra fina dele.
+   ================================================================ */
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--cor-verde-militar-borda);
+  background-clip: padding-box;
+  border: 5px solid transparent;
+  border-radius: 999px;
+  min-height: 40px;
+}
+::-webkit-scrollbar-thumb:hover { background-color: var(--cor-texto-fraco); border-width: 4px; }
+::-webkit-scrollbar-corner { background: transparent; }
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-width: thin; scrollbar-color: var(--cor-verde-militar-borda) transparent; }
+}
