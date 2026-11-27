@@ -175,24 +175,40 @@ function htmlGraficoQuestoes(memoria) {
    Card "Matérias"
    ================================================================ */
 
-function htmlMaterias(questoesProvas, memoria) {
+/**
+ * Uma linha por matéria: quantas questões dela o aluno já fez (provas da ACAFE + banco de
+ * questões) e, dentro da barra, a parte certa (verde) e a errada (vermelho), na proporção
+ * do total. Vale a última resposta de cada questão.
+ */
+function htmlMaterias(questoesProvas, questoesEstudo, memoria) {
   const perfil = lerGuia()?.perfil;
   const idioma = perfil?.idioma || 'Espanhol';
-  const feitas = new Set(memoria.map(m => m.q));
+  const ultima = new Map();   // id da questão → acertou na última vez?
+  [...memoria].sort((a, b) => a.t - b.t).forEach(m => ultima.set(m.q, Boolean(m.ok)));
+  const todas = [...questoesProvas, ...questoesEstudo];
+  const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+
   const linhas = MATERIAS.map(materia => {
-    const doBanco = questoesProvas.filter(q => materiaDaDisciplina(q.disciplina)?.id === materia.id
+    const daMateria = todas.filter(q => materiaDaDisciplina(q.disciplina)?.id === materia.id
       && (materia.id !== 'lingua' || q.disciplina === idioma));
-    const total = doBanco.length;
-    const n = doBanco.filter(q => feitas.has(q.id)).length;
+    const total = daMateria.length;
+    let certas = 0, erradas = 0;
+    daMateria.forEach(q => { if (ultima.has(q.id)) { if (ultima.get(q.id)) certas++; else erradas++; } });
+    const feitas = certas + erradas;
     const nome = materia.id === 'lingua' ? idioma : nomeMateria(materia, perfil);
     const modulo = materia.id === 'lingua' ? (idioma === 'Inglês' ? 'ingles' : 'espanhol') : moduloMateria(materia, perfil);
-    const pct = total ? Math.round((n / total) * 100) : 0;
+    const pct = n => (total ? (n / total) * 100 : 0);
+    const detalhe = feitas ? `${plural(certas, 'certa', 'certas')} e ${plural(erradas, 'errada', 'erradas')}` : 'nenhuma feita';
     return `
       <li>
-        <a href="${modulo ? `#/questoes/${modulo}` : '#/simulados'}" class="inicio-materia" aria-label="${nome}: ${n} de ${total} questões feitas">
+        <a href="${modulo ? `#/questoes/${modulo}` : '#/simulados'}" class="inicio-materia"
+          aria-label="${nome}: ${feitas} de ${total} questões feitas, ${detalhe}" title="${feitas} de ${total} feitas: ${detalhe}">
           <span class="inicio-materia__nome">${nome}</span>
-          <span class="inicio-materia__barra" aria-hidden="true"><span style="width: ${pct}%"></span></span>
-          <span class="inicio-materia__n">${n}/${total}</span>
+          <span class="inicio-materia__barra" aria-hidden="true">
+            ${certas ? `<span class="inicio-materia__certas" style="width: ${pct(certas)}%"></span>` : ''}
+            ${erradas ? `<span class="inicio-materia__erradas" style="width: ${pct(erradas)}%"></span>` : ''}
+          </span>
+          <span class="inicio-materia__n">${feitas}/${total}</span>
         </a>
       </li>`;
   }).join('');
@@ -203,6 +219,11 @@ function htmlMaterias(questoesProvas, memoria) {
         <span class="inicio-card__legenda">questões feitas</span>
       </header>
       <ul class="inicio-materias" role="list">${linhas}</ul>
+      <p class="inicio-materias__legenda" aria-hidden="true">
+        <span class="inicio-legenda inicio-legenda--certas">certas</span>
+        <span class="inicio-legenda inicio-legenda--erradas">erradas</span>
+        <span class="inicio-legenda inicio-legenda--resto">não feitas</span>
+      </p>
     </section>`;
 }
 
@@ -231,7 +252,7 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
       ${htmlProximoBloco(prox)}
       <div class="inicio__grade">
         ${htmlSimulados(memoria)}
-        ${htmlMaterias(questoesProvas, memoria)}
+        ${htmlMaterias(questoesProvas, todasQuestoes, memoria)}
       </div>
     </div>`;
   iniciarContagemCompacta(container);

@@ -479,8 +479,17 @@
 }
 .inicio-materia:hover { background: var(--cor-verde-militar); text-decoration: none; }
 .inicio-materia__nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.inicio-materia__barra { display: block; height: 6px; border-radius: 3px; background: var(--cor-marinho-borda); overflow: hidden; }
-.inicio-materia__barra span { display: block; height: 100%; border-radius: 3px; background: var(--cor-progresso); }
+/* Barra: certas (verde) + erradas (vermelho), na proporção do total da matéria; o trilho é o que falta */
+.inicio-materia__barra { display: flex; gap: 2px; height: 8px; border-radius: 4px; background: var(--cor-marinho-borda); overflow: hidden; }
+.inicio-materia__barra span { display: block; height: 100%; flex: none; }
+.inicio-materia__certas  { background: var(--cor-certa); }
+.inicio-materia__erradas { background: var(--cor-errada); }
+.inicio-materias__legenda { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 0; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.inicio-legenda { display: inline-flex; align-items: center; gap: 6px; }
+.inicio-legenda::before { content: ""; width: 10px; height: 10px; border-radius: 3px; }
+.inicio-legenda--certas::before  { background: var(--cor-certa); }
+.inicio-legenda--erradas::before { background: var(--cor-errada); }
+.inicio-legenda--resto::before   { background: var(--cor-marinho-borda); }
 .inicio-materia__n {
   text-align: right;
   font-family: var(--fonte-numero);
