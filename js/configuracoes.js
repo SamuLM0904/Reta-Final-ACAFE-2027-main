@@ -479,7 +479,7 @@ function vincularEdicaoInline(dialogo) {
         if (campo === 'nome') {
           const nome = await alterarNome(input.value);
           valorEl.textContent = nome;
-          const noCabecalho = document.querySelector('.cabecalho-usuario__nome');
+          const noCabecalho = document.querySelector('.menu-site__usuario');
           if (noCabecalho) noCabecalho.textContent = nome;
           fechar();
           status.textContent = 'Nome alterado.';

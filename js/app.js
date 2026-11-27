@@ -33,6 +33,7 @@ import { MODULOS }                from './modulos.js';
 import { icone }                  from './icones.js';
 import { abrirConfiguracoes }     from './configuracoes.js';
 import { renderizarPlanos }       from './planos.js';
+import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
@@ -50,27 +51,78 @@ const elApp       = document.getElementById('app');
    Cabeçalho persistente
    ================================================================ */
 
+/** Logo: círculo com traçado de batimento (ECG); a cor vem de currentColor. */
+const htmlLogo = (tamanho = 36) => `
+  <svg class="logo-ecg" width="${tamanho}" height="${tamanho}" viewBox="0 0 56 56" aria-hidden="true">
+    <circle cx="28" cy="28" r="26" fill="none" stroke="currentColor" stroke-width="3"/>
+    <path d="M10 30 H20 L24 19 L30 39 L34 27 H46" fill="none" stroke="currentColor"
+          stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
+/** Links do menu (as rotas continuam as mesmas). `ativo` diz quais hashes acendem o link. */
+const LINKS_MENU = [
+  { href: '#/',        nome: 'Início',            ativo: h => h === '#/' || h === '' || h.startsWith('#/questoes/') },
+  { href: '#/guia',    nome: 'Guia de estudos',   ativo: h => h === '#/guia' },
+  { href: '#/simulados', nome: 'Simulados',       ativo: h => h.startsWith('#/simulado') },
+  { href: '#/revisao', nome: 'Correção de erros', ativo: h => h === '#/revisao' },
+  { href: '#/em-breve/leituras-obrigatorias', nome: 'Leituras obrigatórias', ativo: h => h === '#/em-breve/leituras-obrigatorias' },
+];
+
+/**
+ * Menu do site: lateral fixo no desktop (≥ 1024 px) e barra superior com botão de menu
+ * no celular. Logo, links das rotas, Configurações e, no rodapé, a contagem para a prova.
+ */
 function renderizarCabecalho() {
   const user = usuarioAtual();
   elCabecalho.innerHTML = `
-    <header class="cabecalho-site" role="banner">
-      <div class="container">
-        <a href="#/" class="cabecalho-logo" aria-label="Reta Final ACAFE 2027 — Início">
-          <span class="cabecalho-titulo">Reta Final ACAFE 2027</span>
-          <span class="cabecalho-subtitulo">Medicina • questões reais das provas anteriores da ACAFE</span>
+    <header class="menu-site" role="banner">
+      <div class="menu-site__barra">
+        <a href="#/" class="menu-site__logo" aria-label="Reta Final ACAFE 2027 — Início">
+          ${htmlLogo(36)}
+          <span class="menu-site__marca">
+            <span class="cabecalho-titulo">RETA FINAL</span>
+            <span class="cabecalho-subtitulo">ACAFE 2027 · Medicina</span>
+          </span>
         </a>
-        <div class="cabecalho-usuario">
-          ${user ? `
-            <span class="cabecalho-usuario__nome" title="Usuário: ${usuarioExibido(user)}">
-              ${user.displayName || usuarioExibido(user)}
-            </span>` : ''}
-          <button type="button" class="btn btn-secundario btn-pequeno cabecalho-config" id="btn-config"
-            aria-label="Configurações" title="Configurações">${icone('settings', 20)}</button>
+        <button type="button" class="menu-site__abrir" id="btn-menu" aria-expanded="false" aria-controls="menu-navegacao"
+          aria-label="Abrir menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+          </svg>
+        </button>
+      </div>
+      <div class="menu-site__painel" id="menu-navegacao">
+        <nav class="menu-site__nav" aria-label="Navegação principal">
+          ${LINKS_MENU.map(l => `<a href="${l.href}" class="menu-site__link" data-menu-link>${l.nome}</a>`).join('')}
+          <button type="button" class="menu-site__link" id="btn-config">Configurações</button>
+        </nav>
+        <div class="menu-site__rodape">
+          ${user ? `<p class="menu-site__usuario" title="Usuário: ${usuarioExibido(user)}">${user.displayName || usuarioExibido(user)}</p>` : ''}
+          ${htmlContagemCompacta()}
         </div>
       </div>
     </header>
   `;
-  elCabecalho.querySelector('#btn-config')?.addEventListener('click', abrirConfiguracoes);
+  const btnMenu = elCabecalho.querySelector('#btn-menu');
+  const fecharMenu = () => { elCabecalho.classList.remove('menu-aberto'); btnMenu.setAttribute('aria-expanded', 'false'); btnMenu.setAttribute('aria-label', 'Abrir menu'); };
+  btnMenu.addEventListener('click', () => {
+    const aberto = elCabecalho.classList.toggle('menu-aberto');
+    btnMenu.setAttribute('aria-expanded', String(aberto));
+    btnMenu.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+  });
+  elCabecalho.querySelectorAll('[data-menu-link]').forEach(a => a.addEventListener('click', fecharMenu));
+  elCabecalho.querySelector('#btn-config').addEventListener('click', () => { fecharMenu(); abrirConfiguracoes(); });
+  iniciarContagemCompacta(elCabecalho);
+  marcarLinkAtivo();
+}
+
+/** Acende no menu o link da tela atual. */
+function marcarLinkAtivo() {
+  const hash = window.location.hash || '#/';
+  elCabecalho.querySelectorAll('[data-menu-link]').forEach((a, i) => {
+    if (LINKS_MENU[i].ativo(hash)) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  });
 }
 
 /* ================================================================
@@ -328,6 +380,7 @@ if (nuvemAtiva()) {
 // Escuta mudanças de hash (navegação)
 window.addEventListener('hashchange', () => {
   roteador();
+  marcarLinkAtivo();
   // Rola para o topo ao trocar de tela
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });

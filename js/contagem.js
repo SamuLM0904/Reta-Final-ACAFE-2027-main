@@ -138,3 +138,42 @@ export function iniciarContagem(container) {
     if (!box.isConnected || !atualizar()) clearInterval(timer);
   }, 1000);
 }
+
+/* ================================================================
+   Contagem compacta (rodapé do menu lateral e topo da tela inicial no celular)
+   ================================================================ */
+
+/** "22/11" da prova, no fuso de Brasília. */
+const diaMesProva = () => PROVA.inicio.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' });
+const horaPortoes = () => PROVA.portoesFecham.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' }).replace(':', 'h');
+
+/**
+ * HTML da contagem compacta ("15d 12h", com a data e os portões embaixo).
+ * Os números são preenchidos por iniciarContagemCompacta.
+ */
+export function htmlContagemCompacta() {
+  return `
+    <div class="contagem-compacta" data-contagem-compacta aria-label="Contagem regressiva para a prova">
+      <span class="contagem-compacta__rotulo">Prova</span>
+      <span class="contagem-compacta__valor" data-contagem-valor></span>
+      <span class="contagem-compacta__data">${diaMesProva()} · portões ${horaPortoes()}</span>
+    </div>`;
+}
+
+/** Atualiza as contagens compactas dentro de `raiz` a cada minuto (param sozinhas ao sair da tela). */
+export function iniciarContagemCompacta(raiz) {
+  raiz.querySelectorAll('[data-contagem-compacta]').forEach(box => {
+    const valor = box.querySelector('[data-contagem-valor]');
+    const atualizar = () => {
+      const agora = Date.now();
+      if (agora >= PROVA.termino) { valor.textContent = 'Prova realizada'; box.classList.add('contagem-compacta--fim'); return false; }
+      if (agora >= PROVA.inicio) { valor.textContent = 'Em andamento'; return true; }
+      const { dias, horas, minutos } = decompor(PROVA.inicio - agora);
+      valor.textContent = dias ? `${dias}d ${horas}h` : `${horas}h ${doisDigitos(minutos)}min`;
+      box.setAttribute('aria-label', `Faltam ${dias} dias e ${horas} horas para a prova, em ${PROVA.dataExtenso}`);
+      return true;
+    };
+    if (!atualizar()) return;
+    const timer = setInterval(() => { if (!box.isConnected || !atualizar()) clearInterval(timer); }, 30000);
+  });
+}

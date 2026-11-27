@@ -104,7 +104,7 @@
   --padding-lateral:         clamp(var(--espaco-md), 4vw, var(--espaco-xl));
 
   /* --- Cabeçalho --- */
-  --altura-cabecalho:        68px;
+  --altura-cabecalho:        64px;   /* barra superior no celular; 0 no desktop (menu lateral, base.css) */
 
   /* --- Cores que mudam com o tema (o bloco acima é o tema "escuro", o padrão) --- */
   --cor-texto-sobre-primaria: #1A1300;
@@ -113,6 +113,7 @@
   --gradiente-destaque:      #161B22;
   --sombra-destaque:         0 0 0 1px #2A323D;
   --sombra-cabecalho:        none;
+  --cor-menu-lateral:        #12161C;   /* fundo do menu (base.css) */
   --cor-caixa-numero:        #0E1116;
   --cor-ajuda:               #2A323D;
   --cor-ajuda-texto:         #C9D1DA;
@@ -177,6 +178,7 @@
   --gradiente-destaque:      #FFFFFF;
   --sombra-destaque:         0 0 0 1px #D8DDE3;
   --sombra-cabecalho:        0 2px 10px rgba(15, 25, 35, 0.08);
+  --cor-menu-lateral:        #FFFFFF;
   --cor-caixa-numero:        #FFFFFF;
   --cor-ajuda:               #d3d7da;
   --cor-ajuda-texto:         #5f686e;
