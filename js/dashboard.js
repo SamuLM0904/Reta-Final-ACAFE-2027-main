@@ -160,12 +160,13 @@ function htmlGraficoQuestoes(memoria) {
       : !erradas ? `<path class="inicio-grafico__certas" d="${topoArredondado(x, base, y)}"/>`
       : !v.ok ? `<path class="inicio-grafico__erradas" d="${topoArredondado(x, base, y)}"/>`
       : `<path class="inicio-grafico__certas" d="${reto(x, base, yCertas)}"/><path class="inicio-grafico__erradas" d="${topoArredondado(x, yCertas, y)}"/>`;
-    return `<g class="inicio-grafico__coluna"><title>${dica}</title>
+    return `<g class="inicio-grafico__coluna" tabindex="0" role="img" aria-label="${dica}"
+      data-dia="${rotulo(dias[i])}" data-n="${v.n}" data-ok="${v.ok}">
       <rect x="${i * larg}" y="0" width="${larg}" height="${A}" fill="transparent"/>${partes}</g>`;
   }).join('');
 
   return `
-    <figure class="inicio-grafico">
+    <figure class="inicio-grafico" data-grafico>
       <figcaption class="inicio-grafico__titulo">Questões feitas nos últimos 14 dias <span class="inicio-grafico__total">${total} no total</span></figcaption>
       <svg viewBox="0 0 ${L} ${A}" class="inicio-grafico__svg" role="img"
         aria-label="Questões feitas por dia nos últimos 14 dias: ${total} no total">
@@ -176,11 +177,55 @@ function htmlGraficoQuestoes(memoria) {
         <text x="0" y="${A - 2}" class="inicio-grafico__eixo">${rotulo(dias[0])}</text>
         <text x="${L}" y="${A - 2}" text-anchor="end" class="inicio-grafico__eixo">hoje</text>
       </svg>
+      <div class="inicio-grafico__dica" role="tooltip" hidden></div>
       <p class="inicio-grafico__legenda" aria-hidden="true">
         <span class="inicio-legenda inicio-legenda--graf-certas">certas</span>
         <span class="inicio-legenda inicio-legenda--graf-erradas">erradas</span>
       </p>
     </figure>`;
+}
+
+/**
+ * Janelinha que aparece sobre a barra do dia (mouse ou teclado) com o total e a
+ * proporção de certas e erradas.
+ */
+function vincularDicaDoGrafico(container) {
+  const figura = container.querySelector('[data-grafico]');
+  if (!figura) return;
+  const dica = figura.querySelector('.inicio-grafico__dica');
+  const pct = (n, total) => (total ? Math.round((n / total) * 100) : 0);
+
+  const mostrar = coluna => {
+    const n = Number(coluna.dataset.n), ok = Number(coluna.dataset.ok), erradas = n - ok;
+    dica.innerHTML = n
+      ? `<p class="inicio-grafico__dica-titulo">${coluna.dataset.dia} · ${n} ${n === 1 ? 'questão' : 'questões'}</p>
+         <p class="inicio-grafico__dica-linha"><span class="inicio-legenda inicio-legenda--graf-certas">certas</span>
+           <span class="inicio-grafico__dica-num">${ok} · ${pct(ok, n)}%</span></p>
+         <p class="inicio-grafico__dica-linha"><span class="inicio-legenda inicio-legenda--graf-erradas">erradas</span>
+           <span class="inicio-grafico__dica-num">${erradas} · ${pct(erradas, n)}%</span></p>
+         <span class="inicio-grafico__dica-barra" aria-hidden="true">
+           <span class="inicio-grafico__dica-certas" style="width: ${pct(ok, n)}%"></span><span class="inicio-grafico__dica-erradas" style="width: ${100 - pct(ok, n)}%"></span>
+         </span>`
+      : `<p class="inicio-grafico__dica-titulo">${coluna.dataset.dia}</p><p class="inicio-grafico__dica-linha">Nenhuma questão</p>`;
+    dica.hidden = false;
+    // sempre acima da barra, centralizada nela (pode passar por cima do título do gráfico; nunca cobre as barras)
+    const f = figura.getBoundingClientRect(), c = coluna.getBoundingClientRect();
+    const largura = dica.offsetWidth, altura = dica.offsetHeight;
+    const topos = [...coluna.querySelectorAll('path')].map(p => p.getBoundingClientRect().top);
+    const barraTopo = topos.length ? Math.min(...topos) : c.bottom;
+    const x = Math.max(0, Math.min(c.left - f.left + c.width / 2 - largura / 2, f.width - largura));
+    const y = barraTopo - f.top - altura - 8;
+    dica.style.left = `${x}px`;
+    dica.style.top = `${y}px`;
+  };
+  const esconder = () => { dica.hidden = true; };
+
+  figura.querySelectorAll('.inicio-grafico__coluna').forEach(coluna => {
+    coluna.addEventListener('pointerenter', () => mostrar(coluna));
+    coluna.addEventListener('focus', () => mostrar(coluna));
+    coluna.addEventListener('blur', esconder);
+  });
+  figura.querySelector('svg').addEventListener('pointerleave', esconder);
 }
 
 /* ================================================================
@@ -268,4 +313,5 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
       </div>
     </div>`;
   iniciarContagemCompacta(container);
+  vincularDicaDoGrafico(container);
 }

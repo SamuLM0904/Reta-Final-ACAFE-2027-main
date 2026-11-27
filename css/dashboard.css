@@ -509,3 +509,31 @@
   .inicio-card { padding: 18px 16px; }
   .inicio-materia { grid-template-columns: 6.5rem 1fr 3.25rem; gap: 10px; }
 }
+
+/* Janelinha do gráfico (mouse ou teclado sobre a barra do dia) */
+.inicio-grafico { position: relative; }
+.inicio-grafico__coluna { outline: none; cursor: default; }
+.inicio-grafico__coluna:focus-visible path { stroke: var(--cor-acento); stroke-width: 2; }
+.inicio-grafico__dica {
+  position: absolute;
+  z-index: 5;
+  min-width: 11rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--cor-marinho-elevado);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-md);
+  pointer-events: none;
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+}
+.inicio-grafico__dica p { margin: 0; }
+.inicio-grafico__dica-titulo { font-weight: 600; color: var(--cor-texto); font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; }
+.inicio-grafico__dica-linha { display: flex; justify-content: space-between; gap: 16px; }
+.inicio-grafico__dica-num { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; color: var(--cor-texto); }
+.inicio-grafico__dica-barra { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--cor-marinho-borda); }
+.inicio-grafico__dica-certas  { background: var(--cor-grafico-certas); }
+.inicio-grafico__dica-erradas { background: var(--cor-grafico-erradas); }
