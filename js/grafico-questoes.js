@@ -220,7 +220,7 @@ const PERIODOS = {
         const dias = Array.from({ length: 7 }, (_, i) => somarDias(dom, i)).filter(d => d >= primeiro && d <= ultimo);
         const n = semanas.length + 1;
         semanas.push({ rotulo: `${n}ª semana · ${diaMes(dias[0])} a ${diaMes(dias.at(-1))}`,
-          curto: `${dias[0].slice(8)}–${diaMes(dias.at(-1))}`, ...somar(porDia, dias) });
+          curto: `${diaMes(dias[0])} a ${diaMes(dias.at(-1))}`, ...somar(porDia, dias) });
       }
       return semanas;
     },

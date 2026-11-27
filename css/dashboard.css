@@ -471,7 +471,7 @@
 .inicio-grafico__expandir:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
 .inicio-grafico__grade--meio { stroke-dasharray: 1 4; opacity: 0.7; }
 .inicio-grafico__total { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; color: var(--cor-texto); }
-.inicio-grafico__svg { width: 100%; height: auto; overflow: visible; }
+.inicio-grafico__svg { width: 100%; height: auto; overflow: visible; user-select: none; -webkit-user-select: none; }
 .inicio-grafico__certas  { fill: var(--cor-grafico-certas); }
 .inicio-grafico__erradas { fill: var(--cor-grafico-erradas); }
 .inicio-grafico__coluna:hover path { opacity: 0.85; }
