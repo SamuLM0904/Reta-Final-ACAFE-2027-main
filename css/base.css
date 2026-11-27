@@ -871,3 +871,20 @@ img, svg { max-width: 100%; display: block; }
 /* Cards bloqueados (tela inicial e chat do Guia) */
 .inicio-bloco--bloqueado .inicio-bloco__rotulo { display: inline-flex; align-items: center; gap: 6px; }
 .guia-chat--bloqueado .simulado-card__titulo { display: inline-flex; align-items: center; gap: 8px; }
+
+/* Configurações em abas: Aparência, Conta e Administração (só administradores, em vermelho) */
+.configuracoes__abas { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 4px; border-bottom: 1px solid var(--cor-borda); }
+.configuracoes__aba {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 0 16px;
+  border: 1px solid transparent; border-radius: 10px 10px 0 0;
+  background: transparent; color: var(--cor-texto-suave);
+  font: inherit; font-size: var(--tamanho-sm); font-weight: 600; cursor: pointer;
+}
+.configuracoes__aba:hover { background: var(--cor-verde-militar); color: var(--cor-texto); }
+.configuracoes__aba[aria-selected="true"] { background: var(--cor-verde-militar); color: var(--cor-texto); box-shadow: inset 0 -2px 0 var(--cor-primaria); }
+.configuracoes__aba--admin { color: var(--cor-errada); }
+.configuracoes__aba--admin[aria-selected="true"] { background: var(--cor-errada-fundo); color: var(--cor-errada); box-shadow: inset 0 -2px 0 var(--cor-errada); }
+.configuracoes__aba[hidden], [data-painel-config][hidden] { display: none; }
+.configuracoes__aba:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+.configuracoes__plano { font-weight: 700; color: var(--cor-primaria); }

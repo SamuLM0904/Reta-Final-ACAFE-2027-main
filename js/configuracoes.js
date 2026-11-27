@@ -13,6 +13,7 @@
  *     pode ser alterada pelo Console do Firebase (veja o README).
  */
 
+import { planoEmUso, nomeDoPlano, abrirJanelaPlanos } from './acesso.js';
 import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
@@ -41,7 +42,13 @@ export async function abrirConfiguracoes() {
         <button type="button" class="configuracoes__fechar" data-fechar aria-label="Fechar">${icone('x', 20)}</button>
       </div>
 
-      <section class="configuracoes__secao" aria-label="Aparência">
+      <div class="configuracoes__abas" role="tablist" aria-label="Partes das configurações">
+        <button type="button" role="tab" class="configuracoes__aba" data-aba-config="aparencia" aria-selected="true">Aparência</button>
+        ${user ? `<button type="button" role="tab" class="configuracoes__aba" data-aba-config="conta" aria-selected="false">Conta</button>
+        <button type="button" role="tab" class="configuracoes__aba configuracoes__aba--admin" data-aba-config="admin" aria-selected="false" hidden>${icone('lock', 14)} Administração</button>` : ''}
+      </div>
+
+      <section class="configuracoes__secao" aria-label="Aparência" data-painel-config="aparencia">
         <h3 class="configuracoes__subtitulo">Aparência</h3>
         <div class="configuracoes__linha">
           ${htmlBotaoTema({ texto: true })}
@@ -51,9 +58,12 @@ export async function abrirConfiguracoes() {
       </section>
 
       ${user ? `
-      <section class="configuracoes__secao" aria-label="Conta">
+      <section class="configuracoes__secao" aria-label="Conta" data-painel-config="conta" hidden>
         <h3 class="configuracoes__subtitulo">Conta</h3>
         <dl class="configuracoes__dados">
+          <dt>Plano</dt>
+          <dd><span class="configuracoes__valor configuracoes__plano">${escaparHtml(nomeDoPlano(planoEmUso()))}</span>
+            <button type="button" class="login-link" id="config-ver-planos">Ver planos</button></dd>
           <dt>Nome completo</dt>
           <dd data-campo="nome"><span class="configuracoes__valor">${escaparHtml(user?.displayName || '—')}</span>${botaoEditar('nome', 'o nome completo')}</dd>
           <dt>Usuário</dt>
@@ -99,7 +109,7 @@ export async function abrirConfiguracoes() {
         <p class="configuracoes__info" id="config-senha-status" role="status"></p>
       </section>
 
-      <div id="config-admin"><p class="configuracoes__info">Verificando permissões...</p></div>` : ''}
+      <div id="config-admin" data-painel-config="admin" hidden><p class="configuracoes__info">Verificando permissões...</p></div>` : ''}
     </div>`;
   document.body.appendChild(dialogo);
   dialogo.addEventListener('close', () => dialogo.remove());
@@ -110,7 +120,14 @@ export async function abrirConfiguracoes() {
 
   vincularBotoesTema(dialogo);
   vincularTemaAutomatico(dialogo);
+  // abas: Aparência (abre nela), Conta e, para administradores, Administração
+  dialogo.querySelectorAll('[data-aba-config]').forEach(aba => aba.addEventListener('click', () => {
+    dialogo.querySelectorAll('[data-aba-config]').forEach(a => a.setAttribute('aria-selected', String(a === aba)));
+    dialogo.querySelectorAll('[data-painel-config]').forEach(p => { p.hidden = p.dataset.painelConfig !== aba.dataset.abaConfig; });
+  }));
   if (!user) return;   // sem login (modo local): só a aparência
+
+  dialogo.querySelector('#config-ver-planos').addEventListener('click', () => { dialogo.close(); abrirJanelaPlanos(); });
 
   dialogo.querySelector('#config-sair').addEventListener('click', async () => {
     if (!(await confirmar({
@@ -128,6 +145,7 @@ export async function abrirConfiguracoes() {
 
   const area = dialogo.querySelector('#config-admin');
   if (!(await eAdmin())) { area.remove(); return; }
+  area.closest('dialog')?.querySelector('[data-aba-config="admin"]')?.removeAttribute('hidden');
   renderizarAreaAdmin(area);
 }
 
