@@ -11,6 +11,7 @@
  * Sem alternativa marcada, "Avançar" apenas pula a questão.
  */
 
+import { cronometrarQuestao, tempoNaQuestao, pararCronometro } from './cronometro-questao.js';
 import { icone }          from './icones.js';
 import { confirmar } from './confirmar.js';
 import { slugify, escaparHtml } from './utils.js';
@@ -387,6 +388,7 @@ function renderizarQuestaoAtual(container, modulo) {
   // Questão já respondida: mostra direto o resultado e as explicações
   const resposta = respostasSession[questao.id];
   if (resposta) aplicarFeedback(container, questao, resposta.alternativaSelecionada);
+  else cronometrarQuestao(questao.id);   // conta o tempo até a resposta (só com a tela à vista)
 
   atualizarBotaoAvancar(container);
   vincularEventosQuestao(container, modulo);
@@ -521,7 +523,9 @@ function conferirResposta(container) {
 
   // Salva no localStorage e no estado da sessão
   salvarResposta(questao.id, resposta);
-  registrarNaMemoria({ questaoId: questao.id, letra: resposta.alternativaSelecionada, acertou, origem: 'estudo' });
+  registrarNaMemoria({ questaoId: questao.id, letra: resposta.alternativaSelecionada, acertou, origem: 'estudo',
+    tempoMs: tempoNaQuestao(questao.id) });
+  pararCronometro();
   estado.respostasSession[questao.id] = resposta;
   estado.selecionada = null;
 

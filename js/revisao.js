@@ -9,6 +9,7 @@
  * O bloco "Correção de erros" do Guia de Estudos traz para cá.
  */
 
+import { cronometrarQuestao, tempoNaQuestao, pararCronometro } from './cronometro-questao.js';
 import { icone } from './icones.js';
 import { htmlImagens, htmlAlternativa, vincularImagens, aplicarFeedback } from './render-questao.js';
 import { lerMemoria, lerSimulado, registrarNaMemoria, registrarMotivoNaMemoria } from './armazenamento.js';
@@ -77,6 +78,7 @@ export function renderizarRevisao(container, questoesProvas, questoesEstudo) {
         </div>
       </div>`;
     vincularImagens(container);
+    cronometrarQuestao(questao.id);
 
     const proxima = container.querySelector('#btn-proxima');
     const pular = container.querySelector('#btn-pular');
@@ -85,7 +87,8 @@ export function renderizarRevisao(container, questoesProvas, questoesEstudo) {
       if (!btn || btn.disabled) return;
       const letra = btn.dataset.letra;
       const acertou = letra === questao.gabarito;
-      registrarNaMemoria({ questaoId: questao.id, letra, acertou, origem: 'revisao' });
+      registrarNaMemoria({ questaoId: questao.id, letra, acertou, origem: 'revisao', tempoMs: tempoNaQuestao(questao.id) });
+      pararCronometro();
       placar[acertou ? 'acertos' : 'erros']++;
       aplicarFeedback(container, questao, letra);
       if (!acertou) desenharDiagnostico();

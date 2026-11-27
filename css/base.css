@@ -793,3 +793,32 @@ img, svg { max-width: 100%; display: block; }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* Dificuldade da questão, depois de respondida (js/dificuldade.js) */
+.dificuldade { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+.dificuldade__botao {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 32px; padding: 0 12px;
+  border: 1px solid var(--cor-verde-militar-borda);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font: inherit; font-size: var(--tamanho-xs); font-weight: 600;
+  cursor: pointer;
+}
+.dificuldade__botao:hover { background: var(--cor-verde-militar); color: var(--cor-texto); }
+.dificuldade__botao:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+.dificuldade__etiqueta {
+  display: none;
+  align-items: center; gap: 4px; flex-wrap: wrap;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--cor-verde-militar-suave);
+  color: var(--cor-texto);
+  font-size: var(--tamanho-xs); font-weight: 600;
+}
+:root[data-mostrar-dificuldade] .dificuldade__etiqueta { display: inline-flex; }
+.dificuldade__etiqueta--facil, .dificuldade__etiqueta--muito-facil { background: var(--cor-certa-fundo); }
+.dificuldade__etiqueta--dificil, .dificuldade__etiqueta--muito-dificil { background: var(--cor-errada-fundo); }
+.dificuldade__origem, .dificuldade__admin { font-weight: 500; color: var(--cor-texto-fraco); }
+.dificuldade__admin[hidden] { display: none; }

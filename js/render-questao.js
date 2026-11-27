@@ -4,6 +4,7 @@
  * imagens com legendas, alternativas, visualizador de imagem e feedback.
  */
 
+import { htmlDificuldade, vincularDificuldade } from './dificuldade.js';
 import { icone } from './icones.js';
 
 /**
@@ -155,8 +156,14 @@ export function aplicarFeedback(container, questao, selecionada) {
     if (explicacao) explicacao.style.display = 'block';
   });
 
+  // Dificuldade da questão (botão geral "Mostrar dificuldade"; ver js/dificuldade.js)
+  const feedbackArea = container.querySelector('#feedback-area');
+  feedbackArea.parentElement.querySelectorAll('.dificuldade').forEach(el => el.remove());
+  feedbackArea.insertAdjacentHTML('afterend', htmlDificuldade(questao));
+  vincularDificuldade(feedbackArea.parentElement);
+
   // Mensagem de feedback
-  const feedbackEl = container.querySelector('#feedback-area');
+  const feedbackEl = feedbackArea;
   if (acertou) {
     feedbackEl.className = 'feedback-area feedback-area--acerto';
     feedbackEl.innerHTML = `${icone('check', 18)} <span>Você acertou! Muito bem.</span>`;

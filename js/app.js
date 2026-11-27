@@ -36,6 +36,7 @@ import { abrirConfiguracoes }     from './configuracoes.js';
 import { renderizarPlanos }       from './planos.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { iniciarTemaAutomatico } from './tema.js';
+import { pararCronometro } from './cronometro-questao.js';
 import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
@@ -142,7 +143,8 @@ function roteador() {
 
   const hash = window.location.hash || '#/';
 
-  // Limpa o conteúdo anterior
+  // Limpa o conteúdo anterior (e para o tempo da questão que estava na tela; a próxima tela retoma)
+  pararCronometro();
   elApp.innerHTML = '';
 
   // Com o banco de dados ativo, é preciso entrar

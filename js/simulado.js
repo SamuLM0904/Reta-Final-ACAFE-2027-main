@@ -21,6 +21,7 @@
  * regressivo (5 horas, a duração da ACAFE) e pausa quando se sai da tela.
  */
 
+import { cronometrarQuestao, tempoNaQuestao } from './cronometro-questao.js';
 import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
@@ -853,6 +854,7 @@ function renderizarQuestaoSimulado(container) {
   const lista = container.querySelector('#alternativas-lista');
   marcarAlternativa(lista, respostas[questao.id]);
   vincularImagens(container);
+  cronometrarQuestao(questao.id);   // soma o tempo desta questão, mesmo indo e voltando
 
   lista.addEventListener('click', (e) => {
     const btn = e.target.closest('.alternativa-btn');
@@ -864,7 +866,8 @@ function renderizarQuestaoSimulado(container) {
       removerDaMemoria(simuladoId, questao.id);
     } else {
       respostas[questao.id] = letra;
-      registrarNaMemoria({ questaoId: questao.id, letra, acertou: letra === questao.gabarito, origem: 'simulado', simuladoId });
+      registrarNaMemoria({ questaoId: questao.id, letra, acertou: letra === questao.gabarito, origem: 'simulado', simuladoId,
+        tempoMs: tempoNaQuestao(questao.id) });
     }
     marcarAlternativa(lista, respostas[questao.id]);
     atualizarRespondidas(container);

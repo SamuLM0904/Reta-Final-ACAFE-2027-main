@@ -301,12 +301,14 @@ export function lerMemoria() {
  * é um novo registro.
  * @param {{ questaoId: string, letra: string, acertou: boolean, origem: 'estudo'|'simulado', simuladoId?: string }} r
  */
-export function registrarNaMemoria({ questaoId, letra, acertou, origem, simuladoId }) {
+export function registrarNaMemoria({ questaoId, letra, acertou, origem, simuladoId, tempoMs }) {
   const dados = lerTudo();
   let memoria = dados.memoria || [];
   if (origem === 'simulado') memoria = memoria.filter(m => !(m.s === simuladoId && m.q === questaoId));
   const registro = { q: questaoId, a: letra, ok: acertou, t: Date.now(), o: origem };
   if (simuladoId) registro.s = simuladoId;
+  // tempo que o aluno ficou na questão, com a tela à vista (js/cronometro-questao.js), em segundos
+  if (tempoMs > 0) registro.d = Math.round(tempoMs / 1000);
   dados.memoria = [...memoria, registro];
   gravarTudo(dados);
 }
