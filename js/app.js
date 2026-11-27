@@ -3,6 +3,7 @@
  *
  * Rotas suportadas:
  *   #/              → Dashboard (tela inicial)
+ *   #/questoes      → Banco de questões: as matérias, com o progresso de cada uma
  *   #/questoes/<id> → Motor de questões do módulo (questões de estudo)
  *   #/simulados     → Simulados com as provas anteriores (montar/continuar/histórico)
  *   #/simulado      → Simulado em andamento
@@ -25,7 +26,7 @@
  */
 
 import { renderizarDashboard }    from './dashboard.js';
-import { iniciarSessaoQuestoes, renderizarConteudosModulo } from './questoes.js';
+import { iniciarSessaoQuestoes, renderizarConteudosModulo, renderizarBancoQuestoes } from './questoes.js';
 import { renderizarTelaSimulados, iniciarSimulado, renderizarResultadoSimulado, renderizarQuestoesFeitas } from './simulado.js';
 import { renderizarGuia }         from './guia.js';
 import { renderizarRevisao }      from './revisao.js';
@@ -61,9 +62,10 @@ const htmlLogo = (tamanho = 36) => `
 
 /** Links do menu (as rotas continuam as mesmas). `ativo` diz quais hashes acendem o link. */
 const LINKS_MENU = [
-  { href: '#/',        nome: 'Início',            ativo: h => h === '#/' || h === '' || h.startsWith('#/questoes/') },
+  { href: '#/',        nome: 'Início',            ativo: h => h === '#/' || h === '' },
   { href: '#/guia',    nome: 'Guia de estudos',   ativo: h => h === '#/guia' },
   { href: '#/simulados', nome: 'Simulados',       ativo: h => h.startsWith('#/simulado') },
+  { href: '#/questoes', nome: 'Banco de questões', ativo: h => h === '#/questoes' || h.startsWith('#/questoes/') },
   { href: '#/revisao', nome: 'Correção de erros', ativo: h => h === '#/revisao' },
   { href: '#/em-breve/leituras-obrigatorias', nome: 'Leituras obrigatórias', ativo: h => h === '#/em-breve/leituras-obrigatorias' },
 ];
@@ -160,6 +162,13 @@ function roteador() {
   if (hash === '#/' || hash === '') {
     document.title = 'Sapiens Med';
     renderizarDashboard(elApp, todasQuestoes, questoesProvas);
+    return;
+  }
+
+  // Rota: banco de questões (lista das matérias)
+  if (hash === '#/questoes') {
+    document.title = 'Banco de questões — Sapiens Med';
+    renderizarBancoQuestoes(elApp, todasQuestoes, MODULOS.filter(m => m.tipo === 'disciplina' && m.status === 'ativo'));
     return;
   }
 

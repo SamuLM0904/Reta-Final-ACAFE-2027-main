@@ -707,3 +707,56 @@
 }
 .conteudos-ordem:focus { outline: none; border-color: var(--cor-primaria); }
 .conteudos-vazio { color: var(--cor-texto-suave); font-size: var(--tamanho-sm); }
+
+/* Banco de questões (#/questoes) */
+.banco {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding: var(--espaco-xl) var(--padding-lateral) var(--espaco-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+.banco__cabecalho { display: flex; flex-direction: column; gap: 8px; }
+.banco__titulo { margin: 0; font-size: clamp(1.75rem, 4vw, 2.125rem); line-height: 1.15; }
+.banco__subtitulo { margin: 0; max-width: 65ch; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.banco__lista {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  background: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+}
+.banco-materia {
+  display: grid;
+  grid-template-columns: 20px 9rem 1fr 4rem 8rem;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 0 16px;
+  border-radius: var(--raio-md);
+  color: var(--cor-texto);
+  text-decoration: none;
+}
+.banco-materia:hover { background: var(--cor-verde-militar); text-decoration: none; }
+.banco-materia__icone { display: flex; color: var(--cor-texto-fraco); }
+.banco-materia__nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.banco-materia__barra { display: block; height: 6px; border-radius: 3px; background: var(--cor-marinho-borda); overflow: hidden; }
+.banco-materia__barra span { display: block; height: 100%; border-radius: 3px; background: var(--cor-progresso); }
+.banco-materia__n, .banco-materia__acertos {
+  font-family: var(--fonte-numero);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-suave);
+  text-align: right;
+  white-space: nowrap;
+}
+.banco-materia__acertos { color: var(--cor-texto-fraco); }
+@media (max-width: 700px) {
+  .banco-materia { grid-template-columns: 20px 1fr 3.5rem; row-gap: 6px; padding-block: 10px; }
+  .banco-materia__barra { grid-column: 2 / 4; grid-row: 2; }
+  .banco-materia__acertos { display: none; }
+}

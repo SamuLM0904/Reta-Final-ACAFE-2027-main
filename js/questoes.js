@@ -89,7 +89,7 @@ export function renderizarConteudosModulo(container, todasQuestoes, modulo) {
       <div class="container">
         <header class="questoes-cabecalho">
           <div class="questoes-nav-linha">
-            <a href="#/" class="btn-voltar" aria-label="Voltar ao início">${icone('arrow-left', 18)} Voltar ao início</a>
+            <a href="#/questoes" class="btn-voltar">${icone('arrow-left', 18)} Banco de questões</a>
           </div>
           <h2 class="conteudos-titulo">${modulo.titulo}</h2>
           <p class="conteudos-subtitulo">Questões de outros vestibulares, separadas pelos conteúdos do material de estudo.
@@ -659,4 +659,44 @@ function renderizarResultado(container, modulo) {
       iniciarSessaoQuestoes(container, questoes, modulo, erradasIds);
     });
   }
+}
+
+/* ================================================================
+   Banco de questões (#/questoes): as matérias, com o progresso de cada uma
+   ================================================================ */
+
+/**
+ * Lista as matérias do banco de questões de estudo (outros vestibulares). Cada linha
+ * abre a lista de conteúdos da matéria (#/questoes/<matéria>).
+ * @param {HTMLElement} container
+ * @param {Object[]}    todasQuestoes
+ * @param {Object[]}    modulos - os módulos do tipo "disciplina" (js/modulos.js)
+ */
+export function renderizarBancoQuestoes(container, todasQuestoes, modulos) {
+  const linhas = modulos.map(modulo => {
+    const nome = modulo.disciplina || modulo.titulo.replace(/^Questões de /, '');
+    const questoes = filtrarPorDisciplina(todasQuestoes, modulo.disciplina);
+    const { total, respondidas, acertos } = estatisticasModulo(questoes);
+    const pct = total ? Math.round((respondidas / total) * 100) : 0;
+    return `
+      <li>
+        <a href="#/questoes/${modulo.id}" class="banco-materia" aria-label="${escaparHtml(nome)}: ${respondidas} de ${total} questões feitas">
+          <span class="banco-materia__icone" aria-hidden="true">${icone(modulo.icone, 20)}</span>
+          <span class="banco-materia__nome">${escaparHtml(nome)}</span>
+          <span class="banco-materia__barra" aria-hidden="true"><span style="width: ${pct}%"></span></span>
+          <span class="banco-materia__n">${respondidas}/${total}</span>
+          <span class="banco-materia__acertos">${respondidas ? `${Math.round((acertos / respondidas) * 100)}% de acerto` : 'nenhuma feita'}</span>
+        </a>
+      </li>`;
+  }).join('');
+  const totalGeral = modulos.reduce((s, m) => s + filtrarPorDisciplina(todasQuestoes, m.disciplina).length, 0);
+  container.innerHTML = `
+    <div class="banco">
+      <header class="banco__cabecalho">
+        <h1 class="banco__titulo">Banco de questões</h1>
+        <p class="banco__subtitulo">${totalGeral} questões de outros vestibulares (ENEM, Fuvest, Unesp, Unicamp, UFPR, UDESC, PUCPR),
+          separadas por matéria e conteúdo. Elas não entram nos simulados.</p>
+      </header>
+      <ul class="banco__lista" role="list">${linhas}</ul>
+    </div>`;
 }
