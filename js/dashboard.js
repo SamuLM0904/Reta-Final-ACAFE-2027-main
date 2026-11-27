@@ -170,7 +170,7 @@ function htmlSimulados(memoria) {
       ${atual ? `<a href="#/simulado" class="inicio-atalho inicio-atalho--andamento">
           <span>Continuar simulado em andamento</span><span class="inicio-atalho__info">${Object.keys(atual.respostas || {}).length}/${atual.ids.length}</span></a>` : ''}
       <ul class="inicio-atalhos" role="list">
-        ${ATALHOS.map(a => `<li><a href="#/simulados" class="inicio-atalho"><span>${a.nome}</span><span class="inicio-atalho__info">${a.info}</span></a></li>`).join('')}
+        ${ATALHOS.map(a => `<li><a href="#/simulados" class="inicio-atalho" data-inclinar="2"><span>${a.nome}</span><span class="inicio-atalho__info">${a.info}</span></a></li>`).join('')}
       </ul>
       <p class="inicio-card__nota">${feitos}</p>
       ${htmlGraficoQuestoes(memoria)}
