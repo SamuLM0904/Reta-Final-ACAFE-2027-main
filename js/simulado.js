@@ -257,15 +257,24 @@ function questoesPorIds(questoesProvas, ids) {
  *   materias: ids de BLOCOS a usar (padrão: todas, na proporção da prova)
  * @returns {boolean} false se não houver questões
  */
-export function criarSimuladoAleatorio(questoesProvas, { idioma, total, nome, materias = null }) {
-  const filtro = materias ? { materias: new Set(materias), conteudos: null, dificuldades: {} } : null;
-  const disp = disponibilidade(questoesProvas, idioma, filtro);
-  const rodizio = lerSimulado().tentativas.length;
-  const quantidades = quantidadesPorBloco(total, rodizio, {
-    pesos: BLOCOS.map(b => (!filtro || filtro.materias.has(b.id) ? b.quantidade : 0)),
-    capacidades: disp.map(d => d.banco),
-  });
-  const { ids } = sortearSimulado(questoesProvas, idioma, quantidades, filtro);
+export function criarSimuladoAleatorio(questoesProvas, { idioma, total, nome, materias = null, ids: escolhidas = null }) {
+  // ids prontos (ex.: o simulado do dia, escolhido pelo Guia): usa essas questões, na ordem da prova
+  let ids;
+  if (escolhidas?.length) {
+    const ordem = new Map(BLOCOS.map((b, i) => [b.id, i]));
+    const porId = new Map(questoesProvas.map(q => [q.id, q]));
+    ids = escolhidas.filter(id => porId.has(id))
+      .sort((a, b) => (ordem.get(blocoDa(porId.get(a))) ?? 99) - (ordem.get(blocoDa(porId.get(b))) ?? 99));
+  } else {
+    const filtro = materias ? { materias: new Set(materias), conteudos: null, dificuldades: {} } : null;
+    const disp = disponibilidade(questoesProvas, idioma, filtro);
+    const rodizio = lerSimulado().tentativas.length;
+    const quantidades = quantidadesPorBloco(total, rodizio, {
+      pesos: BLOCOS.map(b => (!filtro || filtro.materias.has(b.id) ? b.quantidade : 0)),
+      capacidades: disp.map(d => d.banco),
+    });
+    ({ ids } = sortearSimulado(questoesProvas, idioma, quantidades, filtro));
+  }
   if (!ids.length) return false;
   if (lerSimulado().atual) descartarSimuladoAtual();
   salvarSimuladoAtual({

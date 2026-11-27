@@ -27,7 +27,7 @@ import {
   inicioDaSemana, minutosDoDia, MAX_MINUTOS_DIA, simuladoDoDia, indexarQuestoes, analisarMemoria, calcularPrioridades,
   conteudosFracos, taxaErro, planejarPeriodo, aplicarMudancas, avaliarMudancas, projetarAcertos,
   formatarHoras, dataCurta, notaCorteDoPerfil, acertosParaNota, escoreDosAcertos, NOTAS_CORTE_2024,
-  faseDaPreparacao, valeComoSimuladoDaSemana, errosPendentes,
+  faseDaPreparacao, valeComoSimuladoDaSemana, errosPendentes, escolherSimuladoDoDia, descreverSimuladoDoDia,
 } from './guia-plano.js';
 import { criarSimuladoAleatorio } from './simulado.js';
 import { conteudosDa } from './conteudos.js';
@@ -73,6 +73,7 @@ function montarContexto(questoesProvas, questoesEstudo) {
     semanasComSimuladoFeito: new Set(completos.map(t => inicioDaSemana(chaveDia(new Date(t.data))))),
     simuladoFeitoHoje: completos.some(t => chaveDia(new Date(t.data)) === hoje),
     indice,
+    questoesProvas,
     // "<matéria>|<conteúdo>" dos conteúdos que têm questões no banco de questões (para os links dos blocos)
     conteudosComQuestoes: new Set(questoesEstudo.flatMap(q => {
       const m = materiaDaDisciplina(q.disciplina)?.id;
@@ -206,9 +207,9 @@ export function proximoBlocoDeHoje(questoesProvas, questoesEstudo) {
   const i = plano.blocos.findIndex((_, k) => !feitos.has(k));
   if (i < 0) {
     // dia concluído: sugere o mini-simulado do dia (as matérias estudadas hoje)
-    const materias = materiasDoPlano(plano);
-    const mini = materias.length && base.diasParaProva > 1
-      ? { tipo: 'simulado', total: QUESTOES_MINI_DO_DIA, nome: 'Mini-simulado do dia', materias } : null;
+    const escolha = simuladoDoDiaDe(plano, ctx);
+    const mini = escolha ? { tipo: 'simulado', total: escolha.total, nome: 'Simulado do dia', ids: escolha.ids,
+      descricao: descreverSimuladoDoDia(escolha) } : null;
     return { ...base, total, feitos: feitos.size, vazio: 'Você fez todos os blocos de hoje.', mini };
   }
   const bloco = plano.blocos[i];
@@ -497,6 +498,7 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
       total: Number(btn.dataset.gerarSimulado),
       nome: btn.dataset.nome,
       materias: btn.dataset.materias ? btn.dataset.materias.split(',') : null,
+      ids: btn.dataset.ids ? btn.dataset.ids.split(',') : null,
     });
     if (criado) window.location.hash = '#/simulado';
   }));
@@ -630,20 +632,25 @@ function atualizarResumoFeitos(container) {
 /** Matérias de estudo do plano (ids de MATERIAS, sem repetir). */
 const materiasDoPlano = plano => [...new Set(plano.blocos.filter(b => b.tipo === 'materia').map(b => b.materia))];
 
-/** Número de questões do mini-simulado do dia. */
-const QUESTOES_MINI_DO_DIA = 10;
 
-/** Botão do mini-simulado do dia: questões das matérias estudadas hoje. */
+/** Simulado do dia escolhido para hoje (conteúdos do dia, fase e dificuldades do aluno), ou null. */
+function simuladoDoDiaDe(plano, ctx) {
+  if (!materiasDoPlano(plano).length || diasEntre(ctx.hoje, DIA_PROVA) <= 1) return null;
+  return escolherSimuladoDoDia({
+    plano, perfil: ctx.guia.perfil, analise: ctx.analise, fase: ctx.fase,
+    questoesProvas: ctx.questoesProvas || [], memoria: lerMemoria(), hoje: ctx.hoje, agora: ctx.agora,
+  });
+}
+
 function htmlMiniDoDia(plano, ctx) {
-  const materias = materiasDoPlano(plano);
-  if (!materias.length || diasEntre(ctx.hoje, DIA_PROVA) <= 1) return '';
-  const nomes = materias.map(id => nomeMateria(MATERIAS.find(m => m.id === id), ctx.guia.perfil)).join(', ');
+  const escolha = simuladoDoDiaDe(plano, ctx);
+  if (!escolha) return '';
   return `
     <div class="guia-mini">
-      <p><strong>Mini-simulado do dia</strong>: ${QUESTOES_MINI_DO_DIA} questões das provas anteriores de ${escaparHtml(nomes)},
-        para fixar o que você estudou hoje (cerca de ${Math.round(QUESTOES_MINI_DO_DIA * 300 / 63)} min).</p>
-      <button type="button" class="btn btn-secundario btn-pequeno" data-gerar-simulado="${QUESTOES_MINI_DO_DIA}"
-        data-nome="Mini-simulado do dia" data-materias="${materias.join(',')}">Fazer o mini-simulado</button>
+      <p><strong>Simulado do dia</strong>: ${escaparHtml(descreverSimuladoDoDia(escolha))}
+        Escolhido para a fase ${escaparHtml(ctx.fase.nome.toLowerCase())} (cerca de ${Math.round(escolha.total * 300 / 63)} min).</p>
+      <button type="button" class="btn btn-secundario btn-pequeno" data-gerar-simulado="${escolha.total}"
+        data-nome="Simulado do dia" data-ids="${escolha.ids.join(',')}">Fazer o simulado do dia</button>
     </div>`;
 }
 

@@ -949,3 +949,127 @@ export function avaliarMudancas(guia, mudancas, ctx) {
   return { veredito: avisosUnicos.length ? 'atencao' : 'ok', erros, avisos: avisosUnicos, consequencias, compensacao, guiaNovo,
     mudancas: resolvidas, planoHojeDepois, tempoDeHojeMuda };
 }
+
+/* ================================================================
+   Simulado do dia (mini-simulado): questões escolhidas, não sorteadas
+   ================================================================
+   Cada questão das provas da ACAFE ganha uma pontuação e entram as de maior pontuação:
+     - conteúdos estudados HOJE (o foco dos blocos vale mais; o resto das matérias do dia, menos);
+     - DIFICULDADES do aluno: a taxa de erro do conteúdo (erro por falta de atenção já vale
+       meio erro em analisarMemoria) e as matérias que ele marcou como difíceis;
+     - FASE da preparação: muda o peso de cada parte, a dificuldade das questões e o tamanho.
+   Não repete o que foi feito nos últimos 14 dias (se ainda houver outras) e não concentra
+   demais numa matéria ou num conteúdo. O sorteio do desempate é fixo para o dia (o mesmo
+   simulado se o aluno abrir de novo). */
+
+const MINI_POR_FASE = {
+  //          tamanho  pesos: dia  fraco  difícil    dificuldade das questões (proporção desejada)
+  base:      { total: 10, dia: 3,   fraco: 1.2, dificil: 0.4, alvo: { facil: 0.4, media: 0.4, dificil: 0.2 } },
+  intensiva: { total: 12, dia: 2,   fraco: 2,   dificil: 0.6, alvo: { facil: 0.25, media: 0.45, dificil: 0.3 } },
+  reta:      { total: 15, dia: 1.2, fraco: 3,   dificil: 0.8, alvo: { facil: 0.15, media: 0.4, dificil: 0.45 } },
+};
+const MINI_DIAS_SEM_REPETIR = 14;
+
+/** Número pseudoaleatório fixo para (texto, dia), entre 0 e 1. */
+function sorteioFixo(texto) {
+  let h = 2166136261;
+  for (let i = 0; i < texto.length; i++) { h ^= texto.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return ((h >>> 0) % 10000) / 10000;
+}
+
+/**
+ * Escolhe as questões do simulado do dia.
+ * @param {Object} p
+ * @param {Object}   p.plano          - plano de hoje (blocos com materia e focoChaves)
+ * @param {Object}   p.perfil         - perfil do guia (dificeis, idioma)
+ * @param {Object}   p.analise        - de analisarMemoria
+ * @param {Object}   p.fase           - de faseDaPreparacao
+ * @param {Object[]} p.questoesProvas - questões das provas da ACAFE
+ * @param {Object[]} p.memoria        - memória de erros e acertos
+ * @param {string}   p.hoje           - "AAAA-MM-DD"
+ * @param {number}   [p.agora]
+ * @returns {{ ids: string[], total: number, partes: { dia: number, fracos: number, dificeis: number, outras: number },
+ *   materias: string[] } | null}
+ */
+export function escolherSimuladoDoDia({ plano, perfil, analise, fase, questoesProvas, memoria, hoje, agora = Date.now() }) {
+  const cfg = MINI_POR_FASE[fase?.id] || MINI_POR_FASE.base;
+  const idioma = perfil?.idioma || 'Espanhol';
+  const outroIdioma = idioma === 'Espanhol' ? 'Inglês' : 'Espanhol';
+  const blocos = (plano?.blocos || []).filter(b => b.tipo === 'materia');
+  const materiasDoDia = new Set(blocos.map(b => b.materia));
+  if (!materiasDoDia.size) return null;
+  const focoDoDia = new Set(blocos.flatMap(b => (b.focoChaves || []).map(c => `${b.materia}|${c}`)));
+  const dificeis = new Set(perfil?.dificeis || []);
+
+  // ponto fraco RELATIVO: quanto o conteúdo é errado em comparação com os outros conteúdos do aluno
+  // (0 = o que ele mais acerta, 1 = o que ele mais erra); conteúdo com poucas respostas fica no meio
+  const taxas = Object.values(analise.conteudos).filter(c => c.n >= 3).map(taxaErro).sort((a, b) => a - b);
+  const posicao = erro => (taxas.length ? taxas.filter(t => t <= erro).length / taxas.length : 0.5);
+  const fracoDe = chave => {
+    const c = analise.conteudos[chave];
+    return c && c.n >= 3 ? posicao(taxaErro(c)) : 0.4;
+  };
+
+  const ultimaVez = new Map();
+  memoria.forEach(m => ultimaVez.set(m.q, Math.max(ultimaVez.get(m.q) || 0, m.t)));
+  const recente = agora - MINI_DIAS_SEM_REPETIR * DIA_MS;
+
+  const candidatas = questoesProvas
+    .filter(q => q.gabarito && q.disciplina !== outroIdioma)
+    .map(q => {
+      const materia = materiaDaDisciplina(q.disciplina)?.id;
+      if (!materia) return null;
+      const chaves = conteudosDa(q).map(c => `${materia}|${c}`);
+      const doFoco = chaves.some(c => focoDoDia.has(c));
+      const doDia = doFoco ? 1 : materiasDoDia.has(materia) ? 0.5 : 0;
+      // o conteúdo mais fraco da questão, em relação aos outros do aluno (só a metade mais fraca conta)
+      const fraco = Math.max(0, Math.max(...chaves.map(fracoDe)) - 0.5) * 2;
+      const dificil = dificeis.has(materia) ? 1 : 0;
+      const ajusteDificuldade = cfg.alvo[q.dificuldade] ?? 0.33;
+      let pontos = cfg.dia * doDia + cfg.fraco * fraco + cfg.dificil * dificil + ajusteDificuldade
+        + sorteioFixo(`${q.id}|${hoje}`) * 0.6;
+      const feitaHaPouco = (ultimaVez.get(q.id) || 0) > recente;
+      if (feitaHaPouco) pontos -= 10;                           // só entra se faltarem outras
+      return { q, materia, chaves, pontos, doDia, fraco, dificil };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.pontos - a.pontos);
+
+  // variedade: no máximo 40% de uma matéria e 3 questões de um mesmo conteúdo
+  const total = cfg.total;
+  const maxMateria = Math.ceil(total * 0.4), maxConteudo = 3;
+  const porMateria = {}, porConteudo = {};
+  const escolhidas = [];
+  for (const c of candidatas) {
+    if (escolhidas.length >= total) break;
+    if ((porMateria[c.materia] || 0) >= maxMateria) continue;
+    if (c.chaves.some(k => (porConteudo[k] || 0) >= maxConteudo)) continue;
+    escolhidas.push(c);
+    porMateria[c.materia] = (porMateria[c.materia] || 0) + 1;
+    c.chaves.forEach(k => { porConteudo[k] = (porConteudo[k] || 0) + 1; });
+  }
+  if (!escolhidas.length) return null;
+
+  // de onde veio cada questão (para explicar ao aluno): a parte que mais pesou nela
+  const partes = { dia: 0, fracos: 0, dificeis: 0, outras: 0 };
+  escolhidas.forEach(c => {
+    const pesos = { dia: cfg.dia * c.doDia, fracos: cfg.fraco * c.fraco, dificeis: cfg.dificil * c.dificil };
+    const maior = Object.entries(pesos).sort((a, b) => b[1] - a[1])[0];
+    partes[maior[1] > 0 ? maior[0] : 'outras']++;
+  });
+  return { ids: escolhidas.map(c => c.q.id), total: escolhidas.length, partes, materias: [...materiasDoDia] };
+}
+
+/** Frase com a composição do simulado do dia ("6 dos conteúdos de hoje, 3 dos seus pontos fracos..."). */
+export function descreverSimuladoDoDia(escolha) {
+  if (!escolha) return '';
+  const { partes } = escolha;
+  const itens = [
+    partes.dia && `${partes.dia} dos conteúdos que você estudou hoje`,
+    partes.fracos && `${partes.fracos} dos seus pontos fracos`,
+    partes.dificeis && `${partes.dificeis} das matérias que você marcou como difíceis`,
+    partes.outras && `${partes.outras} para variar`,
+  ].filter(Boolean);
+  const lista = itens.length > 1 ? `${itens.slice(0, -1).join(', ')} e ${itens.at(-1)}` : itens[0];
+  return `${escolha.total} questões das provas da ACAFE: ${lista}.`;
+}

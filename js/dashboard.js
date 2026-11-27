@@ -58,7 +58,7 @@ function htmlBotaoDaAcao(acao, rotulo, classe = 'btn btn-primario inicio-bloco__
   if (!acao) return '';
   if (acao.tipo === 'simulado') {
     return `<button type="button" class="${classe}" data-criar-simulado="${acao.total}" data-nome="${escaparHtml(acao.nome)}"
-      ${acao.materias ? `data-materias="${acao.materias.join(',')}"` : ''}>${rotulo}</button>`;
+      ${acao.materias ? `data-materias="${acao.materias.join(',')}"` : ''}${acao.ids ? ` data-ids="${acao.ids.join(',')}"` : ''}>${rotulo}</button>`;
   }
   return `<a href="${acao.href}" class="${classe}"${acao.tipo === 'revisao' ? ` data-revisao-limite="${acao.limite}"` : ''}>${rotulo}</a>`;
 }
@@ -84,11 +84,11 @@ function htmlProximaAtividade(prox) {
         <div class="inicio-bloco__texto">
           <p class="inicio-bloco__rotulo">${concluido ? 'Dia concluído' : 'Hoje'}</p>
           <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">${prox.vazio}</h2>
-          ${prox.mini ? '<p class="inicio-bloco__descricao">Para fixar, faça o mini-simulado do dia com as matérias que você estudou hoje.</p>'
+          ${prox.mini ? `<p class="inicio-bloco__descricao">Para fixar, faça o simulado do dia: ${escaparHtml(prox.mini.descricao)}</p>`
             : prox.total ? `<p class="inicio-bloco__descricao">${prox.feitos} de ${prox.total} blocos feitos. Bom descanso!</p>` : ''}
         </div>
         <div class="inicio-bloco__acoes">
-          ${prox.mini ? htmlBotaoDaAcao(prox.mini, `Fazer o mini-simulado (${prox.mini.total} questões)`) : ''}
+          ${prox.mini ? htmlBotaoDaAcao(prox.mini, `Fazer o simulado do dia (${prox.mini.total} questões)`) : ''}
           <a href="#/guia" class="btn btn-secundario">Ver o guia</a>
         </div>
       </section>`;
@@ -305,6 +305,7 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
       total: Number(btn.dataset.criarSimulado),
       nome: btn.dataset.nome,
       materias: btn.dataset.materias ? btn.dataset.materias.split(',') : null,
+      ids: btn.dataset.ids ? btn.dataset.ids.split(',') : null,
     });
     if (criado) window.location.hash = '#/simulado';
   }));
