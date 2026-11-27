@@ -21,6 +21,8 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 ## Para fazer depois (já combinado)
 
+- **Chat do Guia (27/11/2026):** melhorar o que ele entende e ligar o Gemini Flash (a chave está na tabela acima). Você pediu para deixar para depois.
+
 - Escrever os resumos das obras literárias (capítulos do livro das obras). Hoje cada capítulo mostra "em preparação". Adiado por você em 26/11/2026.
 - Cadastrar as provas de 2023 a 2021 (você adiou).
 - Questões de estudo de edições mais novas (ENEM 2026, Fuvest 2027, Unesp 2027, UDESC 2027, UFPR 2027 com gabarito definitivo) quando saírem.

@@ -621,3 +621,171 @@
   font-size: var(--tamanho-sm);
 }
 .guia-mini p { flex: 1 1 18rem; }
+
+/* ================================================================
+   Guia — identidade visual B "Plantão" (mesmo formato da tela inicial)
+   Cabeçalho, card grande de hoje, semana de domingo a sábado e cards
+   para o chat, as mudanças e o desempenho.
+   ================================================================ */
+.guia-painel {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding: var(--espaco-xl) var(--padding-lateral) var(--espaco-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+.guia-painel__cabecalho { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--espaco-md); }
+.guia-painel__titulos { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 28rem; }
+.guia-painel__ritmo { margin: 4px 0 0; max-width: 70ch; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.guia-etiqueta {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--cor-dourado-suave);
+  color: var(--cor-primaria);
+  font-size: var(--tamanho-xs);
+  font-weight: 600;
+}
+
+/* Cards: hoje, semana, chat, mudanças e desempenho */
+.guia-painel__hoje,
+.guia-semana,
+.guia-painel > .simulado-card {
+  margin: 0;
+  padding: 24px 28px;
+  background: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: none;
+}
+.guia-painel > .simulado-card .simulado-card__corpo { padding: 0; gap: 12px; }
+.guia-painel > .simulado-card .simulado-card__titulo { font-family: var(--fonte-titulo); font-size: 1.125rem; }
+
+/* Card de hoje */
+.guia-painel__hoje { display: flex; flex-direction: column; gap: 14px; }
+.guia-painel__hoje .guia-hoje__topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.guia-painel__hoje .agenda-cartao__data {
+  margin: 0;
+  font-size: var(--tamanho-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-primaria);
+}
+.guia-painel__hoje .agenda-cartao__titulo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.375rem, 3vw, 1.75rem);
+  line-height: 1.2;
+}
+.guia-painel__hoje .guia-hoje__progresso {
+  font-family: var(--fonte-numero);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+
+/* Blocos de hoje: uma linha por bloco */
+.guia-painel .guia-blocos { gap: 10px; }
+.guia-painel .guia-bloco {
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--cor-verde-militar);
+  border: 1px solid transparent;
+  border-radius: var(--raio-md);
+}
+.guia-painel .guia-bloco--simulado,
+.guia-painel .guia-bloco--revisao { border-left: 1px solid transparent; }   /* sem faixa colorida na lateral */
+.guia-painel .guia-bloco__marcar { display: inline-flex; padding-top: 2px; }
+.guia-painel .guia-bloco__marcar input { width: 22px; height: 22px; }
+.guia-painel .guia-bloco__titulo { margin: 0; font-size: 1rem; font-weight: 600; }
+.guia-painel .guia-bloco__tempo { font-family: var(--fonte-numero); font-size: var(--tamanho-sm); font-weight: 700; }
+.guia-painel .guia-bloco__atividade { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.guia-painel .guia-bloco__foco { margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.guia-painel .guia-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--cor-verde-militar-suave);
+  color: var(--cor-acento);
+  font-size: var(--tamanho-xs);
+  font-weight: 600;
+}
+.guia-painel .guia-pausa { padding-left: 54px; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); list-style: none; }
+.guia-painel .guia-mini {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 18px;
+  border: 1px dashed var(--cor-verde-militar-borda);
+  border-radius: var(--raio-md);
+  background: transparent;
+  font-size: var(--tamanho-sm);
+}
+.guia-painel .guia-mini p { margin: 0; flex: 1 1 22rem; }
+.guia-painel .guia-ajuste { font-size: var(--tamanho-sm); }
+.guia-painel .btn-pequeno { min-height: 36px; border-radius: 10px; }
+
+/* Semana: uma linha por dia */
+.guia-semana { display: flex; flex-direction: column; gap: 14px; }
+.guia-semana__topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.guia-semana__navegar { display: inline-flex; align-items: center; gap: 6px; }
+.guia-semana__hoje {
+  margin-right: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cor-acento);
+  font: inherit;
+  font-size: var(--tamanho-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.guia-semana__dias { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.guia-dia {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+}
+.guia-dia--hoje { border-color: var(--cor-primaria); background: var(--cor-dourado-suave); }
+.guia-dia--passado, .guia-dia--sem-registro, .guia-dia--depois { opacity: 0.7; }
+.guia-dia--prova { border-color: var(--cor-primaria); }
+.guia-dia__data { display: flex; flex-direction: column; gap: 2px; }
+.guia-dia__semana { font-size: var(--tamanho-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--cor-texto-fraco); }
+.guia-dia__numero { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: 1.125rem; font-weight: 700; color: var(--cor-texto); }
+.guia-dia__selo {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--cor-primaria);
+  color: var(--cor-texto-sobre-primaria);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+.guia-dia__corpo { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.guia-dia__titulo { margin: 0; font-weight: 600; color: var(--cor-texto); }
+.guia-dia__texto { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.guia-dia__blocos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.guia-dia__blocos .agenda-bloco { display: flex; gap: 10px; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.guia-dia__blocos .agenda-bloco strong { color: var(--cor-texto); font-weight: 600; }
+.guia-dia__blocos .agenda-bloco__tempo { flex: none; min-width: 3.5rem; font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-weight: 700; color: var(--cor-primaria); }
+.guia-dia__blocos .agenda-bloco--feito { text-decoration: line-through; opacity: 0.7; }
+.guia-dia .guia-ajuste { margin-top: 2px; }
+
+@media (max-width: 600px) {
+  .guia-painel { padding-top: var(--espaco-lg); }
+  .guia-painel__hoje, .guia-semana, .guia-painel > .simulado-card { padding: 18px 16px; }
+  .guia-dia { grid-template-columns: 1fr; gap: 8px; }
+  .guia-dia__data { flex-direction: row; align-items: baseline; gap: 8px; }
+  .guia-dia__selo { margin-top: 0; }
+  .guia-painel .guia-pausa { padding-left: 0; }
+}
+.guia-dia__feitas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-suave); font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; }
+.guia-dia--passado .guia-dia__feitas, .guia-dia--sem-registro .guia-dia__feitas { opacity: 1; }
+.guia-painel .simulado-tabela { width: 100%; }

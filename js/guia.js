@@ -43,6 +43,10 @@ const BLOCOS_PRONTOS = [
 ];
 
 let conversa = [];   // mensagens do chat nesta visita: { autor: 'aluno'|'guia', html }
+let semanaVista = null;   // domingo da semana mostrada no Guia (null = esta semana)
+
+/** Domingo da semana de um dia "AAAA-MM-DD". */
+const domingoDe = chave => somarDias(chave, -new Date(`${chave}T12:00:00-03:00`).getUTCDay());
 
 /* ================================================================
    Contexto (dados do aluno + cálculos)
@@ -105,6 +109,7 @@ function planoDeHoje(ctx) {
  * @param {Object[]} questoesEstudo - questões de estudo por matéria
  */
 export function renderizarGuia(container, questoesProvas, questoesEstudo) {
+  semanaVista = null;   // ao abrir o Guia, começa na semana atual
   const guia = lerGuia();
   if (!guia?.perfil) {
     renderizarQuestionario(container, null, () => renderizarGuia(container, questoesProvas, questoesEstudo));
@@ -345,34 +350,44 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
   const { guia, hoje } = ctx;
   const diasParaProva = diasEntre(hoje, DIA_PROVA);
 
+  const faltam = diasParaProva > 0
+    ? `faltam ${diasParaProva} dia${diasParaProva > 1 ? 's' : ''} para a prova (${dataCurta(DIA_PROVA)})`
+    : diasParaProva === 0 ? 'hoje é o dia da prova · boa prova!' : 'a prova já aconteceu';
+  const ehDiaDeEstudo = hoje < DIA_PROVA;
+
   container.innerHTML = `
-    <div class="tela-questoes">
-      <div class="container">
-        <header class="questoes-cabecalho">
-          <div class="questoes-nav-linha">
-            <a href="#/" class="btn-voltar">${icone('arrow-left', 18)} Voltar ao início</a>
-            <button type="button" class="btn btn-secundario btn-pequeno" id="guia-editar">Editar minhas respostas</button>
-          </div>
-        </header>
-        <div class="simulados-conteudo">
-          <p class="agenda-dica">${icone('alert-circle', 22)}
-            <span>Este é o seu cronograma até a prova. Ele se ajusta sozinho conforme você acerta e erra as questões
-            dos simulados e dos módulos. Precisa mudar algo (viagem, simulado do cursinho)? Use a conversa abaixo.</span></p>
-          <h2 class="agenda-faixa">Cronograma até a prova<span>${diasParaProva > 0
-            ? `faltam ${diasParaProva} dia${diasParaProva > 1 ? 's' : ''} • ${PROVA.dataExtenso}`
-            : diasParaProva === 0 ? 'hoje é o dia da prova • boa prova! 🍀' : 'a prova já aconteceu'}</span></h2>
-          ${diasParaProva > 1 ? `<p class="guia-fase"><strong>Ritmo: ${ctx.fase.nome}</strong> — ${ctx.fase.descricao}.
-            O guia ajusta o ritmo sozinho conforme a prova se aproxima.</p>` : ''}
-          ${htmlChat()}
-          ${htmlMudancasAtivas(ctx)}
-          ${htmlLinhaDoTempo(ctx, plano)}
-          ${htmlDesempenho(ctx)}
+    <div class="guia-painel">
+      <header class="guia-painel__cabecalho">
+        <div class="guia-painel__titulos">
+          <p class="inicio__data">${dataDoCabecalho(hoje)} · ${faltam}</p>
+          <h1 class="inicio__titulo">Guia de estudos</h1>
+          ${diasParaProva > 1 ? `<p class="guia-painel__ritmo"><span class="guia-etiqueta">Ritmo: ${ctx.fase.nome}</span>
+            ${ctx.fase.descricao}. O plano se ajusta sozinho ao que você acerta e erra.</p>` : ''}
         </div>
-      </div>
+        <button type="button" class="btn btn-secundario" id="guia-editar">Editar minhas respostas</button>
+      </header>
+
+      ${ehDiaDeEstudo ? `
+      <section class="guia-painel__hoje" aria-label="Plano de hoje">
+        ${htmlCartaoDia(ctx, plano, tipoDoDia(plano, hoje, hoje))}
+      </section>` : ''}
+
+      ${htmlSemana(ctx, plano)}
+
+      ${htmlChat()}
+      ${htmlMudancasAtivas(ctx)}
+      ${htmlDesempenho(ctx)}
     </div>`;
 
   container.querySelector('#guia-editar').addEventListener('click', () =>
     renderizarQuestionario(container, guia.perfil, redesenhar));
+
+  // Semana: anterior / próxima / esta semana
+  container.querySelectorAll('[data-semana-guia]').forEach(btn => btn.addEventListener('click', () => {
+    const passo = btn.dataset.semanaGuia;
+    semanaVista = passo === 'atual' ? null : somarDias(semanaVista || domingoDe(hoje), 7 * Number(passo));
+    redesenhar();
+  }));
 
   // Simulado da semana e mini-simulado do dia: cria o simulado pronto e abre
   container.querySelectorAll('[data-gerar-simulado]').forEach(btn => btn.addEventListener('click', async () => {
@@ -522,6 +537,13 @@ const MESES_NOMES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
   'setembro', 'outubro', 'novembro', 'dezembro'];
 const DIAS_NOMES = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
 
+/** "Sexta, 27 de novembro" (cabeçalho do Guia, como na tela inicial) */
+function dataDoCabecalho(chave) {
+  const [, mes, dia] = chave.split('-').map(Number);
+  const semana = DIAS_NOMES[new Date(`${chave}T12:00:00-03:00`).getUTCDay()].replace('-feira', '');
+  return `${semana.charAt(0).toUpperCase()}${semana.slice(1)}, ${dia} de ${MESES_NOMES[mes - 1]}`;
+}
+
 /** "30 de outubro de 2026 · sexta-feira" */
 function dataLonga(chave) {
   const [ano, mes, dia] = chave.split('-').map(Number);
@@ -648,62 +670,118 @@ function htmlCartaoDia(ctx, plano, tipo) {
 }
 
 /**
- * Linha do tempo do cronograma: dias recentes (cinza, riscados), hoje (destaque, interativo),
- * os próximos dias até a véspera (prévia), a prova e o gabarito. Um cabeçalho por mês.
+ * Semana do cronograma (domingo a sábado), com setas para as semanas anteriores e seguintes.
+ * Só esta semana é planejada (antes, a linha do tempo planejava todos os dias até a prova).
+ * Dias passados mostram o plano que foi fixado (os últimos 14 dias ficam guardados); hoje
+ * aponta para o card de cima; dias seguintes são uma prévia que se ajusta com o desempenho.
  */
-function htmlLinhaDoTempo(ctx, planoHoje) {
+function htmlSemana(ctx, planoHoje) {
   const { guia, hoje } = ctx;
+  const semanaAtual = domingoDe(hoje);
+  const ultimaSemana = domingoDe(somarDias(DIA_PROVA, 1));
+  const guardados = Object.keys(ctx.planosFixos).sort();
+  const primeiraSemana = domingoDe(guardados[0] && guardados[0] < hoje ? guardados[0] : hoje);
+  let inicio = semanaVista || semanaAtual;
+  if (inicio < primeiraSemana) inicio = primeiraSemana;
+  if (inicio > ultimaSemana) inicio = ultimaSemana;
+  const fim = somarDias(inicio, 6);
+
+  // prévia dos dias seguintes desta semana (de amanhã até o sábado ou a véspera)
   const vespera = somarDias(DIA_PROVA, -1);
-  const passados = Object.keys(ctx.planosFixos).filter(d => d >= somarDias(hoje, -3)).sort()
-    .map(d => ({ ...ctx.planosFixos[d], chave: d }));
-  const futuros = hoje < vespera
-    ? planejarPeriodo(guia, { ...ctx, planosFixos: { ...ctx.planosFixos, [hoje]: planoHoje }, de: hoje, ate: vespera }).slice(1)
-    : [];
-  const dias = [
-    ...passados,
-    ...(hoje < DIA_PROVA ? [planoHoje] : []),
-    ...futuros,
-    ...(hoje <= DIA_PROVA ? [{ chave: DIA_PROVA, blocos: [] }] : []),
-    { chave: somarDias(DIA_PROVA, 1), blocos: [] },
-  ];
+  const ateFuturo = fim < vespera ? fim : vespera;
+  const futuros = new Map();
+  if (ateFuturo > hoje) {
+    planejarPeriodo(guia, { ...ctx, planosFixos: { ...ctx.planosFixos, [hoje]: planoHoje }, de: hoje, ate: ateFuturo })
+      .forEach(p => futuros.set(p.chave, p));
+  }
 
-  let mesAtual = '';
-  let lado = 0;
-  const itens = dias.map(plano => {
-    const mes = plano.chave.slice(0, 7);
-    let cabecalho = '';
-    if (mes !== mesAtual) {
-      mesAtual = mes;
-      const [ano, m] = mes.split('-').map(Number);
-      cabecalho = `
-        <li class="agenda-item agenda-item--mes agenda-item--${lado++ % 2 ? 'esquerda' : 'direita'}">
-          <span class="agenda-marcador agenda-marcador--mes" aria-hidden="true">${icone('clock', 16)}</span>
-          <h3 class="agenda-mes">${MESES_NOMES[m - 1]} ${ano}</h3>
-        </li>`;
+  // questões feitas em cada dia da semana (simulados, banco de questões e correção de erros)
+  const feitasNoDia = new Map();
+  lerMemoria().forEach(m => {
+    const d = chaveDia(new Date(m.t));
+    if (d < inicio || d > fim) return;
+    const v = feitasNoDia.get(d) || { n: 0, ok: 0 };
+    v.n++; if (m.ok) v.ok++;
+    feitasNoDia.set(d, v);
+  });
+
+  const dias = Array.from({ length: 7 }, (_, i) => somarDias(inicio, i)).map(chave => {
+    if (chave === hoje && hoje < DIA_PROVA) return { chave, plano: planoHoje, tipo: tipoDoDia(planoHoje, chave, hoje), hoje: true };
+    if (chave === DIA_PROVA) return { chave, plano: { chave, blocos: [] }, tipo: 'prova' };
+    if (chave === somarDias(DIA_PROVA, 1)) return { chave, plano: { chave, blocos: [] }, tipo: 'gabarito' };
+    if (chave > DIA_PROVA) return { chave, plano: null, tipo: 'depois' };
+    if (chave < hoje) {
+      const plano = ctx.planosFixos[chave];
+      return { chave, plano: plano ? { ...plano, chave } : null, tipo: plano ? 'passado' : 'sem-registro' };
     }
-    const tipo = tipoDoDia(plano, plano.chave, hoje);
-    const ehHoje = plano.chave === hoje;
-    return cabecalho + `
-      <li class="agenda-item agenda-item--${lado++ % 2 ? 'esquerda' : 'direita'}${ehHoje ? ' agenda-item--hoje' : ''}"${ehHoje ? ' id="agenda-hoje"' : ''}>
-        <span class="agenda-marcador agenda-marcador--${tipo}" aria-hidden="true">${icone(tipo === 'passado' ? 'check' : 'clock', 16)}</span>
-        <article class="agenda-cartao agenda-cartao--${tipo}${ehHoje ? ' agenda-cartao--hoje' : ''}" aria-label="${dataLonga(plano.chave)}">
-          ${htmlCartaoDia(ctx, plano, tipo)}
-        </article>
-      </li>`;
-  }).join('');
+    const plano = futuros.get(chave);
+    return { chave, plano, tipo: plano ? tipoDoDia(plano, chave, hoje) : 'sem-registro' };
+  });
 
+  const rotulo = `${dataCurta(inicio).split(', ')[1]} a ${dataCurta(fim).split(', ')[1]}`;
+  const estaSemana = inicio === semanaAtual;
   return `
-    <section aria-label="Cronograma dia a dia">
-      <ol class="agenda">${itens}</ol>
-      <p class="guia-dica agenda-legenda">
-        <span class="agenda-cor agenda-cor--estudo"></span> estudo
-        <span class="agenda-cor agenda-cor--simulado"></span> simulado
-        <span class="agenda-cor agenda-cor--externo"></span> simulado externo
-        <span class="agenda-cor agenda-cor--livre"></span> dia livre
-        <span class="agenda-cor agenda-cor--prova"></span> prova
-        — os dias seguintes são uma prévia: as matérias de cada dia são definidas no próprio dia, com o seu desempenho mais recente.
-      </p>
+    <section class="guia-semana" aria-labelledby="guia-semana-titulo">
+      <header class="guia-semana__topo">
+        <h2 class="inicio-card__titulo" id="guia-semana-titulo">${estaSemana ? 'Esta semana' : 'Semana'}</h2>
+        <div class="guia-semana__navegar">
+          ${estaSemana ? '' : '<button type="button" class="guia-semana__hoje" data-semana-guia="atual">Voltar para esta semana</button>'}
+          <button type="button" class="grafico-ampliado__seta" data-semana-guia="-1" aria-label="Semana anterior"${inicio <= primeiraSemana ? ' disabled' : ''}>${icone('arrow-left', 18)}</button>
+          <span class="grafico-ampliado__semana" aria-live="polite">${rotulo}</span>
+          <button type="button" class="grafico-ampliado__seta grafico-ampliado__seta--proxima" data-semana-guia="1" aria-label="Próxima semana"${inicio >= ultimaSemana ? ' disabled' : ''}>${icone('arrow-left', 18)}</button>
+        </div>
+      </header>
+      <ol class="guia-semana__dias">
+        ${dias.map(d => htmlDiaDaSemana(ctx, { ...d, feitas: feitasNoDia.get(d.chave) })).join('')}
+      </ol>
+      <p class="guia-dica">Os dias seguintes são uma prévia: as matérias de cada dia são definidas no próprio dia, com o seu desempenho mais recente.</p>
     </section>`;
+}
+
+/** Uma linha da semana. */
+function htmlDiaDaSemana(ctx, { chave, plano, tipo, hoje: ehHoje, feitas }) {
+  const { guia, hoje } = ctx;
+  const [, mes, dia] = chave.split('-');
+  const nomeDia = DIAS_NOMES[new Date(`${chave}T12:00:00-03:00`).getUTCDay()].replace('-feira', '');
+  const data = `
+    <div class="guia-dia__data">
+      <span class="guia-dia__semana">${nomeDia}</span>
+      <span class="guia-dia__numero">${dia}/${mes}</span>
+      ${ehHoje ? '<span class="guia-dia__selo">Hoje</span>' : ''}
+    </div>`;
+  let corpo;
+  if (tipo === 'prova') {
+    corpo = `<p class="guia-dia__titulo">Prova · ${PROVA.nome}</p>
+      <p class="guia-dia__texto">Portões fecham às 13h00; prova das 13h20 às 18h20 (redação e 63 questões). Nada de estudar neste dia.</p>`;
+  } else if (tipo === 'gabarito') {
+    corpo = `<p class="guia-dia__titulo">Gabarito preliminar</p><p class="guia-dia__texto">${PROVA.gabarito}</p>`;
+  } else if (tipo === 'depois') {
+    corpo = '<p class="guia-dia__texto">Depois da prova.</p>';
+  } else if (tipo === 'sem-registro') {
+    corpo = chave < hoje
+      ? `<p class="guia-dia__texto">${feitas ? 'Sem plano guardado deste dia.' : 'Sem plano guardado e nenhuma questão feita neste dia.'}</p>`
+      : '<p class="guia-dia__texto">Sem plano para este dia.</p>';
+  } else {
+    const feitos = new Set(plano.feitos || []);
+    const passado = tipo === 'passado';
+    const resumo = passado && plano.blocos.length ? ` · ${feitos.size} de ${plano.blocos.length} feitos` : '';
+    corpo = `
+      <p class="guia-dia__titulo">${tituloDoDia(plano, chave, '').replace(/^Hoje · /, '')}${resumo}</p>
+      ${plano.blocos.length ? `<ul class="guia-dia__blocos">${plano.blocos.map((b, i) => htmlBlocoCompacto(b, guia, passado && feitos.has(i))).join('')}</ul>` : ''}
+      ${tipo === 'vespera' ? '<p class="guia-dia__texto">Releia resumos e anotações, sem conteúdo novo. Separe documento e caneta e durma cedo.</p>' : ''}
+      ${ehHoje ? '<p class="guia-dia__texto">Os blocos de hoje estão no card de cima.</p>'
+        : !passado && chave > hoje ? htmlAjusteDoDia(guia, chave, false) : ''}`;
+  }
+  if (feitas && chave <= hoje) {
+    corpo += `<p class="guia-dia__feitas">${feitas.n} ${feitas.n === 1 ? 'questão feita' : 'questões feitas'}
+      · <span class="inicio-legenda inicio-legenda--graf-certas">${feitas.ok} certa${feitas.ok === 1 ? '' : 's'}</span>
+      <span class="inicio-legenda inicio-legenda--graf-erradas">${feitas.n - feitas.ok} errada${feitas.n - feitas.ok === 1 ? '' : 's'}</span></p>`;
+  }
+  return `
+    <li class="guia-dia guia-dia--${tipo}${ehHoje ? ' guia-dia--hoje' : ''}" aria-label="${dataLonga(chave)}">
+      ${data}
+      <div class="guia-dia__corpo">${corpo}</div>
+    </li>`;
 }
 
 /* ---------------- Mudanças ativas ---------------- */
