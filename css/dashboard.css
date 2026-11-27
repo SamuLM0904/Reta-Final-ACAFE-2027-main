@@ -453,7 +453,23 @@
 
 /* Gráfico de questões por dia */
 .inicio-grafico { margin: 4px 0 0; display: flex; flex-direction: column; gap: 8px; }
-.inicio-grafico__titulo { display: flex; justify-content: space-between; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.inicio-grafico__titulo { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.inicio-grafico__acoes { display: inline-flex; align-items: center; gap: 8px; }
+.inicio-grafico__expandir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--cor-verde-militar-borda);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+.inicio-grafico__expandir:hover { background: var(--cor-verde-militar); color: var(--cor-texto); }
+.inicio-grafico__expandir:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+.inicio-grafico__grade--meio { stroke-dasharray: 1 4; opacity: 0.7; }
 .inicio-grafico__total { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; color: var(--cor-texto); }
 .inicio-grafico__svg { width: 100%; height: auto; overflow: visible; }
 .inicio-grafico__certas  { fill: var(--cor-grafico-certas); }
@@ -537,3 +553,75 @@
 .inicio-grafico__dica-barra { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--cor-marinho-borda); }
 .inicio-grafico__dica-certas  { background: var(--cor-grafico-certas); }
 .inicio-grafico__dica-erradas { background: var(--cor-grafico-erradas); }
+
+/* Gráfico ampliado: janela com ~70% da tela e o resto desfocado (js/grafico-questoes.js) */
+.grafico-ampliado {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(70vw, 1100px);
+  height: min(70vh, 760px);
+  max-width: 94vw;
+  max-height: 90vh;
+  padding: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  box-shadow: var(--sombra-lg);
+  overflow: hidden;
+}
+.grafico-ampliado::backdrop {
+  background: rgba(8, 10, 14, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.grafico-ampliado__caixa {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 28px;
+  overflow-y: auto;
+}
+.grafico-ampliado__topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.grafico-ampliado__titulo { margin: 0; font-size: 1.375rem; }
+.grafico-ampliado__fechar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border: 0; border-radius: 10px;
+  background: transparent; color: var(--cor-texto-suave); cursor: pointer;
+}
+.grafico-ampliado__fechar:hover { background: var(--cor-verde-militar); color: var(--cor-texto); }
+.grafico-ampliado__fechar:focus-visible, .grafico-ampliado__aba:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+.grafico-ampliado__abas { display: flex; flex-wrap: wrap; gap: 6px; }
+.grafico-ampliado__aba {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--cor-verde-militar-borda);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cor-texto-suave);
+  font: inherit;
+  font-size: var(--tamanho-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.grafico-ampliado__aba[aria-selected="true"] { background: var(--cor-primaria); border-color: var(--cor-primaria); color: var(--cor-texto-sobre-primaria); }
+.grafico-ampliado__resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: 10px; }
+.grafico-ampliado__numero {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--raio-md);
+  background: var(--cor-verde-militar);
+  font-size: var(--tamanho-xs);
+  color: var(--cor-texto-fraco);
+}
+.grafico-ampliado__numero strong { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: 1.5rem; color: var(--cor-texto); }
+.grafico-ampliado__grafico { flex: 1; min-height: 0; margin: 0; }
+.grafico-ampliado__grafico .inicio-grafico__svg { max-height: 100%; }
+.grafico-ampliado__grafico .inicio-grafico__eixo { font-size: 11px; }
+@media (max-width: 700px) {
+  .grafico-ampliado { width: 94vw; height: 86vh; }
+  .grafico-ampliado__caixa { padding: 18px 16px; }
+}

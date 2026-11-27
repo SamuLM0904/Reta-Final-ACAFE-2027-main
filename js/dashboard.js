@@ -12,15 +12,16 @@
  * As outras telas (guia, correção de erros, leituras) ficam no menu lateral.
  */
 
+import { icone } from './icones.js';
 import { escaparHtml } from './utils.js';
+import { htmlGraficoBarras, htmlLegenda, vincularDica, porDia, abrirGraficoAmpliado } from './grafico-questoes.js';
 import { lerMemoria, lerSimulado, lerGuia } from './armazenamento.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { proximoBlocoDeHoje } from './guia.js';
 import { TAMANHOS, duracaoDoSimulado } from './simulado.js';
-import { MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, formatarHoras } from './guia-plano.js';
+import { MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, formatarHoras } from './guia-plano.js';
 import { nomeDoAluno } from './nuvem.js';
 
-const DIA_MS = 86400000;
 const DIAS_GRAFICO = 14;
 
 /* ================================================================
@@ -128,104 +129,24 @@ function htmlSimulados(memoria) {
     </section>`;
 }
 
-/** Barras: questões respondidas por dia nos últimos 14 dias (uma série, sem legenda). */
+/** Gráfico dos últimos 14 dias (certas × erradas), com o botão para o gráfico ampliado. */
 function htmlGraficoQuestoes(memoria) {
-  const hoje = chaveDia();
-  const dias = Array.from({ length: DIAS_GRAFICO }, (_, i) => somarDias(hoje, i - DIAS_GRAFICO + 1));
-  const porDia = new Map(dias.map(d => [d, { n: 0, ok: 0 }]));
-  const limite = Date.now() - (DIAS_GRAFICO + 1) * DIA_MS;
-  memoria.forEach(m => {
-    if (m.t < limite) return;
-    const d = porDia.get(chaveDia(new Date(m.t)));
-    if (d) { d.n++; if (m.ok) d.ok++; }
-  });
-  const valores = dias.map(d => porDia.get(d));
+  const valores = porDia(memoria, DIAS_GRAFICO);
   const total = valores.reduce((s, v) => s + v.n, 0);
-  const max = Math.max(...valores.map(v => v.n), 1);
-  const topo = Math.max(5, Math.ceil(max / 5) * 5);
-
-  const L = 280, A = 104, base = 88, colunas = DIAS_GRAFICO;
-  const larg = L / colunas, barra = larg - 4;
-  const rotulo = d => { const [, mes, dia] = d.split('-'); return `${dia}/${mes}`; };
-  // Barra empilhada: certas embaixo (marrom forte), erradas em cima (marrom claro); só o topo é arredondado
-  const topoArredondado = (x, y0, y) => `M${x},${y0} V${y + 4} Q${x},${y} ${x + 4},${y} H${x + barra - 4} Q${x + barra},${y} ${x + barra},${y + 4} V${y0} Z`;
-  const reto = (x, y0, y) => `M${x},${y0} V${y} H${x + barra} V${y0} Z`;
-  const barras = valores.map((v, i) => {
-    const h = v.n ? Math.max(4, (v.n / topo) * (base - 8)) : 0;
-    const x = i * larg + 2, y = base - h;
-    const erradas = v.n - v.ok;
-    const yCertas = base - (v.n ? h * (v.ok / v.n) : 0);   // onde as certas acabam
-    const dica = `${rotulo(dias[i])}: ${v.n} ${v.n === 1 ? 'questão' : 'questões'}${v.n ? ` (${v.ok} certa${v.ok === 1 ? '' : 's'}, ${erradas} errada${erradas === 1 ? '' : 's'})` : ''}`;
-    const partes = !h ? ''
-      : !erradas ? `<path class="inicio-grafico__certas" d="${topoArredondado(x, base, y)}"/>`
-      : !v.ok ? `<path class="inicio-grafico__erradas" d="${topoArredondado(x, base, y)}"/>`
-      : `<path class="inicio-grafico__certas" d="${reto(x, base, yCertas)}"/><path class="inicio-grafico__erradas" d="${topoArredondado(x, yCertas, y)}"/>`;
-    return `<g class="inicio-grafico__coluna" tabindex="0" role="img" aria-label="${dica}"
-      data-dia="${rotulo(dias[i])}" data-n="${v.n}" data-ok="${v.ok}">
-      <rect x="${i * larg}" y="0" width="${larg}" height="${A}" fill="transparent"/>${partes}</g>`;
-  }).join('');
-
   return `
     <figure class="inicio-grafico" data-grafico>
-      <figcaption class="inicio-grafico__titulo">Questões feitas nos últimos 14 dias <span class="inicio-grafico__total">${total} no total</span></figcaption>
-      <svg viewBox="0 0 ${L} ${A}" class="inicio-grafico__svg" role="img"
-        aria-label="Questões feitas por dia nos últimos 14 dias: ${total} no total">
-        <line x1="0" y1="${base - (base - 8)}" x2="${L}" y2="${base - (base - 8)}" class="inicio-grafico__grade"/>
-        <text x="0" y="${base - (base - 8) - 3}" class="inicio-grafico__eixo">${topo} por dia</text>
-        <line x1="0" y1="${base}" x2="${L}" y2="${base}" class="inicio-grafico__base"/>
-        ${barras}
-        <text x="0" y="${A - 2}" class="inicio-grafico__eixo">${rotulo(dias[0])}</text>
-        <text x="${L}" y="${A - 2}" text-anchor="end" class="inicio-grafico__eixo">hoje</text>
-      </svg>
+      <figcaption class="inicio-grafico__titulo">
+        <span>Questões feitas nos últimos 14 dias</span>
+        <span class="inicio-grafico__acoes">
+          <span class="inicio-grafico__total">${total} no total</span>
+          <button type="button" class="inicio-grafico__expandir" data-expandir-grafico
+            aria-label="Ver o gráfico por semana, mês e ano" title="Ver por semana, mês e ano">${icone('maximize', 16)}</button>
+        </span>
+      </figcaption>
+      ${htmlGraficoBarras(valores, { ultimo: 'hoje' })}
       <div class="inicio-grafico__dica" role="tooltip" hidden></div>
-      <p class="inicio-grafico__legenda" aria-hidden="true">
-        <span class="inicio-legenda inicio-legenda--graf-certas">certas</span>
-        <span class="inicio-legenda inicio-legenda--graf-erradas">erradas</span>
-      </p>
+      ${htmlLegenda()}
     </figure>`;
-}
-
-/**
- * Janelinha que aparece sobre a barra do dia (mouse ou teclado) com o total e a
- * proporção de certas e erradas.
- */
-function vincularDicaDoGrafico(container) {
-  const figura = container.querySelector('[data-grafico]');
-  if (!figura) return;
-  const dica = figura.querySelector('.inicio-grafico__dica');
-  const pct = (n, total) => (total ? Math.round((n / total) * 100) : 0);
-
-  const mostrar = coluna => {
-    const n = Number(coluna.dataset.n), ok = Number(coluna.dataset.ok), erradas = n - ok;
-    dica.innerHTML = n
-      ? `<p class="inicio-grafico__dica-titulo">${coluna.dataset.dia} · ${n} ${n === 1 ? 'questão' : 'questões'}</p>
-         <p class="inicio-grafico__dica-linha"><span class="inicio-legenda inicio-legenda--graf-certas">certas</span>
-           <span class="inicio-grafico__dica-num">${ok} · ${pct(ok, n)}%</span></p>
-         <p class="inicio-grafico__dica-linha"><span class="inicio-legenda inicio-legenda--graf-erradas">erradas</span>
-           <span class="inicio-grafico__dica-num">${erradas} · ${pct(erradas, n)}%</span></p>
-         <span class="inicio-grafico__dica-barra" aria-hidden="true">
-           <span class="inicio-grafico__dica-certas" style="width: ${pct(ok, n)}%"></span><span class="inicio-grafico__dica-erradas" style="width: ${100 - pct(ok, n)}%"></span>
-         </span>`
-      : `<p class="inicio-grafico__dica-titulo">${coluna.dataset.dia}</p><p class="inicio-grafico__dica-linha">Nenhuma questão</p>`;
-    dica.hidden = false;
-    // sempre acima da barra, centralizada nela (pode passar por cima do título do gráfico; nunca cobre as barras)
-    const f = figura.getBoundingClientRect(), c = coluna.getBoundingClientRect();
-    const largura = dica.offsetWidth, altura = dica.offsetHeight;
-    const topos = [...coluna.querySelectorAll('path')].map(p => p.getBoundingClientRect().top);
-    const barraTopo = topos.length ? Math.min(...topos) : c.bottom;
-    const x = Math.max(0, Math.min(c.left - f.left + c.width / 2 - largura / 2, f.width - largura));
-    const y = barraTopo - f.top - altura - 8;
-    dica.style.left = `${x}px`;
-    dica.style.top = `${y}px`;
-  };
-  const esconder = () => { dica.hidden = true; };
-
-  figura.querySelectorAll('.inicio-grafico__coluna').forEach(coluna => {
-    coluna.addEventListener('pointerenter', () => mostrar(coluna));
-    coluna.addEventListener('focus', () => mostrar(coluna));
-    coluna.addEventListener('blur', esconder);
-  });
-  figura.querySelector('svg').addEventListener('pointerleave', esconder);
 }
 
 /* ================================================================
@@ -313,5 +234,9 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
       </div>
     </div>`;
   iniciarContagemCompacta(container);
-  vincularDicaDoGrafico(container);
+  const figura = container.querySelector('[data-grafico]');
+  if (figura) {
+    vincularDica(figura);
+    figura.querySelector('[data-expandir-grafico]').addEventListener('click', () => abrirGraficoAmpliado(memoria));
+  }
 }
