@@ -21,7 +21,8 @@ import { resetarMemoriaLocal } from './armazenamento.js';
 import { htmlBotaoTema, vincularBotoesTema, htmlTemaAutomatico, vincularTemaAutomatico } from './tema.js';
 import {
   eAdmin, listarAdministradores, adicionarAdministrador, removerAdministrador,
-  listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, gravarDadosDeTeste, usuarioAtual, usuarioExibido, sair, trocarSenha,
+  listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, gravarDadosDeTeste, usuarioAtual,
+  listarContasEPlanos, definirPlanoDoAluno, sincronizarPlanos, usuarioExibido, sair, trocarSenha,
   redefinirSenha, temEmailReal, cadastrarEmailRecuperacao, alterarNome, alterarUsuario,
 } from './nuvem.js';
 
@@ -151,6 +152,24 @@ export async function abrirConfiguracoes() {
 /** Seção de administração: resetar a memória de erros e acertos de um aluno. */
 function renderizarAreaAdmin(area) {
   area.innerHTML = `
+    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Contas e planos">
+      <h3 class="configuracoes__subtitulo">Contas e planos</h3>
+      <div class="contas-planos__resumo" id="config-planos-resumo">Carregando as contas...</div>
+      <div class="configuracoes__linha">
+        <input type="search" id="config-planos-busca" class="guia-texto" placeholder="Buscar por usuário ou nome" aria-label="Buscar conta">
+        <select id="config-planos-filtro" class="tema-auto__hora" aria-label="Filtrar por plano">
+          <option value="">Todos os planos</option>
+          <option value="admin">Administradores</option>
+          <option value="gratuito">Gratuito</option><option value="basico">Básico</option>
+          <option value="pro">Pro</option><option value="ultra">Ultra</option>
+        </select>
+      </div>
+      <div class="configuracoes__tabela contas-planos__tabela" id="config-planos-lista"></div>
+      <div class="configuracoes__linha">
+        <button type="button" class="btn btn-secundario" id="config-planos-sincronizar">Criar os registros que faltam no Firebase</button>
+      </div>
+      <p class="configuracoes__info" id="config-planos-status" role="status"></p>
+    </section>
     <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Administradores">
       <h3 class="configuracoes__subtitulo">Níveis de acesso</h3>
       <p class="configuracoes__info">Usuários comuns acessam apenas os próprios dados. Administradores também podem resetar a memória dos alunos e gerenciar outros administradores. O primeiro administrador é definido pelo Console do Firebase.</p>
@@ -200,6 +219,7 @@ function renderizarAreaAdmin(area) {
       <p class="configuracoes__info" id="config-status-teste" role="status"></p>
     </section>`;
 
+  vincularContasEPlanos(area);
   const status = area.querySelector('#config-status');
   const statusAdmins = area.querySelector('#config-admin-status');
   const listaAdmins = area.querySelector('#config-lista-admins');
@@ -592,4 +612,87 @@ function htmlConferenciaDificuldade(alunos) {
         <td>${Math.round(x.taxa * 100)}%</td><td>${x.n}</td><td>${NOMES_DIF[sugerir(x.taxa)]}</td></tr>`).join('')}</tbody>
     </table></div>
     <p>Me mande esta lista (print) para eu ajustar as questões.</p>`;
+}
+
+/* ================================================================
+   Contas e planos (só administradores)
+   Lista todas as contas com o plano de cada uma; trocar o plano grava em planos/<usuário>
+   (é o que libera o plano depois do pagamento, enquanto ele não é automático).
+   ================================================================ */
+
+const NOMES_PLANOS = { gratuito: 'Gratuito', basico: 'Básico', pro: 'Pro', ultra: 'Ultra' };
+
+function vincularContasEPlanos(area) {
+  const resumo = area.querySelector('#config-planos-resumo');
+  const lista = area.querySelector('#config-planos-lista');
+  const busca = area.querySelector('#config-planos-busca');
+  const filtro = area.querySelector('#config-planos-filtro');
+  const status = area.querySelector('#config-planos-status');
+  let contas = [];
+
+  const desenhar = () => {
+    const contar = id => contas.filter(c => c.plano === id && !c.admin).length;
+    resumo.innerHTML = `<strong>${contas.length}</strong> contas · ${contas.filter(c => c.admin).length} administradores · `
+      + Object.entries(NOMES_PLANOS).map(([id, nome]) => `${nome}: <strong>${contar(id)}</strong>`).join(' · ');
+    const termo = busca.value.trim().toLowerCase();
+    const f = filtro.value;
+    const visiveis = contas.filter(c => (!termo || c.usuario.includes(termo) || c.nome.toLowerCase().includes(termo))
+      && (!f || (f === 'admin' ? c.admin : c.plano === f && !c.admin)));
+    lista.innerHTML = visiveis.length ? `
+      <table>
+        <thead><tr><th>Usuário</th><th>Nome</th><th>Plano</th></tr></thead>
+        <tbody>${visiveis.map(c => `
+          <tr>
+            <td>${escaparHtml(c.usuario)}${c.admin ? ' <span class="contas-planos__admin">admin</span>' : ''}</td>
+            <td>${escaparHtml(c.nome || '—')}</td>
+            <td>${c.admin ? 'Ilimitado'
+              : `<select class="tema-auto__hora" data-plano-de="${escaparHtml(c.usuario)}" data-nome="${escaparHtml(c.nome || '')}" aria-label="Plano de ${escaparHtml(c.usuario)}">
+                  ${Object.entries(NOMES_PLANOS).map(([id, nome]) => `<option value="${id}"${id === c.plano ? ' selected' : ''}>${nome}</option>`).join('')}
+                </select>`}</td>
+          </tr>`).join('')}</tbody>
+      </table>` : '<p class="configuracoes__info">Nenhuma conta encontrada.</p>';
+    lista.querySelectorAll('[data-plano-de]').forEach(sel => sel.addEventListener('change', async () => {
+      const usuario = sel.dataset.planoDe;
+      const anterior = contas.find(c => c.usuario === usuario)?.plano;
+      if (!(await confirmar({
+        titulo: `Mudar o plano de ${escaparHtml(usuario)}?`,
+        mensagem: `De <strong>${NOMES_PLANOS[anterior] || anterior}</strong> para <strong>${NOMES_PLANOS[sel.value]}</strong>. A conta passa a ter acesso ao novo plano na próxima vez que abrir o site.`,
+        textoConfirmar: 'Mudar o plano',
+      }))) { sel.value = anterior; return; }
+      sel.disabled = true;
+      try {
+        await definirPlanoDoAluno(usuario, sel.value, sel.dataset.nome);
+        const c = contas.find(x => x.usuario === usuario);
+        if (c) { c.plano = sel.value; c.temRegistro = true; }
+        status.textContent = `Plano de ${usuario} mudado para ${NOMES_PLANOS[sel.value]}.`;
+        desenhar();
+      } catch (e) {
+        sel.value = anterior;
+        status.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão (publique o firestore.rules novo no Console).' : e.message);
+      } finally { sel.disabled = false; }
+    }));
+  };
+
+  const carregar = async () => {
+    try {
+      contas = await listarContasEPlanos();
+      desenhar();
+    } catch (e) {
+      resumo.textContent = 'Não foi possível listar as contas: ' + (e.code === 'permission-denied'
+        ? 'publique o firestore.rules novo no Console do Firebase.' : e.message);
+    }
+  };
+  busca.addEventListener('input', desenhar);
+  filtro.addEventListener('change', desenhar);
+  area.querySelector('#config-planos-sincronizar').addEventListener('click', async () => {
+    status.textContent = 'Criando os registros...';
+    try {
+      const r = await sincronizarPlanos();
+      status.textContent = `Pronto: ${r.criados} registro(s) criado(s) como Gratuito e ${r.marcados} conferido(s). Veja a coleção "planos" no Console do Firebase.`;
+      await carregar();
+    } catch (e) {
+      status.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão (publique o firestore.rules novo no Console).' : e.message);
+    }
+  });
+  carregar();
 }

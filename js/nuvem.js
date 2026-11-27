@@ -440,11 +440,85 @@ export async function lerQuestoes() {
  */
 export async function lerPlanoDaConta() {
   if (!usuario || !fb) return 'gratuito';
-  if (await eAdmin()) return 'ilimitado';
+  const u = usuarioExibido(usuario);
+  const ref = fb.f.doc(fb.db, 'planos', u);
+  const admin = await eAdmin();
   try {
-    const snap = await fb.f.getDoc(fb.f.doc(fb.db, 'planos', usuarioExibido(usuario)));
+    const snap = await fb.f.getDoc(ref);
+    if (!snap.exists()) {
+      // primeiro acesso: a conta cria o próprio registro, como gratuito (visível no Console)
+      await fb.f.setDoc(ref, { usuario: u, nome: usuario.displayName || '', plano: 'gratuito', admin: false, atualizadoEm: Date.now() });
+      if (admin) await fb.f.setDoc(ref, { admin: true, atualizadoEm: Date.now() }, { merge: true });
+    } else if (admin && snap.data().admin !== true) {
+      await fb.f.setDoc(ref, { admin: true, atualizadoEm: Date.now() }, { merge: true });
+    }
+    if (admin) return 'ilimitado';
     return (snap.exists() && snap.data().plano) || 'gratuito';
-  } catch { return 'gratuito'; }
+  } catch {
+    return admin ? 'ilimitado' : 'gratuito';
+  }
+}
+
+/* ---------------- Contas e planos (só administradores) ---------------- */
+
+/**
+ * Todas as contas cadastradas com o plano de cada uma e se é administrador.
+ * @returns {Promise<{ usuario, nome, plano, admin, temRegistro, atualizadoEm, alteradoPor }[]>}
+ */
+export async function listarContasEPlanos() {
+  const [alunos, planos, admins] = await Promise.all([
+    fb.f.getDocs(fb.f.collection(fb.db, 'alunos')),
+    fb.f.getDocs(fb.f.collection(fb.db, 'planos')),
+    fb.f.getDocs(fb.f.collection(fb.db, 'admins')),
+  ]);
+  const porUsuario = new Map(planos.docs.map(d => [d.id, d.data()]));
+  const usuariosAdmin = new Set(admins.docs.map(d => d.data().usuario).filter(Boolean));
+  const contas = new Map();
+  alunos.docs.forEach(d => contas.set(d.id, { usuario: d.id, nome: d.data().perfil?.nome || '' }));
+  planos.docs.forEach(d => { if (!contas.has(d.id)) contas.set(d.id, { usuario: d.id, nome: d.data().nome || '' }); });
+  return [...contas.values()].map(c => {
+    const p = porUsuario.get(c.usuario);
+    return {
+      ...c,
+      nome: c.nome || p?.nome || '',
+      plano: p?.plano || 'gratuito',
+      admin: usuariosAdmin.has(c.usuario),
+      temRegistro: Boolean(p),
+      atualizadoEm: p?.atualizadoEm || null,
+      alteradoPor: p?.alteradoPor || null,
+    };
+  }).sort((a, b) => a.usuario.localeCompare(b.usuario));
+}
+
+/** Troca o plano de uma conta (só administradores). */
+export async function definirPlanoDoAluno(textoUsuario, plano, nome = '') {
+  const u = normalizarUsuario(textoUsuario) || (textoUsuario || '').trim().toLowerCase();
+  if (!['gratuito', 'basico', 'pro', 'ultra'].includes(plano)) throw new Error('Plano inválido.');
+  await fb.f.setDoc(fb.f.doc(fb.db, 'planos', u), {
+    usuario: u, nome, plano, atualizadoEm: Date.now(), alteradoPor: usuarioExibido(usuario),
+  }, { merge: true });
+  return u;
+}
+
+/**
+ * Cria o registro de plano (gratuito) das contas que ainda não têm e marca quem é
+ * administrador, para tudo aparecer certinho no Console do Firebase (só administradores).
+ * @returns {Promise<{ criados: number, marcados: number }>}
+ */
+export async function sincronizarPlanos() {
+  const contas = await listarContasEPlanos();
+  let criados = 0, marcados = 0;
+  for (const c of contas) {
+    const ref = fb.f.doc(fb.db, 'planos', c.usuario);
+    if (!c.temRegistro) {
+      await fb.f.setDoc(ref, { usuario: c.usuario, nome: c.nome, plano: 'gratuito', admin: c.admin, atualizadoEm: Date.now(), alteradoPor: usuarioExibido(usuario) });
+      criados++;
+    } else {
+      await fb.f.setDoc(ref, { admin: c.admin, nome: c.nome, atualizadoEm: c.atualizadoEm || Date.now() }, { merge: true });
+      marcados++;
+    }
+  }
+  return { criados, marcados };
 }
 
 export async function eAdmin() {

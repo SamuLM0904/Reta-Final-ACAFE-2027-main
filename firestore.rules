@@ -84,12 +84,24 @@
 
       // Plano de cada aluno (gratuito, basico, pro, ultra): o aluno lê o dele; SÓ administradores
       // criam ou mudam (enquanto não há pagamento automático, a troca é manual). Sem registro = gratuito.
+      // Campos: usuario, nome, plano, admin (true/false, só para ver no Console), atualizadoEm, alteradoPor.
       match /planos/{usuario} {
         allow get: if eDono(usuario) || admin();
         allow list: if admin();
-        allow create, update: if admin()
-          && request.resource.data.plano in ['gratuito', 'basico', 'pro', 'ultra'];
+        // a própria conta cria o seu registro, mas SÓ como gratuito (no primeiro acesso)
+        allow create: if eDono(usuario) && planoValido()
+          && request.resource.data.plano == 'gratuito' && request.resource.data.admin == false;
+        // administradores criam e mudam qualquer um (liberar o plano depois do Pix)
+        allow create, update: if admin() && planoValido();
         allow delete: if admin();
+      }
+
+      function planoValido() {
+        return request.resource.data.keys().hasAll(['usuario', 'plano', 'atualizadoEm']) &&
+          request.resource.data.keys().hasOnly(['usuario', 'nome', 'plano', 'admin', 'atualizadoEm', 'alteradoPor']) &&
+          request.resource.data.plano in ['gratuito', 'basico', 'pro', 'ultra'] &&
+          request.resource.data.usuario is string &&
+          request.resource.data.atualizadoEm is number;
       }
 
       // Banco de questões: alunos logados leem; só administradores gravam
