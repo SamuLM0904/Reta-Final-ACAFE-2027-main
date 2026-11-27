@@ -480,7 +480,7 @@
 .inicio-materia:hover { background: var(--cor-verde-militar); text-decoration: none; }
 .inicio-materia__nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Barra: certas (verde) + erradas (vermelho), na proporção do total da matéria; o trilho é o que falta */
-.inicio-materia__barra { display: flex; gap: 2px; height: 8px; border-radius: 4px; background: var(--cor-marinho-borda); overflow: hidden; }
+.inicio-materia__barra { display: flex; height: 8px; border-radius: 4px; background: var(--cor-marinho-borda); overflow: hidden; }
 .inicio-materia__barra span { display: block; height: 100%; flex: none; }
 .inicio-materia__certas  { background: var(--cor-certa); }
 .inicio-materia__erradas { background: var(--cor-errada); }
