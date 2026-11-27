@@ -147,13 +147,21 @@ function htmlGraficoQuestoes(memoria) {
   const L = 280, A = 104, base = 88, colunas = DIAS_GRAFICO;
   const larg = L / colunas, barra = larg - 4;
   const rotulo = d => { const [, mes, dia] = d.split('-'); return `${dia}/${mes}`; };
+  // Barra empilhada: certas embaixo (marrom forte), erradas em cima (marrom claro); só o topo é arredondado
+  const topoArredondado = (x, y0, y) => `M${x},${y0} V${y + 4} Q${x},${y} ${x + 4},${y} H${x + barra - 4} Q${x + barra},${y} ${x + barra},${y + 4} V${y0} Z`;
+  const reto = (x, y0, y) => `M${x},${y0} V${y} H${x + barra} V${y0} Z`;
   const barras = valores.map((v, i) => {
     const h = v.n ? Math.max(4, (v.n / topo) * (base - 8)) : 0;
     const x = i * larg + 2, y = base - h;
-    const dica = `${rotulo(dias[i])}: ${v.n} ${v.n === 1 ? 'questão' : 'questões'}${v.n ? `, ${v.ok} certa${v.ok === 1 ? '' : 's'}` : ''}`;
+    const erradas = v.n - v.ok;
+    const yCertas = base - (v.n ? h * (v.ok / v.n) : 0);   // onde as certas acabam
+    const dica = `${rotulo(dias[i])}: ${v.n} ${v.n === 1 ? 'questão' : 'questões'}${v.n ? ` (${v.ok} certa${v.ok === 1 ? '' : 's'}, ${erradas} errada${erradas === 1 ? '' : 's'})` : ''}`;
+    const partes = !h ? ''
+      : !erradas ? `<path class="inicio-grafico__certas" d="${topoArredondado(x, base, y)}"/>`
+      : !v.ok ? `<path class="inicio-grafico__erradas" d="${topoArredondado(x, base, y)}"/>`
+      : `<path class="inicio-grafico__certas" d="${reto(x, base, yCertas)}"/><path class="inicio-grafico__erradas" d="${topoArredondado(x, yCertas, y)}"/>`;
     return `<g class="inicio-grafico__coluna"><title>${dica}</title>
-      <rect x="${i * larg}" y="0" width="${larg}" height="${A}" fill="transparent"/>
-      ${h ? `<path class="inicio-grafico__barra" d="M${x},${base} V${y + 4} Q${x},${y} ${x + 4},${y} H${x + barra - 4} Q${x + barra},${y} ${x + barra},${y + 4} V${base} Z"/>` : ''}</g>`;
+      <rect x="${i * larg}" y="0" width="${larg}" height="${A}" fill="transparent"/>${partes}</g>`;
   }).join('');
 
   return `
@@ -168,6 +176,10 @@ function htmlGraficoQuestoes(memoria) {
         <text x="0" y="${A - 2}" class="inicio-grafico__eixo">${rotulo(dias[0])}</text>
         <text x="${L}" y="${A - 2}" text-anchor="end" class="inicio-grafico__eixo">hoje</text>
       </svg>
+      <p class="inicio-grafico__legenda" aria-hidden="true">
+        <span class="inicio-legenda inicio-legenda--graf-certas">certas</span>
+        <span class="inicio-legenda inicio-legenda--graf-erradas">erradas</span>
+      </p>
     </figure>`;
 }
 

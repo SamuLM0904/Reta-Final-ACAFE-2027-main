@@ -456,8 +456,12 @@
 .inicio-grafico__titulo { display: flex; justify-content: space-between; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
 .inicio-grafico__total { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; color: var(--cor-texto); }
 .inicio-grafico__svg { width: 100%; height: auto; overflow: visible; }
-.inicio-grafico__barra { fill: var(--cor-primaria); }
-.inicio-grafico__coluna:hover .inicio-grafico__barra { fill: var(--cor-primaria-hover); }
+.inicio-grafico__certas  { fill: var(--cor-grafico-certas); }
+.inicio-grafico__erradas { fill: var(--cor-grafico-erradas); }
+.inicio-grafico__coluna:hover path { opacity: 0.85; }
+.inicio-grafico__legenda { display: flex; gap: 14px; margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); }
+.inicio-legenda--graf-certas::before  { background: var(--cor-grafico-certas); }
+.inicio-legenda--graf-erradas::before { background: var(--cor-grafico-erradas); }
 .inicio-grafico__grade { stroke: var(--cor-borda); stroke-width: 1; stroke-dasharray: 2 3; }
 .inicio-grafico__base { stroke: var(--cor-marinho-borda); stroke-width: 1; }
 .inicio-grafico__eixo { fill: var(--cor-texto-fraco); font-family: var(--fonte-numero); font-size: 9px; }

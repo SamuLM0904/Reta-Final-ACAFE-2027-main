@@ -114,6 +114,8 @@
   --sombra-destaque:         0 0 0 1px #2A323D;
   --sombra-cabecalho:        none;
   --cor-menu-lateral:        #12161C;   /* fundo do menu (base.css) */
+  --cor-grafico-certas:      #F2B13E;   /* gráfico da tela inicial: dois tons de âmbar (conferidos para daltonismo) */
+  --cor-grafico-erradas:     #8A5F1E;
   --cor-caixa-numero:        #0E1116;
   --cor-ajuda:               #2A323D;
   --cor-ajuda-texto:         #C9D1DA;
@@ -179,6 +181,8 @@
   --sombra-destaque:         0 0 0 1px #C6CCD4;
   --sombra-cabecalho:        0 2px 10px rgba(15, 25, 35, 0.08);
   --cor-menu-lateral:        #F6F7F9;
+  --cor-grafico-certas:      #7A4F00;
+  --cor-grafico-erradas:     #D8B06A;
   --cor-caixa-numero:        #FFFFFF;
   --cor-ajuda:               #d3d7da;
   --cor-ajuda-texto:         #5f686e;
