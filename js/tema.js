@@ -38,10 +38,29 @@ export function temaAtual() {
  */
 export function aplicarTema(id) {
   const tema = TEMAS.find(t => t.id === id) || TEMAS[0];
-  document.documentElement.dataset.tema = tema.id;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', tema.corBarra);
   try { localStorage.setItem(CHAVE, tema.id); } catch { /* ignora */ }
-  document.querySelectorAll('[data-botao-tema]').forEach(atualizarBotao);
+  document.querySelectorAll('[data-botao-tema]').forEach(atualizarBotao);   // o interruptor desliza já
+  if (document.documentElement.dataset.tema === tema.id) return;
+  trocarComTransicao(() => {
+    document.documentElement.dataset.tema = tema.id;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', tema.corBarra);
+  });
+}
+
+/**
+ * Troca de tema suave (~0,5 s): com a View Transitions API, o tema novo aparece sobre o
+ * antigo num esmaecimento; sem ela, as cores mudam aos poucos (classe .tema-em-transicao,
+ * ver base.css). Com "reduzir movimento" ligado no aparelho, troca direto.
+ */
+function trocarComTransicao(trocar) {
+  const reduzir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if (reduzir) { trocar(); return; }
+  if (document.startViewTransition) { document.startViewTransition(trocar); return; }
+  const raiz = document.documentElement;
+  raiz.classList.add('tema-em-transicao');
+  trocar();
+  clearTimeout(trocarComTransicao.timer);
+  trocarComTransicao.timer = setTimeout(() => raiz.classList.remove('tema-em-transicao'), 600);
 }
 
 /** Tema que o botão aplica no próximo clique. */

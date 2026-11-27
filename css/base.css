@@ -775,3 +775,21 @@ img, svg { max-width: 100%; display: block; }
 }
 .tema-auto__hora:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
 .tema-auto__resto { color: var(--cor-texto-fraco); }
+
+/* Troca de tema suave (js/tema.js › trocarComTransicao) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* sem View Transitions: as cores mudam aos poucos durante a troca */
+.tema-em-transicao,
+.tema-em-transicao *,
+.tema-em-transicao *::before,
+.tema-em-transicao *::after {
+  transition: background-color 500ms ease, color 500ms ease, border-color 500ms ease,
+    fill 500ms ease, stroke 500ms ease, box-shadow 500ms ease !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
