@@ -899,3 +899,13 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
   .configuracoes__dados dd { margin-bottom: var(--espaco-sm); }
 }
 .configuracoes__abas { border-bottom: 0; }
+
+/* Abas das Configurações sempre numa linha só; Administração com a caixa vermelha */
+.configuracoes__abas { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.configuracoes__abas::-webkit-scrollbar { display: none; }
+.configuracoes__aba { flex: none; white-space: nowrap; }
+.configuracoes__aba--admin { background: var(--cor-errada-fundo); color: var(--cor-errada); }
+.configuracoes__aba--admin:hover { background: var(--cor-errada-fundo); color: var(--cor-errada); filter: brightness(1.15); }
+@media (max-width: 600px) {
+  .configuracoes__aba { padding: 0 10px; font-size: var(--tamanho-xs); }
+}
