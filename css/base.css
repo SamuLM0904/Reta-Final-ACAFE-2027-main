@@ -929,3 +929,29 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .contas-planos__tabela table { width: 100%; font-size: var(--tamanho-sm); }
 .contas-planos__tabela select { min-height: 34px; }
 .contas-planos__admin { padding: 1px 8px; border-radius: 999px; background: var(--cor-errada-fundo); color: var(--cor-errada); font-size: 0.6875rem; font-weight: 700; }
+
+/* Botão de fechar das janelas: um círculo com o X dentro, fácil de ver e de tocar */
+.configuracoes__fechar,
+.grafico-ampliado__fechar {
+  flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0;
+  border: 1.5px solid var(--cor-verde-militar-borda);
+  border-radius: 50%;
+  background: var(--cor-verde-militar);
+  color: var(--cor-texto);
+}
+.configuracoes__fechar svg, .grafico-ampliado__fechar svg { width: 22px; height: 22px; }
+.configuracoes__fechar:hover, .grafico-ampliado__fechar:hover { background: var(--cor-verde-militar-hover); border-color: var(--cor-texto-fraco); }
+.configuracoes__fechar:focus-visible, .grafico-ampliado__fechar:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
+
+/* Plano em destaque: borda âmbar com brilho em volta (como o hover) e letras um pouco mais fortes */
+.janela-plano--destaque {
+  box-shadow: 0 0 0 1px var(--cor-primaria), 0 0 24px var(--cor-dourado-brilho), 0 0 48px var(--cor-dourado-suave);
+}
+.janela-plano--destaque .janela-plano__nome { color: var(--cor-primaria); font-size: 1.375rem; }
+.janela-plano--destaque .janela-plano__resumo,
+.janela-plano--destaque .janela-plano__total { color: var(--cor-texto); }
+.janela-plano--destaque .janela-plano__recursos { font-weight: 600; }
+.janela-plano--destaque .janela-plano__preco strong { font-size: 1.625rem; }
+.janela-plano:not(.janela-plano--destaque):hover { border-color: var(--cor-verde-militar-borda); box-shadow: 0 0 16px var(--cor-dourado-suave); }

@@ -104,7 +104,7 @@ export function abrirJanelaPlanos(recurso = null) {
             const ehDestaque = p.id === destaque;
             return `
               <article class="janela-plano${ehDestaque ? ' janela-plano--destaque' : ''}${atual ? ' janela-plano--atual' : ''}">
-                ${ehDestaque ? '<span class="janela-plano__selo">Libera o que você tentou abrir</span>' : atual ? '<span class="janela-plano__selo janela-plano__selo--atual">Seu plano</span>' : ''}
+                ${atual ? '<span class="janela-plano__selo janela-plano__selo--atual">Seu plano</span>' : ''}
                 <h3 class="janela-plano__nome">${p.nome}</h3>
                 <p class="janela-plano__resumo">${p.resumo}</p>
                 <p class="janela-plano__preco"><strong>${reais(duracao.precos[p.id])}</strong> /mês</p>
