@@ -1089,3 +1089,26 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
   .usuarios__acoes-celula .btn { width: 100%; }
   .usuarios__plano { max-width: none; }
 }
+
+/* ===== Gráfico de acessos (Administração › Usuários) ===== */
+.usuarios__topo { display: flex; align-items: center; justify-content: space-between; gap: var(--espaco-sm); flex-wrap: wrap; }
+.acessos__agora { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--tamanho-sm); color: var(--cor-texto-fraco); }
+.acessos__agora strong { font-family: var(--fonte-numero); font-size: 1.6rem; color: var(--cor-texto); }
+.acessos__bolinha { width: 10px; height: 10px; border-radius: 50%; background: var(--cor-certa, #3fb950); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.6); animation: acessos-pulso 2s infinite; }
+@keyframes acessos-pulso { 0% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.55); } 70% { box-shadow: 0 0 0 9px rgba(63, 185, 80, 0); } 100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); } }
+@media (prefers-reduced-motion: reduce) { .acessos__bolinha { animation: none; } }
+.acessos__quem { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--tamanho-sm); max-height: 140px; overflow-y: auto; }
+.acessos__area { fill: var(--cor-dourado-suave); opacity: 0.55; }
+.acessos__linha { fill: none; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.acessos__linha--principal { stroke: var(--cor-primaria); }
+.acessos__linha--anterior { stroke: var(--cor-texto-fraco); stroke-dasharray: 5 4; stroke-width: 1.6; }
+.acessos__ponto circle { fill: var(--cor-fundo-card); stroke: var(--cor-primaria); stroke-width: 2; transition: r 120ms; }
+.acessos__ponto:hover circle, .acessos__ponto:focus-visible circle { r: 6; fill: var(--cor-primaria); }
+.acessos__ponto:focus { outline: none; }
+.acessos__rodape { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--espaco-sm); font-size: var(--tamanho-sm); color: var(--cor-texto-fraco); }
+.acessos__rodape [hidden] { display: none; }
+.acessos__comparar { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.acessos__legenda { margin: 0; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.acessos__chave { display: inline-block; width: 18px; height: 0; border-top: 2.5px solid var(--cor-primaria); vertical-align: middle; }
+.acessos__chave--anterior { border-top: 2px dashed var(--cor-texto-fraco); }
+#acessos-navegar[hidden] { display: none; }

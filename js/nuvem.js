@@ -361,6 +361,7 @@ export async function lerDadosAluno() {
   const dados = snap.exists() ? snap.data() : null;
   nomeDoPerfil = dados?.perfil?.nome || nomeDoPerfil;
   atualizarResumo(dados || {}, true);
+  iniciarPresenca();
   return dados;
 }
 
@@ -679,4 +680,78 @@ export async function recalcularUsuarios() {
     }
   }
   return { resumos: nResumos, planos: nPlanos };
+}
+
+/* ================================================================
+   Acessos: quem está online agora e o histórico de uso
+   - presenca/{usuario} → { usuario, nome, t }: o site do aluno "dá sinal" a cada 2 minutos
+     enquanto a página está à vista, e zera o t ao esconder ou fechar a aba. Online = sinal
+     nos últimos 5 minutos.
+   - atividade/{AAAA-MM-DD} → { usuarios: [...], h00..h23: [...] }: quem usou no dia e em
+     cada hora. Cada aluno grava no máximo uma vez por hora (arrayUnion, sem repetir nome).
+   - atividadeMes/{AAAA-MM} → { usuarios: [...] }: quem usou no mês (uma vez por dia).
+   Custo baixo: ~30 gravações por aluno por dia de uso. Só administradores leem.
+   ================================================================ */
+
+export const SINAL_PRESENCA = 2 * 60 * 1000;
+export const ONLINE_ATE = 5 * 60 * 1000;
+let presencaIniciada = false;
+let ultimaHoraGravada = '', ultimoDiaGravado = '';
+
+const doisDig = n => String(n).padStart(2, '0');
+/** "AAAA-MM-DD" e a hora "hHH" no horário do aparelho. */
+export function chavesDeAtividade(data = new Date()) {
+  const dia = `${data.getFullYear()}-${doisDig(data.getMonth() + 1)}-${doisDig(data.getDate())}`;
+  return { dia, mes: dia.slice(0, 7), hora: `h${doisDig(data.getHours())}` };
+}
+
+function darSinal() {
+  if (!usuario || !fb || document.hidden) return;
+  const u = usuarioExibido(usuario);
+  const nome = nomeDoPerfil || usuario.displayName || '';
+  fb.f.setDoc(fb.f.doc(fb.db, 'presenca', u), { usuario: u, nome, t: Date.now() }).catch(() => {});
+  const { dia, mes, hora } = chavesDeAtividade();
+  if (`${dia}${hora}` !== ultimaHoraGravada) {
+    ultimaHoraGravada = `${dia}${hora}`;
+    fb.f.setDoc(fb.f.doc(fb.db, 'atividade', dia), { usuarios: fb.f.arrayUnion(u), [hora]: fb.f.arrayUnion(u) }, { merge: true }).catch(() => { ultimaHoraGravada = ''; });
+  }
+  if (dia !== ultimoDiaGravado) {
+    ultimoDiaGravado = dia;
+    fb.f.setDoc(fb.f.doc(fb.db, 'atividadeMes', mes), { usuarios: fb.f.arrayUnion(u) }, { merge: true }).catch(() => { ultimoDiaGravado = ''; });
+  }
+}
+
+function sairDaPresenca() {
+  if (!usuario || !fb) return;
+  fb.f.setDoc(fb.f.doc(fb.db, 'presenca', usuarioExibido(usuario)), { t: 0 }, { merge: true }).catch(() => {});
+}
+
+function iniciarPresenca() {
+  if (presencaIniciada || !usuario || !fb) return;
+  presencaIniciada = true;
+  darSinal();
+  setInterval(darSinal, SINAL_PRESENCA);
+  document.addEventListener('visibilitychange', () => (document.hidden ? sairDaPresenca() : darSinal()));
+  window.addEventListener('pagehide', sairDaPresenca);
+}
+
+/**
+ * Acompanha em tempo real quem está online (só administradores).
+ * @param {(online: { usuario, nome, t }[]) => void} aoMudar - chamado a cada mudança
+ * @returns {() => void} função que para de acompanhar
+ */
+export function ouvirPresenca(aoMudar) {
+  let docs = [];
+  const avisar = () => { const agora = Date.now(); aoMudar(docs.filter(d => d.t && agora - d.t < ONLINE_ATE)); };
+  const parar = fb.f.onSnapshot(fb.f.collection(fb.db, 'presenca'), snap => { docs = snap.docs.map(d => d.data()); avisar(); }, () => {});
+  const relogio = setInterval(avisar, 15000);   // quem parou de dar sinal sai da lista sozinho
+  return () => { parar(); clearInterval(relogio); };
+}
+
+/** Documentos de atividade entre duas chaves (inclusive), de 'atividade' ou 'atividadeMes'. */
+export async function lerAtividade(colecao, de, ate) {
+  const q = fb.f.query(fb.f.collection(fb.db, colecao),
+    fb.f.where(fb.f.documentId(), '>=', de), fb.f.where(fb.f.documentId(), '<=', ate));
+  const snap = await fb.f.getDocs(q);
+  return new Map(snap.docs.map(d => [d.id, d.data()]));
 }

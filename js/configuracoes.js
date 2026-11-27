@@ -154,7 +154,10 @@ export async function abrirConfiguracoes() {
 function renderizarAreaAdmin(area) {
   area.innerHTML = `
     <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Usuários">
-      <h3 class="configuracoes__subtitulo">Usuários</h3>
+      <div class="usuarios__topo">
+        <h3 class="configuracoes__subtitulo">Usuários</h3>
+        <button type="button" class="btn btn-secundario btn-pequeno" id="usuarios-grafico">${icone('bar-chart', 16)} Gráfico de acessos</button>
+      </div>
       <div class="usuarios__resumo" id="usuarios-resumo">Carregando os usuários...</div>
       <div class="usuarios__controles">
         <input type="search" id="usuarios-busca" class="guia-texto" placeholder="Buscar por usuário, nome ou e-mail" aria-label="Buscar usuário">
@@ -199,6 +202,10 @@ function renderizarAreaAdmin(area) {
     </section>`;
 
   vincularUsuarios(area);
+  area.querySelector('#usuarios-grafico').addEventListener('click', async () => {
+    const { abrirGraficoAcessos } = await import('./grafico-acessos.js');
+    abrirGraficoAcessos();
+  });
   area.querySelector('#config-planos').addEventListener('click', () => area.closest('dialog')?.close?.());
   area.querySelector('#config-dificuldade').addEventListener('click', async () => {
     const saida = area.querySelector('#config-dificuldade-saida');

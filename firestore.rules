@@ -113,6 +113,27 @@
         allow get, list, create, update: if admin();
       }
 
+      // Acessos (gráfico de usuários ativos na Administração). Só administradores leem.
+      // presenca: cada aluno grava só o próprio sinal de "online".
+      match /presenca/{usuario} {
+        allow write: if eDono(usuario);
+        allow read: if admin();
+      }
+      // atividade (por dia: usuarios + h00..h23) e atividadeMes (usuarios): o site grava com
+      // arrayUnion, só acrescentando o próprio usuário. Só esses campos são aceitos.
+      function camposDeAtividade() {
+        return request.resource.data.keys().hasOnly(['usuarios', 'h00','h01','h02','h03','h04','h05','h06','h07','h08','h09','h10','h11',
+          'h12','h13','h14','h15','h16','h17','h18','h19','h20','h21','h22','h23']);
+      }
+      match /atividade/{dia} {
+        allow read: if admin();
+        allow create, update: if logado() && camposDeAtividade();
+      }
+      match /atividadeMes/{mes} {
+        allow read: if admin();
+        allow create, update: if logado() && request.resource.data.keys().hasOnly(['usuarios']);
+      }
+
       // Banco de questões: alunos logados leem; só administradores gravam
       match /questoes/{id} {
         allow read: if logado();
