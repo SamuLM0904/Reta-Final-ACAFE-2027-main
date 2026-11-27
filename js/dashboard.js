@@ -17,7 +17,7 @@ import { lerMemoria, lerSimulado, lerGuia } from './armazenamento.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { proximoBlocoDeHoje } from './guia.js';
 import { MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, formatarHoras } from './guia-plano.js';
-import { usuarioAtual } from './nuvem.js';
+import { nomeDoAluno } from './nuvem.js';
 
 const DIA_MS = 86400000;
 const DIAS_GRAFICO = 14;
@@ -37,10 +37,10 @@ function dataPorExtenso(agora = new Date()) {
   return t.charAt(0).toUpperCase() + t.slice(1).replace(/,/, ',');
 }
 
+/** Primeiro nome do aluno, do nome digitado ao criar a conta. */
 function primeiroNome() {
-  const u = usuarioAtual();
-  const nome = (u?.displayName || '').trim().split(/\s+/)[0];
-  return nome || null;
+  const nome = (nomeDoAluno() || '').split(/\s+/)[0];
+  return nome ? nome.charAt(0).toUpperCase() + nome.slice(1) : null;
 }
 
 /* ================================================================

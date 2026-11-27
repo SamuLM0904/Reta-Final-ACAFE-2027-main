@@ -33,6 +33,7 @@ let fb = null;          // módulos do SDK + instâncias (carregados sob demanda
 let usuario = null;     // usuário logado (Firebase User) ou null
 let nomeUsuario = '';   // nome de usuário do aluno logado (ex.: "joao_silva")
 let cadastro = null;    // { usuario, pronto: Promise } enquanto uma conta está sendo criada
+let nomeDoPerfil = null; // nome digitado ao criar a conta (alunos/{usuario}.perfil.nome)
 
 /** O banco de dados está configurado? */
 export const nuvemAtiva = () => Boolean(FIREBASE_CONFIG);
@@ -141,6 +142,7 @@ export async function iniciarNuvem(aoMudarUsuario) {
   await new Promise(resolver => {
     let primeiraVez = true;
     fb.a.onAuthStateChanged(fb.auth, async user => {
+      if (!user || user.uid !== usuario?.uid) nomeDoPerfil = cadastro ? nomeDoPerfil : null;   // outra conta: esquece o nome
       usuario = user;
       nomeUsuario = user ? await resolverNomeUsuario(user) : '';
       aoMudarUsuario(user);
@@ -207,6 +209,7 @@ export async function criarConta(textoUsuario, senha, nome, emailRecuperacao = '
 
   let terminar, falhar;
   cadastro = { usuario: u, pronto: new Promise((ok, erro) => { terminar = ok; falhar = erro; }) };
+  nomeDoPerfil = nome || null;   // já vale para a primeira tela, antes de o perfil ser gravado
   try {
     const { user } = await fb.a.createUserWithEmailAndPassword(fb.auth, email || emailInterno(u), senha);
     if (nome) await fb.a.updateProfile(user, { displayName: nome });
@@ -309,6 +312,7 @@ export async function alterarNome(nome) {
   try {
     await fb.a.updateProfile(usuario, { displayName: n });
     await fb.f.setDoc(docAluno(), { perfil: { nome: n } }, { merge: true });
+    nomeDoPerfil = n;
   } catch (e) { throw e.code ? traduzirErro(e) : e; }
   return n;
 }
@@ -354,7 +358,20 @@ export async function sair() {
 export async function lerDadosAluno() {
   if (!usuario) return null;
   const snap = await fb.f.getDoc(docAluno());
-  return snap.exists() ? snap.data() : null;
+  const dados = snap.exists() ? snap.data() : null;
+  nomeDoPerfil = dados?.perfil?.nome || nomeDoPerfil;
+  return dados;
+}
+
+
+/**
+ * Nome completo do aluno, como ele digitou ao criar a conta (ou ao trocar o nome em
+ * Configurações). Usa o perfil salvo no banco e, se ainda não houver, o nome da conta.
+ * @returns {string|null}
+ */
+export function nomeDoAluno() {
+  if (!usuario) return null;
+  return (nomeDoPerfil || usuario.displayName || '').trim() || null;
 }
 
 /**
