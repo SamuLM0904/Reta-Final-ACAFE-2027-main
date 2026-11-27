@@ -519,6 +519,28 @@ export async function lerMemoriasAlunos() {
 }
 
 /**
+ * Grava dados de teste (js/dados-teste.js) na conta de um aluno (só administradores podem):
+ * substitui questões feitas, simulados e memória. O Guia e o perfil ficam como estão.
+ * Grava também um `memoriaResetadaEm` novo: os navegadores dessa conta descartam a cópia
+ * local e passam a usar estes dados (o mesmo caminho do reset; ver ouvirReset).
+ * @param {string} textoUsuario
+ * @param {{ respostas: Object, simulado: Object, memoria: Object[] }} dados
+ * @returns {Promise<{ usuario: string, resetEm: number }>}
+ */
+export async function gravarDadosDeTeste(textoUsuario, dados) {
+  const u = normalizarUsuario(textoUsuario) || (textoUsuario || '').trim().toLowerCase();
+  const ref = fb.f.doc(fb.db, 'alunos', u);
+  const snap = await fb.f.getDoc(ref);
+  if (!snap.exists()) throw new Error(`Aluno "${u}" não encontrado.`);
+  const agora = Date.now();
+  await fb.f.updateDoc(ref, {
+    respostas: dados.respostas, simulado: dados.simulado, memoria: dados.memoria,
+    memoriaResetadaEm: agora, atualizadoEm: agora,
+  });
+  return { usuario: u, resetEm: agora };
+}
+
+/**
  * Zera o progresso de um aluno (só administradores podem): questões respondidas, simulados,
  * memória de erros e acertos e o Guia de Estudos. A conta (perfil, nome, login) fica.
  * Grava também `memoriaResetadaEm`, para que a cópia no navegador do aluno seja

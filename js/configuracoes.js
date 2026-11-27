@@ -20,7 +20,7 @@ import { resetarMemoriaLocal } from './armazenamento.js';
 import { htmlBotaoTema, vincularBotoesTema } from './tema.js';
 import {
   eAdmin, listarAdministradores, adicionarAdministrador, removerAdministrador,
-  listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, usuarioAtual, usuarioExibido, sair, trocarSenha,
+  listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, gravarDadosDeTeste, usuarioAtual, usuarioExibido, sair, trocarSenha,
   redefinirSenha, temEmailReal, cadastrarEmailRecuperacao, alterarNome, alterarUsuario,
 } from './nuvem.js';
 
@@ -168,6 +168,17 @@ function renderizarAreaAdmin(area) {
         <button type="button" class="btn btn-primario btn-perigo" id="config-resetar">Resetar memória</button>
       </div>
       <p class="configuracoes__info" id="config-status" role="status"></p>
+
+      <p class="configuracoes__info"><strong>Dados de teste</strong><br>
+        Grava um ano simulado de uso na conta escolhida (questões feitas, simulados, correção de erros
+        e erros e acertos), para testar as telas. Substitui o que a conta já tem; o Guia e o login não mudam.
+        Use só em contas de teste.</p>
+      <div class="configuracoes__linha">
+        <input type="text" id="config-usuario-teste" class="guia-texto" list="config-lista-alunos"
+          placeholder="usuário da conta de teste" autocomplete="off" aria-label="Usuário da conta de teste">
+        <button type="button" class="btn btn-secundario" id="config-dados-teste">Gerar 1 ano de dados de teste</button>
+      </div>
+      <p class="configuracoes__info" id="config-status-teste" role="status"></p>
     </section>`;
 
   const status = area.querySelector('#config-status');
@@ -256,6 +267,28 @@ function renderizarAreaAdmin(area) {
     .catch(() => {
       status.textContent = 'Não foi possível listar os alunos: publique as regras novas (firestore.rules) no Console do Firebase.';
     });
+
+  area.querySelector('#config-dados-teste').addEventListener('click', async () => {
+    const statusTeste = area.querySelector('#config-status-teste');
+    const usuario = area.querySelector('#config-usuario-teste').value.trim();
+    if (!usuario) { statusTeste.textContent = 'Digite o usuário da conta de teste.'; return; }
+    const nome = escaparHtml(usuario);
+    if (!(await confirmar({
+      titulo: `Gravar dados de teste em ${nome}?`,
+      mensagem: `As questões feitas, os simulados e os erros e acertos de <strong>${nome}</strong> serão <strong>substituídos</strong> por um ano simulado de uso. Não dá para desfazer.`,
+      textoConfirmar: 'Gravar dados de teste', perigo: true,
+    }))) return;
+    statusTeste.textContent = 'Gerando e gravando...';
+    try {
+      const { gerarAnoDeTeste } = await import('./dados-teste.js');
+      const dados = gerarAnoDeTeste(window.QUESTOES_PROVAS || [], window.QUESTOES || []);
+      const r = await gravarDadosDeTeste(usuario, dados);
+      statusTeste.textContent = `Pronto: ${dados.memoria.length} respostas e ${dados.simulado.tentativas.length} simulados gravados em ${r.usuario}.`
+        + (r.usuario === usuarioExibido(usuarioAtual()) ? ' A página vai recarregar.' : ' Se a conta estiver aberta em outro lugar, a página dela recarrega sozinha.');
+    } catch (e) {
+      statusTeste.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão de administrador.' : e.message);
+    }
+  });
 
   area.querySelector('#config-resetar').addEventListener('click', async () => {
     const usuario = area.querySelector('#config-usuario').value.trim();
