@@ -16,6 +16,7 @@ import { escaparHtml } from './utils.js';
 import { lerMemoria, lerSimulado, lerGuia } from './armazenamento.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { proximoBlocoDeHoje } from './guia.js';
+import { TAMANHOS, duracaoDoSimulado } from './simulado.js';
 import { MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, chaveDia, somarDias, formatarHoras } from './guia-plano.js';
 import { nomeDoAluno } from './nuvem.js';
 
@@ -93,10 +94,16 @@ function htmlProximoBloco(prox) {
    Card "Simulados"
    ================================================================ */
 
+/** "1h06" — mesmo arredondamento da tela de simulados (minutos para baixo). */
+function tempoDoSimulado(total) {
+  const min = Math.floor(duracaoDoSimulado(total) / 60000);
+  return `${Math.floor(min / 60)}h${String(min % 60).padStart(2, '0')}`;
+}
+
+/** As mesmas opções da tela de simulados: os tamanhos do simulado aleatório e a prova de um ano inteira. */
 const ATALHOS = [
-  { nome: 'Prova completa · 63 questões', info: '5h00' },
-  { nome: 'Mini simulado · 14 questões', info: '42 min' },
-  { nome: 'Por matéria', info: '3 min/questão' },
+  ...TAMANHOS.map(t => ({ nome: `${t.nome} · ${t.total} questões`, info: tempoDoSimulado(t.total) })),
+  { nome: 'Prova de um ano inteira', info: tempoDoSimulado(63) },
 ];
 
 function htmlSimulados(memoria) {

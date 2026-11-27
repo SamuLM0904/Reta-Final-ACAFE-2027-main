@@ -118,6 +118,8 @@ function passaNoFiltro(q, bloco, filtro) {
 
 /** Tempo de prova de um simulado com `n` questões (proporcional às 5h da prova completa). */
 const duracaoPara = n => Math.round(DURACAO_MS * Math.min(n, 63) / 63);
+/** Tempo de prova de um simulado com n questões (ms) — o mesmo usado na tela de simulados. */
+export const duracaoDoSimulado = duracaoPara;
 
 /* ================================================================
    Banco de questões e sorteio
