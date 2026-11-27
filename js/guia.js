@@ -184,35 +184,55 @@ export function renderizarGuia(container, questoesProvas, questoesEstudo) {
 }
 
 /**
- * Próximo bloco de hoje para a tela inicial (o mesmo plano do Guia, sem refazer nada).
- * @returns {null | { hoje, total, feitos, posicao, bloco, materia, titulo, assunto, atividade, href, rotuloAcao } | { hoje, vazio: string }}
- *   null = o aluno ainda não montou o guia; `vazio` = não há bloco a fazer hoje (texto explica).
+ * Próxima atividade de hoje para a tela inicial (o mesmo plano do Guia, sem refazer nada).
+ * `acao` diz o que o botão faz, para o aluno só clicar e estudar:
+ *   { tipo: 'link', href }                       abre a tela (questões do conteúdo, simulado em andamento...)
+ *   { tipo: 'revisao', href, limite }            correção de erros com só as questões do bloco
+ *   { tipo: 'simulado', total, nome, materias }  cria o simulado (do dia ou o mini) e abre
+ * @returns {null | { hoje, fase, diasParaProva, total, feitos, posicao?, bloco?, titulo?, assunto?, atividade?,
+ *   progresso?, acao?, rotuloAcao?, vazio?, mini? }}  null = o aluno ainda não montou o guia
  */
 export function proximoBlocoDeHoje(questoesProvas, questoesEstudo) {
   const guia = lerGuia();
   if (!guia?.perfil) return null;
   const ctx = montarContexto(questoesProvas, questoesEstudo);
   const hoje = ctx.hoje;
-  if (hoje >= DIA_PROVA) return { hoje, vazio: hoje === DIA_PROVA ? 'Hoje é o dia da prova. Boa prova!' : 'A prova já aconteceu.' };
+  const base = { hoje, fase: ctx.fase, diasParaProva: diasEntre(hoje, DIA_PROVA), errosDevidos: ctx.errosPendentes.filter(p => p.devida).length };
+  if (hoje >= DIA_PROVA) return { ...base, vazio: hoje === DIA_PROVA ? 'Hoje é o dia da prova. Boa prova!' : 'A prova já aconteceu.' };
   const plano = planoDeHoje(ctx);
   const total = plano.blocos.length;
-  if (!total) return { hoje, vazio: 'Hoje está livre no seu cronograma.' };
+  if (!total) return { ...base, vazio: 'Hoje está livre no seu cronograma.' };
   const feitos = new Set(plano.feitos || []);
   const i = plano.blocos.findIndex((_, k) => !feitos.has(k));
-  if (i < 0) return { hoje, total, feitos: feitos.size, vazio: 'Você fez todos os blocos de hoje.' };
+  if (i < 0) {
+    // dia concluído: sugere o mini-simulado do dia (as matérias estudadas hoje)
+    const materias = materiasDoPlano(plano);
+    const mini = materias.length && base.diasParaProva > 1
+      ? { tipo: 'simulado', total: QUESTOES_MINI_DO_DIA, nome: 'Mini-simulado do dia', materias } : null;
+    return { ...base, total, feitos: feitos.size, vazio: 'Você fez todos os blocos de hoje.', mini };
+  }
   const bloco = plano.blocos[i];
   const materia = MATERIAS.find(m => m.id === bloco.materia);
-  let titulo, href = '#/guia', rotuloAcao = 'Começar bloco';
-  if (bloco.tipo === 'simulado') { titulo = bloco.nome || 'Simulado completo'; if (ctx.atual) { href = '#/simulado'; rotuloAcao = 'Continuar simulado'; } }
-  else if (bloco.tipo === 'externo') titulo = 'Simulado externo';
-  else if (bloco.tipo === 'revisao') { titulo = 'Correção de erros'; href = '#/revisao'; }
-  else {
+  let titulo, acao = { tipo: 'link', href: '#/guia' }, rotuloAcao = 'Começar';
+  if (bloco.tipo === 'simulado') {
+    titulo = bloco.nome || 'Simulado completo';
+    if (ctx.atual) { acao = { tipo: 'link', href: '#/simulado' }; rotuloAcao = 'Continuar o simulado'; }
+    else { acao = { tipo: 'simulado', total: bloco.total || 63, nome: bloco.nome || 'Simulado completo' }; rotuloAcao = `Começar o simulado (${bloco.total || 63} questões)`; }
+  } else if (bloco.tipo === 'externo') {
+    titulo = 'Simulado externo';
+    rotuloAcao = 'Ver no guia';
+  } else if (bloco.tipo === 'revisao') {
+    titulo = 'Correção de erros';
+    const limite = Math.min(base.errosDevidos, bloco.quantidade || Infinity);
+    acao = limite ? { tipo: 'revisao', href: '#/revisao', limite } : { tipo: 'link', href: '#/guia' };
+    rotuloAcao = limite ? `Refazer ${limite === 1 ? 'a questão' : `${limite} questões`}` : 'Ver no guia';
+  } else {
     titulo = nomeMateria(materia, guia.perfil);
     const link = linkDoBloco(bloco, ctx, guia.perfil);
-    if (link) href = link.href;
+    if (link) { acao = { tipo: 'link', href: link.href }; rotuloAcao = link.conteudo ? 'Começar pelas questões' : 'Começar'; }
   }
-  return { hoje, total, feitos: feitos.size, posicao: i + 1, bloco, materia, titulo,
-    assunto: bloco.foco?.[0] || null, atividade: bloco.atividade, href, rotuloAcao };
+  return { ...base, total, feitos: feitos.size, posicao: i + 1, bloco, materia, titulo,
+    assunto: bloco.foco?.[0] || null, atividade: bloco.atividade, progresso: ctx.progressoHoje?.[i] || null, acao, rotuloAcao };
 }
 
 /** Texto do card do guia na tela inicial. */

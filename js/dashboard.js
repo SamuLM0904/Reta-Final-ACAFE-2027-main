@@ -1,10 +1,13 @@
 /**
  * dashboard.js — Tela inicial (#/), no formato da identidade visual B (IDENTIDADE-VISUAL.md, 5.2).
  *
- * De cima para baixo:
- *   1. Saudação e data ("Sábado, 7 de novembro · bloco 3 de 5" / "Boa noite, Samuel").
- *   2. Card "Próximo bloco": o próximo bloco de HOJE do Guia de Estudos (o mesmo plano do
- *      #/guia). Sem guia montado, o card convida a montar o guia.
+ * A tela é feita de MÓDULOS (MODULOS_INICIO, no fim do arquivo): cada um diz quando aparece.
+ * Hoje, de cima para baixo:
+ *   0. Simulado em andamento (só quando há um).
+ *   1. Saudação e data ("Sábado, 7 de novembro · atividade 3 de 5" / "Boa noite, Samuel").
+ *   2. Card "Próxima atividade": a próxima atividade de HOJE do Guia; o botão já leva ao que
+ *      fazer (questões do conteúdo, correção de erros, simulado do dia). Sem guia, convida a
+ *      montar o guia; com o dia concluído, sugere o mini-simulado do dia.
  *   3. Dois cards lado a lado:
  *      - Simulados: atalhos (prova completa, mini, por matéria), os simulados já feitos e um
  *        gráfico das questões feitas nos últimos 14 dias.
@@ -18,7 +21,8 @@ import { htmlGraficoBarras, htmlLegenda, vincularDica, porDia, abrirGraficoAmpli
 import { lerMemoria, lerSimulado, lerGuia } from './armazenamento.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { proximoBlocoDeHoje } from './guia.js';
-import { TAMANHOS, duracaoDoSimulado } from './simulado.js';
+import { TAMANHOS, duracaoDoSimulado, criarSimuladoAleatorio } from './simulado.js';
+import { confirmar } from './confirmar.js';
 import { MATERIAS, nomeMateria, moduloMateria, materiaDaDisciplina, formatarHoras } from './guia-plano.js';
 import { nomeDoAluno } from './nuvem.js';
 
@@ -46,17 +50,27 @@ function primeiroNome() {
 }
 
 /* ================================================================
-   Card "Próximo bloco"
+   Card "Próxima atividade": o aluno só abre o site e clica; o botão já leva ao que fazer
    ================================================================ */
 
-function htmlProximoBloco(prox) {
+/** Botão principal de uma ação (link, correção de erros com limite ou simulado a criar). */
+function htmlBotaoDaAcao(acao, rotulo, classe = 'btn btn-primario inicio-bloco__principal') {
+  if (!acao) return '';
+  if (acao.tipo === 'simulado') {
+    return `<button type="button" class="${classe}" data-criar-simulado="${acao.total}" data-nome="${escaparHtml(acao.nome)}"
+      ${acao.materias ? `data-materias="${acao.materias.join(',')}"` : ''}>${rotulo}</button>`;
+  }
+  return `<a href="${acao.href}" class="${classe}"${acao.tipo === 'revisao' ? ` data-revisao-limite="${acao.limite}"` : ''}>${rotulo}</a>`;
+}
+
+function htmlProximaAtividade(prox) {
   if (!prox) {
     return `
       <section class="inicio-bloco" aria-labelledby="inicio-bloco-titulo">
         <div class="inicio-bloco__texto">
           <p class="inicio-bloco__rotulo">Comece por aqui</p>
           <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">Monte seu guia de estudos</h2>
-          <p class="inicio-bloco__descricao">Responda 9 perguntas e receba um cronograma diário com os blocos de estudo, simulados e correção de erros.</p>
+          <p class="inicio-bloco__descricao">Responda 9 perguntas e receba um cronograma diário: depois é só abrir o site e clicar para saber o que estudar.</p>
         </div>
         <div class="inicio-bloco__acoes">
           <a href="#/guia" class="btn btn-primario inicio-bloco__principal">Montar meu guia</a>
@@ -64,30 +78,48 @@ function htmlProximoBloco(prox) {
       </section>`;
   }
   if (prox.vazio) {
+    const concluido = prox.total && prox.feitos === prox.total;
     return `
       <section class="inicio-bloco" aria-labelledby="inicio-bloco-titulo">
         <div class="inicio-bloco__texto">
-          <p class="inicio-bloco__rotulo">Hoje</p>
+          <p class="inicio-bloco__rotulo">${concluido ? 'Dia concluído' : 'Hoje'}</p>
           <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">${prox.vazio}</h2>
-          ${prox.total ? `<p class="inicio-bloco__descricao">${prox.feitos} de ${prox.total} blocos feitos.</p>` : ''}
+          ${prox.mini ? '<p class="inicio-bloco__descricao">Para fixar, faça o mini-simulado do dia com as matérias que você estudou hoje.</p>'
+            : prox.total ? `<p class="inicio-bloco__descricao">${prox.feitos} de ${prox.total} blocos feitos. Bom descanso!</p>` : ''}
         </div>
         <div class="inicio-bloco__acoes">
+          ${prox.mini ? htmlBotaoDaAcao(prox.mini, `Fazer o mini-simulado (${prox.mini.total} questões)`) : ''}
           <a href="#/guia" class="btn btn-secundario">Ver o guia</a>
         </div>
       </section>`;
   }
   const titulo = prox.assunto ? `${escaparHtml(prox.titulo)} — ${escaparHtml(prox.assunto)}` : escaparHtml(prox.titulo);
+  const prog = prox.progresso;
   return `
     <section class="inicio-bloco" aria-labelledby="inicio-bloco-titulo">
       <div class="inicio-bloco__texto">
-        <p class="inicio-bloco__rotulo">Próximo bloco · ${formatarHoras(prox.bloco.minutos).toUpperCase()}</p>
+        <p class="inicio-bloco__rotulo">Próxima atividade · ${formatarHoras(prox.bloco.minutos).toUpperCase()} · ${prox.posicao} de ${prox.total}</p>
         <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">${titulo}</h2>
         <p class="inicio-bloco__descricao">${prox.atividade}</p>
+        ${prog ? `<p class="inicio-bloco__progresso">Questões de hoje: <strong>${prog.feitas} de ${prog.alvo}</strong></p>` : ''}
       </div>
       <div class="inicio-bloco__acoes">
-        <a href="${prox.href}" class="btn btn-primario inicio-bloco__principal">${prox.rotuloAcao}</a>
+        ${htmlBotaoDaAcao(prox.acao, prox.rotuloAcao)}
         <a href="#/guia" class="btn btn-secundario">Ver o dia todo</a>
       </div>
+    </section>`;
+}
+
+/** Simulado em andamento: aparece em cima de tudo, para não ficar esquecido. */
+function htmlSimuladoEmAndamento() {
+  const { atual } = lerSimulado();
+  if (!atual) return '';
+  const respondidas = Object.keys(atual.respostas || {}).length;
+  return `
+    <section class="inicio-aviso" aria-label="Simulado em andamento">
+      <p><strong>Você tem um simulado em andamento</strong>${atual.nome ? ` (${escaparHtml(atual.nome)})` : ''}:
+        ${respondidas} de ${atual.ids.length} questões respondidas.</p>
+      <a href="#/simulado" class="btn btn-secundario">Continuar o simulado</a>
     </section>`;
 }
 
@@ -143,7 +175,7 @@ function htmlGraficoQuestoes(memoria) {
             aria-label="Ver o gráfico por semana, mês e ano" title="Ver por semana, mês e ano">${icone('maximize', 16)}</button>
         </span>
       </figcaption>
-      ${htmlGraficoBarras(valores, { ultimo: 'hoje' })}
+      ${htmlGraficoBarras(valores, { ultimo: 'hoje', largura: 340, altura: 116 })}
       <div class="inicio-grafico__dica" role="tooltip" hidden></div>
       ${htmlLegenda()}
     </figure>`;
@@ -206,8 +238,18 @@ function htmlMaterias(questoesProvas, questoesEstudo, memoria) {
 }
 
 /* ================================================================
-   Tela
+   Tela feita de módulos
+   Cada módulo diz QUANDO aparece (conforme o momento de estudo do aluno) e o seu HTML.
+   Para mudar o que a tela mostra, basta mexer nesta lista: a ordem é a ordem na tela, e
+   os módulos com lado: true ficam lado a lado, dois por linha.
    ================================================================ */
+
+const MODULOS_INICIO = [
+  { id: 'simulado-andamento', quando: () => Boolean(lerSimulado().atual), html: () => htmlSimuladoEmAndamento() },
+  { id: 'proxima-atividade',  quando: () => true, html: m => htmlProximaAtividade(m.prox) },
+  { id: 'simulados', lado: true, quando: () => true, html: m => htmlSimulados(m.memoria) },
+  { id: 'materias',  lado: true, quando: () => true, html: m => htmlMaterias(m.questoesProvas, m.todasQuestoes, m.memoria) },
+];
 
 /**
  * @param {HTMLElement} container
@@ -218,7 +260,18 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
   const prox = proximoBlocoDeHoje(questoesProvas, todasQuestoes);
   const memoria = lerMemoria();
   const nome = primeiroNome();
-  const linhaData = `${dataPorExtenso()}${prox?.posicao ? ` · bloco ${prox.posicao} de ${prox.total}` : ''}`;
+  const momento = { prox, memoria, todasQuestoes, questoesProvas };
+  const linhaData = `${dataPorExtenso()}${prox?.posicao ? ` · atividade ${prox.posicao} de ${prox.total}` : ''}`;
+
+  // módulos que valem agora; os "lado a lado" são agrupados de dois em dois
+  const partes = [];
+  MODULOS_INICIO.filter(m => m.quando(momento)).forEach(m => {
+    const html = m.html(momento);
+    if (!html) return;
+    const ultimo = partes.at(-1);
+    if (m.lado && ultimo?.lado && ultimo.itens.length < 2) ultimo.itens.push(html);
+    else partes.push({ lado: Boolean(m.lado), itens: [html] });
+  });
 
   container.innerHTML = `
     <div class="inicio">
@@ -227,11 +280,7 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
         <p class="inicio__data">${linhaData}</p>
         <h1 class="inicio__titulo">${saudacao()}${nome ? `, ${escaparHtml(nome)}` : ''}</h1>
       </header>
-      ${htmlProximoBloco(prox)}
-      <div class="inicio__grade">
-        ${htmlSimulados(memoria)}
-        ${htmlMaterias(questoesProvas, todasQuestoes, memoria)}
-      </div>
+      ${partes.map(p => (p.lado ? `<div class="inicio__grade">${p.itens.join('')}</div>` : p.itens.join(''))).join('')}
     </div>`;
   iniciarContagemCompacta(container);
   const figura = container.querySelector('[data-grafico]');
@@ -239,4 +288,24 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
     vincularDica(figura);
     figura.querySelector('[data-expandir-grafico]').addEventListener('click', () => abrirGraficoAmpliado(memoria));
   }
+
+  // Correção de erros: abre só as questões do bloco
+  container.querySelectorAll('[data-revisao-limite]').forEach(link => link.addEventListener('click', () => {
+    try { sessionStorage.setItem('acafe2027:revisao-limite', link.dataset.revisaoLimite); } catch { /* ignora */ }
+  }));
+  // Simulado do dia / mini-simulado: cria e abre
+  container.querySelectorAll('[data-criar-simulado]').forEach(btn => btn.addEventListener('click', async () => {
+    if (lerSimulado().atual && !(await confirmar({
+      titulo: 'Começar um novo simulado?',
+      mensagem: 'Já existe um simulado em andamento. Começar este vai descartá-lo e apagar as marcações dele da sua memória de erros e acertos.',
+      textoConfirmar: 'Descartar e começar', perigo: true,
+    }))) return;
+    const criado = criarSimuladoAleatorio(questoesProvas, {
+      idioma: lerGuia()?.perfil?.idioma || 'Espanhol',
+      total: Number(btn.dataset.criarSimulado),
+      nome: btn.dataset.nome,
+      materias: btn.dataset.materias ? btn.dataset.materias.split(',') : null,
+    });
+    if (criado) window.location.hash = '#/simulado';
+  }));
 }

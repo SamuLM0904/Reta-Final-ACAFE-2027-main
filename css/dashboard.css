@@ -348,7 +348,7 @@
    Tela inicial — identidade visual B (IDENTIDADE-VISUAL.md, 5.2)
    ================================================================ */
 .inicio {
-  max-width: 1040px;
+  max-width: 1250px;   /* 20% mais larga que os 1040 px de antes */
   margin-inline: auto;
   padding: var(--espaco-xl) var(--padding-lateral) var(--espaco-2xl);
   display: flex;
@@ -640,3 +640,16 @@
 .grafico-ampliado__seta:disabled { opacity: 0.35; cursor: default; }
 .grafico-ampliado__seta:focus-visible { outline: 2px solid var(--cor-acento); outline-offset: 2px; }
 .grafico-ampliado__seta--proxima svg { transform: rotate(180deg); }
+
+/* Aviso de simulado em andamento (módulo do topo da tela inicial) */
+.inicio-aviso {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 20px;
+  border: 1px solid var(--cor-primaria);
+  border-radius: var(--raio-md);
+  background: var(--cor-dourado-suave);
+  font-size: var(--tamanho-sm);
+}
+.inicio-aviso p { margin: 0; }
+.inicio-bloco__progresso { margin: 4px 0 0; font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: var(--tamanho-xs); color: var(--cor-texto-suave); }
+.inicio-bloco__progresso strong { color: var(--cor-texto); }
