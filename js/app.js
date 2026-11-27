@@ -119,7 +119,10 @@ function renderizarCabecalho() {
         </div>
       </div>
     </header>
+    <button type="button" class="menu-site__fixar" id="btn-fixar-menu" aria-controls="menu-navegacao"></button>
+    <div class="menu-site__borda" aria-hidden="true"></div>
   `;
+  ligarMenuRecolhivel();
   const btnMenu = elCabecalho.querySelector('#btn-menu');
   const fecharMenu = () => { elCabecalho.classList.remove('menu-aberto'); btnMenu.setAttribute('aria-expanded', 'false'); btnMenu.setAttribute('aria-label', 'Abrir menu'); };
   btnMenu.addEventListener('click', () => {
@@ -426,3 +429,48 @@ window.addEventListener('hashchange', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
+/* ================================================================
+   Menu lateral recolhível (só no computador, ≥ 1024 px), como o do Claude:
+   recolhido, fica só o ícone no canto de cima; passar o mouse no ícone ou na borda
+   esquerda mostra o menu por cima da tela; clicar no ícone fixa o menu (e clicar de
+   novo recolhe). A escolha fica guardada neste navegador.
+   ================================================================ */
+const CHAVE_MENU_FIXO = 'sapiens-menu-fixo';
+const ICONE_BARRA_LATERAL = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>`;
+
+function menuFixo() {
+  try { return localStorage.getItem(CHAVE_MENU_FIXO) === '1'; } catch { return false; }
+}
+
+function aplicarMenuFixo(fixo) {
+  document.documentElement.classList.toggle('menu-recolhido', !fixo);
+  const btn = document.getElementById('btn-fixar-menu');
+  if (!btn) return;
+  btn.innerHTML = ICONE_BARRA_LATERAL;
+  btn.setAttribute('aria-pressed', String(fixo));
+  btn.setAttribute('aria-label', fixo ? 'Recolher o menu lateral' : 'Fixar o menu lateral');
+  btn.title = fixo ? 'Recolher menu' : 'Fixar menu';
+}
+
+function ligarMenuRecolhivel() {
+  const raiz = document.documentElement;
+  const menu = elCabecalho.querySelector('.menu-site');
+  const btn = elCabecalho.querySelector('#btn-fixar-menu');
+  const borda = elCabecalho.querySelector('.menu-site__borda');
+  aplicarMenuFixo(menuFixo());
+  let timer = null;
+  const mostrar = () => { clearTimeout(timer); if (raiz.classList.contains('menu-recolhido')) raiz.classList.add('menu-espiando'); };
+  const esconder = () => { clearTimeout(timer); timer = setTimeout(() => raiz.classList.remove('menu-espiando'), 250); };
+  [btn, borda, menu].forEach(el => {
+    el.addEventListener('mouseenter', mostrar);
+    el.addEventListener('mouseleave', esconder);
+  });
+  btn.addEventListener('click', () => {
+    const fixo = raiz.classList.contains('menu-recolhido');
+    try { localStorage.setItem(CHAVE_MENU_FIXO, fixo ? '1' : '0'); } catch {}
+    raiz.classList.remove('menu-espiando');
+    aplicarMenuFixo(fixo);
+  });
+  // ao escolher uma tela no menu espiando, ele recolhe
+  menu.addEventListener('click', e => { if (e.target.closest('a, button')) raiz.classList.remove('menu-espiando'); });
+}
