@@ -955,3 +955,28 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .janela-plano--destaque .janela-plano__recursos { font-weight: 600; }
 .janela-plano--destaque .janela-plano__preco strong { font-size: 1.625rem; }
 .janela-plano:not(.janela-plano--destaque):hover { border-color: var(--cor-verde-militar-borda); box-shadow: 0 0 16px var(--cor-dourado-suave); }
+
+/* Inclinação 3D (js/efeitos.js, atributo data-inclinar) */
+.inclinavel {
+  --inclinar-x: 0deg; --inclinar-y: 0deg; --escala: 1;
+  transform: perspective(900px) rotateX(var(--inclinar-x)) rotateY(var(--inclinar-y)) scale(var(--escala));
+  transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow var(--transicao);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.inclinavel--ativo { transition: transform 80ms linear, box-shadow var(--transicao); }
+/* reflexo de luz que acompanha o mouse */
+.inclinavel--ativo::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(circle at var(--luz-x, 50%) var(--luz-y, 50%), rgba(255, 255, 255, 0.10), transparent 55%);
+}
+.janela-plano--destaque.inclinavel { --escala: 1.06; transform: perspective(900px) rotateX(var(--inclinar-x)) rotateY(var(--inclinar-y)) scale(var(--escala)); }
+@media (prefers-reduced-motion: reduce) { .inclinavel { transition: none; } }
+@media (max-width: 760px) { .janela-plano--destaque.inclinavel { --escala: 1; } }
+
+/* Botões grandes (principais e secundários): brilho em volta e um leve levantar ao passar o mouse */
+.btn:not(.btn-pequeno) { transition: background-color var(--transicao), border-color var(--transicao), box-shadow var(--transicao), transform var(--transicao), color var(--transicao); }
+.btn-primario:not(.btn-pequeno):not(:disabled):hover { box-shadow: 0 0 0 1px var(--cor-primaria), 0 0 20px var(--cor-dourado-brilho), 0 6px 18px var(--cor-dourado-suave); transform: translateY(-1px); }
+.btn-secundario:not(.btn-pequeno):not(:disabled):hover { box-shadow: 0 0 0 1px var(--cor-verde-militar-borda), 0 0 18px var(--cor-dourado-suave); transform: translateY(-1px); }
+.btn:not(.btn-pequeno):active { transform: translateY(0) scale(0.98); }
+@media (prefers-reduced-motion: reduce) { .btn:not(.btn-pequeno):hover { transform: none; } }

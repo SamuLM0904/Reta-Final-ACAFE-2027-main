@@ -103,7 +103,7 @@ export function abrirJanelaPlanos(recurso = null) {
             const atual = p.id === planoAtual;
             const ehDestaque = p.id === destaque;
             return `
-              <article class="janela-plano${ehDestaque ? ' janela-plano--destaque' : ''}${atual ? ' janela-plano--atual' : ''}">
+              <article class="janela-plano${ehDestaque ? ' janela-plano--destaque' : ''}${atual ? ' janela-plano--atual' : ''}" data-inclinar>
                 ${atual ? '<span class="janela-plano__selo janela-plano__selo--atual">Seu plano</span>' : ''}
                 <h3 class="janela-plano__nome">${p.nome}</h3>
                 <p class="janela-plano__resumo">${p.resumo}</p>

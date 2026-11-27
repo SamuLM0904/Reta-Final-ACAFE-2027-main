@@ -37,6 +37,7 @@ import { renderizarPlanos }       from './planos.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { iniciarTemaAutomatico } from './tema.js';
 import { pararCronometro } from './cronometro-questao.js';
+import './efeitos.js';   // inclinação 3D nos elementos com data-inclinar
 import { definirPlano, temAcesso, abrirJanelaPlanos } from './acesso.js';
 import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
