@@ -1,66 +1,69 @@
 /* ============================================================
    variaveis.css — Design Tokens do Reta Final ACAFE 2027
-   Paleta Nobre & Profissional:
-     - Fundo principal: Azul Marinho Profundo (#0a1118 / #0f1923)
-     - Destaque nobre e secundário: Verde Militar (#243b2f / #315241 / #3d6651)
-     - Acentos & Dourado Fosco: Gold Champagne (#c5a869 / #d8bc7e)
-     - Tipografia principal: Branco puro e brancos suaves (#ffffff / #e1e7ec)
+   Direção B "Plantão" (IDENTIDADE-VISUAL.md):
+     - Tema escuro para estudar à noite, superfícies neutras (#0E1116 / #161B22 / #1D242E)
+     - Um único destaque: âmbar (#F2B13E); azul (#7CC4FF) só para informação e links
+     - Verde só significa "acertou"
+   Os NOMES das variáveis ainda são os antigos (marinho, verde militar, dourado):
+   só os valores mudaram. Renomear fica para um commit separado.
    ============================================================ */
 
 :root {
-  /* --- Paleta Principal das Especificações --- */
-  /* Azul Marinho Escuro & Profundo */
-  --cor-marinho-base:       #0a1118;   /* Fundo geral da página */
-  --cor-marinho-card:       #111c27;   /* Cartões e superfícies */
-  --cor-marinho-elevado:    #162433;   /* Menus, modais, headers e hover cards */
-  --cor-marinho-borda:      #1f3347;   /* Divisões e contornos refinados */
-  --cor-marinho-borda-leve: rgba(197, 168, 105, 0.18); /* Dourado suave em bordas */
+  /* --- Paleta --- */
+  /* Superfícies (nome antigo: "marinho") */
+  --cor-marinho-base:       #0E1116;
+  --cor-marinho-card:       #161B22;
+  --cor-marinho-elevado:    #1D242E;
+  --cor-marinho-borda:      #2A323D;
+  --cor-marinho-borda-leve: rgba(242, 177, 62, 0.18);
 
-  /* Verde Escuro Militar */
-  --cor-verde-militar:       #2a4234;  /* Base do verde militar */
-  --cor-verde-militar-hover: #365543;  /* Hover militar */
-  --cor-verde-militar-suave: rgba(42, 66, 52, 0.45); /* Fundos sutis */
-  --cor-verde-militar-borda: #456d56;
+  /* Neutros elevados (nome antigo: "verde militar" — não é mais verde) */
+  --cor-verde-militar:       #1D242E;
+  --cor-verde-militar-hover: #252D38;
+  --cor-verde-militar-suave: rgba(124, 196, 255, 0.10);
+  --cor-verde-militar-borda: #3A4450;
 
-  /* Dourado Fosco (Elegante & Não Neon) */
-  --cor-dourado-fosco:       #c5a869;  /* Dourado nobre fosco */
-  --cor-dourado-hover:       #d6bc80;  /* Leve realce */
-  --cor-dourado-suave:       rgba(197, 168, 105, 0.12); /* Brilho de fundo */
-  --cor-dourado-borda:       rgba(197, 168, 105, 0.35); /* Contorno dourado */
-  --cor-dourado-brilho:      rgba(197, 168, 105, 0.25);
+  /* Destaque único: âmbar (nome antigo: "dourado") */
+  --cor-dourado-fosco:       #F2B13E;
+  --cor-dourado-hover:       #F6C463;
+  --cor-dourado-suave:       rgba(242, 177, 62, 0.12);
+  --cor-dourado-borda:       rgba(242, 177, 62, 0.35);
+  --cor-dourado-brilho:      rgba(242, 177, 62, 0.25);
 
   /* --- Mapeamento Semântico de Cores --- */
-  --cor-primaria:            #c5a869;  /* Dourado fosco como destaque nobre */
-  --cor-primaria-hover:      #d6bc80;
-  --cor-primaria-suave:      rgba(197, 168, 105, 0.12);
+  --cor-primaria:            #F2B13E;
+  --cor-primaria-hover:      #F6C463;
+  --cor-primaria-suave:      rgba(242, 177, 62, 0.12);
 
-  --cor-acento:              #365543;  /* Verde militar de contraste */
-  --cor-acento-hover:        #456d56;
+  --cor-acento:              #7CC4FF;
+  --cor-acento-hover:        #A9D8FF;
 
-  /* --- Superfícies e Fundos (Azul Marinho Predominante) --- */
-  --cor-fundo:               #0a1118;  /* Azul Marinho Escuro */
-  --cor-fundo-card:          #111c27;  /* Cartão Azul Marinho Sólido */
-  --cor-borda:               #1f3347;  /* Linha sutil marinho */
+  /* --- Superfícies e Fundos --- */
+  --cor-fundo:               #0E1116;
+  --cor-fundo-card:          #161B22;
+  --cor-borda:               #2A323D;
 
-  /* --- Tipografia: Branco Puro para Facilitar a Leitura --- */
-  --cor-texto:               #ffffff;  /* Branco puro */
-  --cor-texto-suave:         #e2e8f0;  /* Branco ligeiramente acetinado */
-  --cor-texto-fraco:         #94a3b8;  /* Branco acinzentado p/ detalhes menores */
+  /* --- Texto --- */
+  --cor-texto:               #ECEFF3;
+  --cor-texto-suave:         #C9D1DA;
+  --cor-texto-fraco:         #9AA5B1;
 
   /* --- Feedback (Avisos, Respostas e Acertos) --- */
-  --cor-certa:               #48bb78;  /* Verde de acerto */
-  --cor-certa-fundo:         rgba(36, 82, 54, 0.65);
-  --cor-certa-borda:         #38a169;
+  --cor-certa:               #57D18B;
+  --cor-certa-fundo:         #13261C;
+  --cor-certa-borda:         #57D18B;
 
-  --cor-errada:              #e53e3e;  /* Vermelho de erro */
-  --cor-errada-fundo:        rgba(92, 23, 23, 0.6);
-  --cor-errada-borda:        #c53030;
+  --cor-errada:              #FF8A7A;
+  --cor-errada-fundo:        #2D1715;
+  --cor-errada-borda:        #FF8A7A;
 
   /* --- Progresso / Indicadores --- */
-  --cor-progresso:           #c5a869;  /* Barra em Dourado Fosco */
+  --cor-progresso:           #F2B13E;
 
   /* --- Tipografia --- */
-  --fonte-base:              'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --fonte-base:              'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fonte-titulo:            'Space Grotesk', 'Inter', system-ui, sans-serif;   /* h1–h3 e nome do site */
+  --fonte-numero:            'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;   /* contagem, cronômetro, placares */
   --tamanho-base:            1rem;           /* 16px */
   --tamanho-sm:              0.875rem;       /* 14px */
   --tamanho-xs:              0.75rem;        /* 12px */
@@ -83,14 +86,14 @@
   /* --- Raios de borda modernos --- */
   --raio-sm:                 8px;
   --raio-md:                 12px;
-  --raio-lg:                 18px;
+  --raio-lg:                 20px;                  /* cards grandes */
   --raio-pill:               9999px;
 
-  /* --- Sombras refinadas para tema escuro e nobre --- */
-  --sombra-sm:               0 2px 5px rgba(0, 0, 0, 0.45);
-  --sombra-md:               0 6px 18px rgba(0, 0, 0, 0.55), 0 0 1px rgba(197, 168, 105, 0.15);
-  --sombra-lg:               0 12px 30px rgba(0, 0, 0, 0.7), 0 0 1px rgba(197, 168, 105, 0.25);
-  --sombra-hover:            0 14px 34px rgba(0, 0, 0, 0.75), 0 0 15px rgba(197, 168, 105, 0.2);
+  /* --- Sombras (sem cor, sem brilho) --- */
+  --sombra-sm:               0 1px 2px rgba(0, 0, 0, 0.40);
+  --sombra-md:               0 4px 12px rgba(0, 0, 0, 0.35);
+  --sombra-lg:               0 10px 24px rgba(0, 0, 0, 0.45);
+  --sombra-hover:            0 0 0 1px #3A4450, 0 8px 20px rgba(0, 0, 0, 0.40);
 
   /* --- Transições --- */
   --transicao:               200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -104,18 +107,18 @@
   --altura-cabecalho:        68px;
 
   /* --- Cores que mudam com o tema (o bloco acima é o tema "escuro", o padrão) --- */
-  --cor-texto-sobre-primaria: #0a1118;  /* texto em cima do dourado (botão principal etc.) */
-  --cor-card-hover:          #152432;
-  --cor-alternativa-marcada: rgba(42, 66, 52, 0.55);
-  --gradiente-destaque:      linear-gradient(135deg, rgba(22, 36, 51, 0.95), rgba(42, 66, 52, 0.65));
-  --sombra-destaque:         0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(197, 168, 105, 0.2);
-  --sombra-cabecalho:        0 4px 20px rgba(0, 0, 0, 0.5);
-  --cor-caixa-numero:        #0c151f;   /* caixinhas da contagem regressiva */
-  --cor-ajuda:               #3a4245;   /* botão "?" da contagem */
-  --cor-ajuda-texto:         #b4bcc0;
-  --cor-ajuda-hover:         #4a5357;
-  --cor-ajuda-texto-hover:   #dde3e6;
-  --cor-info:                #93c5fd;   /* dica azul do guia */
+  --cor-texto-sobre-primaria: #1A1300;
+  --cor-card-hover:          #1D242E;
+  --cor-alternativa-marcada: #2A2416;
+  --gradiente-destaque:      #161B22;
+  --sombra-destaque:         0 0 0 1px #2A323D;
+  --sombra-cabecalho:        none;
+  --cor-caixa-numero:        #0E1116;
+  --cor-ajuda:               #2A323D;
+  --cor-ajuda-texto:         #C9D1DA;
+  --cor-ajuda-hover:         #3A4450;
+  --cor-ajuda-texto-hover:   #ECEFF3;
+  --cor-info:                #7CC4FF;
   color-scheme: dark;
 }
 
@@ -124,61 +127,71 @@
    copie este bloco, troque o id e as cores, e registre o tema em js/tema.js.
    ============================================================ */
 :root[data-tema="claro"] {
-  --cor-marinho-base:       #f4f6f8;
-  --cor-marinho-card:       #ffffff;
-  --cor-marinho-elevado:    #ffffff;
-  --cor-marinho-borda:      #d5dde5;
-  --cor-marinho-borda-leve: rgba(138, 106, 40, 0.2);
+  --cor-marinho-base:       #F5F6F8;
+  --cor-marinho-card:       #FFFFFF;
+  --cor-marinho-elevado:    #FFFFFF;
+  --cor-marinho-borda:      #D8DDE3;
+  --cor-marinho-borda-leve: rgba(138, 90, 0, 0.18);
 
-  --cor-verde-militar:       #dfe9e2;
-  --cor-verde-militar-hover: #cfdfd4;
-  --cor-verde-militar-suave: rgba(61, 102, 81, 0.1);
-  --cor-verde-militar-borda: #9fbfaa;
+  --cor-verde-militar:       #EEF1F4;
+  --cor-verde-militar-hover: #E4E8ED;
+  --cor-verde-militar-suave: rgba(31, 111, 184, 0.08);
+  --cor-verde-militar-borda: #C3CBD4;
 
-  --cor-dourado-fosco:       #8a6a28;
-  --cor-dourado-hover:       #75591f;
-  --cor-dourado-suave:       rgba(138, 106, 40, 0.1);
-  --cor-dourado-borda:       rgba(138, 106, 40, 0.35);
-  --cor-dourado-brilho:      rgba(138, 106, 40, 0.2);
+  --cor-dourado-fosco:       #8A5A00;
+  --cor-dourado-hover:       #704900;
+  --cor-dourado-suave:       rgba(138, 90, 0, 0.10);
+  --cor-dourado-borda:       rgba(138, 90, 0, 0.35);
+  --cor-dourado-brilho:      rgba(138, 90, 0, 0.20);
 
-  --cor-primaria:            #8a6a28;
-  --cor-primaria-hover:      #75591f;
-  --cor-primaria-suave:      rgba(138, 106, 40, 0.1);
-  --cor-acento:              #3d6651;
-  --cor-acento-hover:        #315241;
+  --cor-primaria:            #8A5A00;
+  --cor-primaria-hover:      #704900;
+  --cor-primaria-suave:      rgba(138, 90, 0, 0.10);
+  --cor-acento:              #1F6FB8;
+  --cor-acento-hover:        #185A96;
 
-  --cor-fundo:               #f4f6f8;
-  --cor-fundo-card:          #ffffff;
-  --cor-borda:               #d5dde5;
+  --cor-fundo:               #F5F6F8;
+  --cor-fundo-card:          #FFFFFF;
+  --cor-borda:               #D8DDE3;
 
-  --cor-texto:               #14202b;
-  --cor-texto-suave:         #334155;
-  --cor-texto-fraco:         #5b6b7b;
+  --cor-texto:               #14181F;
+  --cor-texto-suave:         #333B46;
+  --cor-texto-fraco:         #5B6470;
 
-  --cor-certa:               #2f855a;
-  --cor-certa-fundo:         #e6f4ea;
-  --cor-certa-borda:         #38a169;
-  --cor-errada:              #c53030;
-  --cor-errada-fundo:        #fdecec;
-  --cor-errada-borda:        #e53e3e;
-  --cor-progresso:           #8a6a28;
+  --cor-certa:               #1E7F4F;
+  --cor-certa-fundo:         #E7F5EC;
+  --cor-certa-borda:         #1E7F4F;
+  --cor-errada:              #C0392B;
+  --cor-errada-fundo:        #FCECEA;
+  --cor-errada-borda:        #C0392B;
+  --cor-progresso:           #8A5A00;
 
   --sombra-sm:               0 1px 3px rgba(15, 25, 35, 0.12);
   --sombra-md:               0 4px 14px rgba(15, 25, 35, 0.12);
   --sombra-lg:               0 10px 28px rgba(15, 25, 35, 0.16);
   --sombra-hover:            0 12px 30px rgba(15, 25, 35, 0.18), 0 0 12px rgba(138, 106, 40, 0.15);
 
-  --cor-texto-sobre-primaria: #ffffff;
-  --cor-card-hover:          #f7f3ea;
-  --cor-alternativa-marcada: rgba(138, 106, 40, 0.1);
-  --gradiente-destaque:      linear-gradient(135deg, #ffffff, #e8efe9);
-  --sombra-destaque:         0 6px 18px rgba(15, 25, 35, 0.1);
+  --cor-texto-sobre-primaria: #FFFFFF;
+  --cor-card-hover:          #F0F2F5;
+  --cor-alternativa-marcada: #FBF1DC;
+  --gradiente-destaque:      #FFFFFF;
+  --sombra-destaque:         0 0 0 1px #D8DDE3;
   --sombra-cabecalho:        0 2px 10px rgba(15, 25, 35, 0.08);
-  --cor-caixa-numero:        #ffffff;
+  --cor-caixa-numero:        #FFFFFF;
   --cor-ajuda:               #d3d7da;
   --cor-ajuda-texto:         #5f686e;
   --cor-ajuda-hover:         #bcc2c6;
   --cor-ajuda-texto-hover:   #3f474c;
-  --cor-info:                #2563eb;
+  --cor-info:                #1F6FB8;
   color-scheme: light;
+}
+
+/* ============================================================
+   Fontes por papel (IDENTIDADE-VISUAL.md, seção 1). O texto todo usa --fonte-base
+   (no body, em base.css); títulos e o nome do site usam --fonte-titulo.
+   --fonte-numero entra nos números (contagem, cronômetro, placares) na fase 2.
+   ============================================================ */
+h1, h2, h3,
+.cabecalho-titulo {
+  font-family: var(--fonte-titulo);
 }
