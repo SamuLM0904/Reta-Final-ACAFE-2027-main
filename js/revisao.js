@@ -26,7 +26,13 @@ export function renderizarRevisao(container, questoesProvas, questoesEstudo) {
   const mapa = new Map([...questoesProvas, ...questoesEstudo].map(q => [q.id, q]));
   const pendentes = errosPendentes(lerMemoria(), { ignorarSimulado: lerSimulado().atual?.id })
     .filter(p => mapa.has(p.q));
-  const fila = pendentes.filter(p => p.devida).map(p => mapa.get(p.q));
+  // vindo do bloco do Guia: só as questões que cabem no bloco (as que venceram há mais tempo primeiro)
+  let limite = Infinity;
+  try {
+    limite = Number(sessionStorage.getItem('acafe2027:revisao-limite')) || Infinity;
+    sessionStorage.removeItem('acafe2027:revisao-limite');
+  } catch { /* ignora */ }
+  const fila = pendentes.filter(p => p.devida).slice(0, limite).map(p => mapa.get(p.q));
   const depois = pendentes.length - fila.length;
   const placar = { acertos: 0, erros: 0, pulos: 0 };
   mostrar(0);

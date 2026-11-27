@@ -789,3 +789,82 @@
 .guia-dia__feitas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-suave); font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; }
 .guia-dia--passado .guia-dia__feitas, .guia-dia--sem-registro .guia-dia__feitas { opacity: 1; }
 .guia-painel .simulado-tabela { width: 100%; }
+
+/* ---- Semana: escolha entre lista e calendário ---- */
+.guia-semana__titulo { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+
+/* ---- Calendário da semana (estilo agenda) ---- */
+.guia-cal__ajustes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.guia-cal__ajustes label { display: inline-flex; align-items: center; gap: 6px; }
+.guia-cal { overflow-x: auto; border: 1px solid var(--cor-borda); border-radius: var(--raio-md); }
+.guia-cal__grade {
+  display: grid;
+  grid-template-columns: 3.5rem repeat(7, minmax(6.5rem, 1fr));
+  min-width: 52rem;
+}
+.guia-cal__canto { border-bottom: 1px solid var(--cor-borda); }
+.guia-cal__dia-topo {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--cor-borda);
+  border-left: 1px solid var(--cor-borda);
+}
+.guia-cal__dia-semana { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cor-texto-fraco); }
+.guia-cal__dia-numero {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  font-family: var(--fonte-titulo); font-size: 1.25rem; color: var(--cor-texto);
+}
+.guia-cal__dia-topo--hoje .guia-cal__dia-semana { color: var(--cor-primaria); }
+.guia-cal__dia-topo--hoje .guia-cal__dia-numero { background: var(--cor-primaria); color: var(--cor-texto-sobre-primaria); font-weight: 700; }
+
+.guia-cal__horas { position: relative; }
+.guia-cal__horas span {
+  position: absolute; right: 8px;
+  transform: translateY(-50%);
+  font-family: var(--fonte-numero); font-variant-numeric: tabular-nums;
+  font-size: 0.6875rem; color: var(--cor-texto-fraco);
+}
+.guia-cal__horas span:first-child { transform: none; }
+.guia-cal__colunas { grid-column: 2 / -1; display: grid; grid-template-columns: repeat(7, minmax(6.5rem, 1fr)); }
+.guia-cal__coluna {
+  position: relative;
+  border-left: 1px solid var(--cor-borda);
+  /* uma linha a cada hora */
+  background-image: linear-gradient(to bottom, var(--cor-borda) 1px, transparent 1px);
+  background-size: 100% var(--px-hora);
+}
+.guia-cal__coluna--hoje { background-color: var(--cor-dourado-suave); }
+
+.guia-cal__bloco {
+  position: absolute; left: 4px; right: 4px;
+  display: flex; flex-direction: column; gap: 1px;
+  padding: 4px 6px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--cor-verde-militar);
+  border: 1px solid var(--cor-verde-militar-borda);
+  color: var(--cor-texto);
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+.guia-cal__bloco--materia  { background: var(--cor-dourado-suave); border-color: var(--cor-dourado-borda); }
+.guia-cal__bloco--revisao  { background: var(--cor-verde-militar-suave); border-color: var(--cor-acento); }
+.guia-cal__bloco--simulado { background: var(--cor-primaria); border-color: var(--cor-primaria); color: var(--cor-texto-sobre-primaria); }
+.guia-cal__bloco--externo  { background: var(--cor-verde-militar); border-style: dashed; }
+.guia-cal__bloco--feito, .guia-cal__bloco--passado { opacity: 0.55; }
+.guia-cal__bloco--feito .guia-cal__bloco-nome { text-decoration: line-through; }
+.guia-cal__bloco-nome { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.guia-cal__bloco-hora { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: 0.6875rem; opacity: 0.85; }
+.guia-cal__bloco-foco { font-size: 0.6875rem; opacity: 0.8; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.guia-cal__aviso {
+  position: absolute; top: 8px; left: 6px; right: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--cor-texto-fraco);
+  text-align: center;
+}
+.guia-cal__aviso--prova { background: var(--cor-primaria); color: var(--cor-texto-sobre-primaria); font-weight: 700; }
+.guia-cal__agora { position: absolute; left: 0; right: 0; height: 2px; background: var(--cor-errada); z-index: 2; }
+.guia-cal__agora::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--cor-errada); }

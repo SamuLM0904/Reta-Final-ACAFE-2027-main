@@ -406,6 +406,24 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
     if (criado) window.location.hash = '#/simulado';
   }));
 
+  // Semana: lista ou calendário (fica guardado neste navegador)
+  container.querySelectorAll('[data-visao-guia]').forEach(btn => btn.addEventListener('click', () => {
+    try { localStorage.setItem(CHAVE_VISAO, btn.dataset.visaoGuia); } catch { /* ignora */ }
+    redesenhar();
+  }));
+  // Calendário: horário de começo dos estudos (dias úteis / fim de semana)
+  container.querySelectorAll('[data-inicio-estudo]').forEach(sel => sel.addEventListener('change', () => {
+    const g = lerGuia();
+    g.horarios = { ...PADRAO_INICIO, ...(g.horarios || {}), [sel.dataset.inicioEstudo]: sel.value };
+    salvarGuia(g);
+    redesenhar();
+  }));
+
+  // Correção de erros do bloco: abre só as questões que cabem nele
+  container.querySelectorAll('[data-revisao-limite]').forEach(link => link.addEventListener('click', () => {
+    try { sessionStorage.setItem('acafe2027:revisao-limite', link.dataset.revisaoLimite); } catch { /* ignora */ }
+  }));
+
   // Blocos feitos
   container.querySelectorAll('[data-bloco-feito]').forEach(caixa => caixa.addEventListener('change', () => {
     const g = lerGuia();
@@ -481,8 +499,9 @@ function htmlBloco(bloco, i, ctx, feito) {
     titulo = 'Simulado externo';
   } else if (bloco.tipo === 'revisao') {
     titulo = 'Correção de erros';
-    const devidas = ctx.errosPendentes.filter(p => p.devida).length;
-    acao = devidas ? `<a href="#/revisao" class="btn btn-primario btn-pequeno">Refazer ${devidas === 1 ? 'a questão' : `as ${devidas} questões`}</a>`
+    // o mesmo número do texto do bloco: só o que cabe nele (a correção abre já com esse limite)
+    const devidas = Math.min(ctx.errosPendentes.filter(p => p.devida).length, bloco.quantidade || Infinity);
+    acao = devidas ? `<a href="#/revisao" class="btn btn-primario btn-pequeno" data-revisao-limite="${devidas}">Refazer ${devidas === 1 ? 'a questão' : `${devidas} questões`}</a>`
       : `<span class="guia-selo guia-selo--ok">${icone('check', 14)} Nenhuma questão para refazer agora</span>`;
   } else {
     titulo = nomeMateria(materia, ctx.guia.perfil);
@@ -721,10 +740,17 @@ function htmlSemana(ctx, planoHoje) {
 
   const rotulo = `${dataCurta(inicio).split(', ')[1]} a ${dataCurta(fim).split(', ')[1]}`;
   const estaSemana = inicio === semanaAtual;
+  const visao = lerVisao();
   return `
     <section class="guia-semana" aria-labelledby="guia-semana-titulo">
       <header class="guia-semana__topo">
-        <h2 class="inicio-card__titulo" id="guia-semana-titulo">${estaSemana ? 'Esta semana' : 'Semana'}</h2>
+        <div class="guia-semana__titulo">
+          <h2 class="inicio-card__titulo" id="guia-semana-titulo">${estaSemana ? 'Esta semana' : 'Semana'}</h2>
+          <div class="grafico-ampliado__abas" role="tablist" aria-label="Forma de ver a semana">
+            <button type="button" role="tab" class="grafico-ampliado__aba" data-visao-guia="lista" aria-selected="${visao === 'lista'}">Lista</button>
+            <button type="button" role="tab" class="grafico-ampliado__aba" data-visao-guia="calendario" aria-selected="${visao === 'calendario'}">Calendário</button>
+          </div>
+        </div>
         <div class="guia-semana__navegar">
           ${estaSemana ? '' : '<button type="button" class="guia-semana__hoje" data-semana-guia="atual">Voltar para esta semana</button>'}
           <button type="button" class="grafico-ampliado__seta" data-semana-guia="-1" aria-label="Semana anterior"${inicio <= primeiraSemana ? ' disabled' : ''}>${icone('arrow-left', 18)}</button>
@@ -732,11 +758,126 @@ function htmlSemana(ctx, planoHoje) {
           <button type="button" class="grafico-ampliado__seta grafico-ampliado__seta--proxima" data-semana-guia="1" aria-label="Próxima semana"${inicio >= ultimaSemana ? ' disabled' : ''}>${icone('arrow-left', 18)}</button>
         </div>
       </header>
+      ${visao === 'calendario' ? htmlCalendario(ctx, dias) : `
       <ol class="guia-semana__dias">
         ${dias.map(d => htmlDiaDaSemana(ctx, { ...d, feitas: feitasNoDia.get(d.chave) })).join('')}
-      </ol>
+      </ol>`}
       <p class="guia-dica">Os dias seguintes são uma prévia: as matérias de cada dia são definidas no próprio dia, com o seu desempenho mais recente.</p>
     </section>`;
+}
+
+/* ---------------- Calendário da semana (estilo agenda: horas na lateral) ---------------- */
+
+const CHAVE_VISAO = 'acafe2027:guia-visao';   // 'lista' ou 'calendario' (vale para este navegador)
+const lerVisao = () => { try { return localStorage.getItem(CHAVE_VISAO) === 'calendario' ? 'calendario' : 'lista'; } catch { return 'lista'; } };
+const HORARIOS_INICIO = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`);
+const PADRAO_INICIO = { semana: '14:00', fimDeSemana: '09:00' };
+const PX_POR_HORA = 48;
+
+/** Horário de começo dos estudos de um dia ("HH:MM"), do guia (dias úteis × fim de semana). */
+const inicioDoDia = (guia, chave) => {
+  const h = { ...PADRAO_INICIO, ...(guia.horarios || {}) };
+  const d = new Date(`${chave}T12:00:00-03:00`).getUTCDay();
+  return d === 0 || d === 6 ? h.fimDeSemana : h.semana;
+};
+const paraMinutos = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+const paraHora = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+
+/** Blocos do dia com horário: um atrás do outro a partir do começo, com a pausa entre eles. */
+function blocosComHorario(guia, plano) {
+  if (!plano?.blocos?.length) return [];
+  const pausa = guia.perfil.bloco?.pausa || 0;
+  let t = paraMinutos(inicioDoDia(guia, plano.chave));
+  const feitos = new Set(plano.feitos || []);
+  return plano.blocos.map((b, i) => {
+    const inicio = t;
+    t += b.minutos + (i < plano.blocos.length - 1 ? pausa : 0);
+    return { ...b, i, inicio, fim: inicio + b.minutos, feito: feitos.has(i) };
+  });
+}
+
+const nomeDoBloco = (b, guia) => b.tipo === 'simulado' ? (b.nome || 'Simulado completo')
+  : b.tipo === 'externo' ? 'Simulado externo'
+  : b.tipo === 'revisao' ? 'Correção de erros'
+  : nomeMateria(MATERIAS.find(m => m.id === b.materia), guia.perfil);
+
+/**
+ * Calendário da semana: uma coluna por dia (domingo a sábado) e as horas na lateral.
+ * @param {Object} ctx
+ * @param {{ chave, plano, tipo, hoje }[]} dias - os 7 dias, como em htmlSemana
+ */
+function htmlCalendario(ctx, dias) {
+  const { guia, hoje } = ctx;
+  const porDia = dias.map(d => ({ ...d, blocos: d.tipo === 'passado' || d.tipo === 'sem-registro' || d.tipo === 'depois' || d.tipo === 'prova' || d.tipo === 'gabarito'
+    ? (d.tipo === 'passado' ? blocosComHorario(guia, d.plano) : [])
+    : blocosComHorario(guia, d.plano) }));
+
+  // faixa de horas mostrada: do primeiro começo à última hora com bloco (no mínimo 8 horas)
+  const comecos = porDia.flatMap(d => d.blocos.map(b => b.inicio));
+  const fins = porDia.flatMap(d => d.blocos.map(b => b.fim));
+  const padrao = paraMinutos(inicioDoDia(guia, hoje));
+  let h0 = Math.floor((comecos.length ? Math.min(...comecos) : padrao) / 60);
+  let h1 = Math.ceil((fins.length ? Math.max(...fins) : padrao + 240) / 60);
+  if (h1 - h0 < 8) h1 = Math.min(24, h0 + 8);
+  if (h1 - h0 < 8) h0 = Math.max(0, h1 - 8);
+  h1 = Math.min(h1, 24);
+  const altura = (h1 - h0) * PX_POR_HORA;
+  const y = m => ((m - h0 * 60) / 60) * PX_POR_HORA;
+
+  const agora = new Date();
+  const minAgora = agora.getHours() * 60 + agora.getMinutes();
+  const horas = Array.from({ length: h1 - h0 }, (_, i) => h0 + i);
+
+  const cabecalhos = porDia.map(d => {
+    const [, mes, dia] = d.chave.split('-');
+    const semana = DIAS_NOMES[new Date(`${d.chave}T12:00:00-03:00`).getUTCDay()].slice(0, 3);
+    return `<div class="guia-cal__dia-topo${d.chave === hoje ? ' guia-cal__dia-topo--hoje' : ''}">
+      <span class="guia-cal__dia-semana">${semana}</span>
+      <span class="guia-cal__dia-numero" title="${dia}/${mes}">${Number(dia)}</span>
+    </div>`;
+  }).join('');
+
+  const colunas = porDia.map(d => {
+    const especial = d.tipo === 'prova' ? `<div class="guia-cal__aviso guia-cal__aviso--prova">Prova<br>13h20–18h20</div>`
+      : d.tipo === 'gabarito' ? '<div class="guia-cal__aviso">Gabarito preliminar</div>'
+      : d.tipo === 'sem-registro' && d.chave < hoje ? '<div class="guia-cal__aviso">Sem plano guardado</div>'
+      : d.plano && !d.plano.blocos?.length && d.chave >= hoje && d.chave < DIA_PROVA ? '<div class="guia-cal__aviso">Dia livre</div>' : '';
+    const blocos = d.blocos.filter(b => b.fim > h0 * 60 && b.inicio < h1 * 60).map(b => {
+      const top = Math.max(0, y(b.inicio)), alt = Math.max(18, y(Math.min(b.fim, h1 * 60)) - top - 2);
+      const nome = nomeDoBloco(b, guia);
+      const foco = b.foco?.length ? b.foco.join(', ') : '';
+      return `<div class="guia-cal__bloco guia-cal__bloco--${b.tipo}${b.feito ? ' guia-cal__bloco--feito' : ''}${d.chave < hoje ? ' guia-cal__bloco--passado' : ''}"
+          style="top: ${top}px; height: ${alt}px" title="${escaparHtml(`${nome} · ${paraHora(b.inicio)}–${paraHora(b.fim)}${foco ? ` · ${foco}` : ''}`)}">
+          <span class="guia-cal__bloco-nome">${b.feito ? `${icone('check', 12)} ` : ''}${escaparHtml(nome)}</span>
+          ${alt >= 34 ? `<span class="guia-cal__bloco-hora">${paraHora(b.inicio)} – ${paraHora(b.fim)}</span>` : ''}
+          ${alt >= 56 && foco ? `<span class="guia-cal__bloco-foco">${escaparHtml(foco)}</span>` : ''}
+        </div>`;
+    }).join('');
+    const linhaAgora = d.chave === hoje && minAgora >= h0 * 60 && minAgora <= h1 * 60
+      ? `<div class="guia-cal__agora" style="top: ${y(minAgora)}px" aria-hidden="true"></div>` : '';
+    return `<div class="guia-cal__coluna${d.chave === hoje ? ' guia-cal__coluna--hoje' : ''}" style="height: ${altura}px">${especial}${blocos}${linhaAgora}</div>`;
+  }).join('');
+
+  const opcoes = sel => HORARIOS_INICIO.map(h => `<option value="${h}"${h === sel ? ' selected' : ''}>${h}</option>`).join('');
+  const h = { ...PADRAO_INICIO, ...(guia.horarios || {}) };
+  return `
+    <div class="guia-cal__ajustes">
+      <span>Começo dos estudos:</span>
+      <label>dias úteis <select class="tema-auto__hora" data-inicio-estudo="semana" aria-label="Começo dos estudos nos dias úteis">${opcoes(h.semana)}</select></label>
+      <label>fim de semana <select class="tema-auto__hora" data-inicio-estudo="fimDeSemana" aria-label="Começo dos estudos no fim de semana">${opcoes(h.fimDeSemana)}</select></label>
+    </div>
+    <div class="guia-cal" role="img" aria-label="Calendário da semana com os blocos de estudo">
+      <div class="guia-cal__grade">
+        <div class="guia-cal__canto"></div>
+        ${cabecalhos}
+        <div class="guia-cal__horas" style="height: ${altura}px">
+          ${horas.map(hh => `<span style="top: ${(hh - h0) * PX_POR_HORA}px">${String(hh).padStart(2, '0')}:00</span>`).join('')}
+        </div>
+        <div class="guia-cal__colunas" style="--px-hora: ${PX_POR_HORA}px">${colunas}</div>
+      </div>
+    </div>
+    <p class="guia-dica">Os blocos começam no horário escolhido e seguem um atrás do outro, com a pausa entre eles.
+      Para marcar um bloco como feito, use o card de hoje (ou a lista).</p>`;
 }
 
 /** Uma linha da semana. */

@@ -501,16 +501,24 @@ export function montarDia({ perfil, chave, minutos, simulado = null,
     });
   });
   if (blocoRevisao) {
+    // só o que cabe no bloco (~3,5 min por questão, com a leitura da explicação); as mais antigas primeiro
+    const quantidade = Math.min(errosDevidos, questoesNoBlocoDeRevisao(blocoRevisao));
+    const resto = errosDevidos - quantidade;
     blocos.push({
       tipo: 'revisao',
       minutos: blocoRevisao,
-      quantidade: errosDevidos,
-      atividade: `Correção de erros: refaça ${errosDevidos === 1 ? 'a questão que você errou' : `as ${errosDevidos} questões que você errou`}
-        e leia as explicações. Errou de novo? Ela volta daqui a alguns dias; siga o cronograma normalmente.`,
+      quantidade,
+      pendentes: errosDevidos,
+      atividade: `Correção de erros: refaça ${quantidade === 1 ? 'a questão que você errou' : `${quantidade} questões que você errou`}`
+        + (resto ? ` (as que venceram há mais tempo; ${resto === 1 ? 'a outra fica' : `as outras ${resto} ficam`} para os próximos dias)` : '')
+        + ' e leia as explicações. Errou de novo? Ela volta daqui a alguns dias; siga o cronograma normalmente.',
     });
   }
   return { chave, minutos, blocos };
 }
+
+/** Quantas questões erradas cabem num bloco de correção de erros (~3,5 min cada, no mínimo 5). */
+export const questoesNoBlocoDeRevisao = minutos => Math.max(5, Math.floor(minutos / 3.5));
 
 /** Blocos de cada matéria em uma lista de planos de dias. */
 export function contarBlocos(planos) {
