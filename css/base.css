@@ -1112,3 +1112,8 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
 .acessos__chave { display: inline-block; width: 18px; height: 0; border-top: 2.5px solid var(--cor-primaria); vertical-align: middle; }
 .acessos__chave--anterior { border-top: 2px dashed var(--cor-texto-fraco); }
 #acessos-navegar[hidden] { display: none; }
+/* Janela de acessos: a altura acompanha o conteúdo (o gráfico não passa por cima do rodapé) */
+.grafico-ampliado.acessos { height: auto; max-height: 92vh; }
+.acessos .grafico-ampliado__caixa { height: auto; max-height: 92vh; }
+.acessos .grafico-ampliado__grafico { flex: none; }
+.acessos__svg { display: block; width: 100%; height: auto; max-height: 52vh; }
