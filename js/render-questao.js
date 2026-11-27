@@ -96,9 +96,7 @@ export function htmlAlternativa(alt) {
         <span class="alternativa-letra" aria-hidden="true">${alt.letra}</span>
         <span class="alternativa-conteudo">
           <span class="alternativa-texto">${alt.texto}</span>
-          <span class="alternativa-explicacao">
-            ${alt.explicacao}
-          </span>
+          ${alt.explicacao ? `<span class="alternativa-explicacao">${alt.explicacao}</span>` : ''}
         </span>
         <span class="alternativa-icone-resultado" aria-hidden="true"></span>
       </button>

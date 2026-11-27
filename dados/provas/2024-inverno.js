@@ -80,6 +80,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Linguagem Publicitária e Funções da Linguagem',
     numeroOriginal: 1,
+    dificuldade: 'media',
+    conteudo: 'por-1a4',
     enunciado: `
       <b>QUESTÃO 01</b><br>
       A partir da leitura dos elementos verbais e não verbais do Texto 1, analise as afirmativas.<br><br>
@@ -106,6 +108,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Variação Linguística e Interpretação de Texto',
     numeroOriginal: 2,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a2',
     textoApoio: TEXTO_ACAFE_2024_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 02</b><br>
@@ -132,6 +136,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Referenciação e Função Sintática',
     numeroOriginal: 3,
+    dificuldade: 'media',
+    conteudo: 'por-3b1',
     textoApoio: TEXTO_ACAFE_2024_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 03</b><br>
@@ -152,6 +158,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 4,
+    dificuldade: 'facil',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2024_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 04</b><br>
@@ -172,6 +180,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Intertextualidade e Comparação de Textos',
     numeroOriginal: 5,
+    dificuldade: 'dificil',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2024_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 05</b><br>
@@ -197,6 +207,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Gêneros Textuais e Interdiscursividade',
     numeroOriginal: 6,
+    dificuldade: 'dificil',
+    conteudo: 'por-4a1',
     textoApoio: TEXTO_ACAFE_2024_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 06</b><br>
@@ -217,6 +229,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 7,
+    dificuldade: 'facil',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2024_INV_4,
     enunciado: `
       <b>QUESTÃO 07</b><br>
@@ -237,6 +251,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Recursos Textuais e Discursivos',
     numeroOriginal: 8,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a5',
     textoApoio: TEXTO_ACAFE_2024_INV_4,
     enunciado: `
       <b>QUESTÃO 08</b><br>
@@ -257,6 +273,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Tecnologias da Informação e Desinformação',
     numeroOriginal: 9,
+    dificuldade: 'media',
+    conteudo: 'por-2a2',
     enunciado: `
       <b>QUESTÃO 09</b><br>
       As tecnologias de informação e comunicação digitais desempenham um papel crucial na sociedade contemporânea, impactando diversos aspectos da vida cotidiana, tanto de forma positiva quanto negativa. Considere os benefícios e os problemas dessas tecnologias para a análise do Texto 5, extraído de um portal jornalístico. A partir desse contexto, assinale a alternativa que apresenta a conclusão <b>INCORRETA</b> sobre o texto 5 em relação às tecnologias digitais de comunicação.
@@ -278,6 +296,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Relação entre Afirmativas (Causa e Justificativa)',
     numeroOriginal: 10,
+    dificuldade: 'media',
+    conteudo: 'por-2a4',
     textoApoio: TEXTO_ACAFE_2024_INV_4,
     enunciado: `
       <b>QUESTÃO 10</b><br>
@@ -308,6 +328,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 11,
+    dificuldade: 'media',
+    obra: 'exercicio-incerteza',
     enunciado: `
       <b>QUESTÃO 11</b><br>
       “A vida do século XXI ficou medicalizada.” Esta frase, extraída do livro de memórias “<i>O exercício da Incerteza</i>” de Drauzio Varella:
@@ -327,6 +349,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 12,
+    dificuldade: 'dificil',
+    obra: 'vendedor-passados',
     enunciado: `
       <b>QUESTÃO 12</b><br>
       Na obra "<i>O Vendedor de Passados</i>" de José Eduardo Agualusa, a osga é um elemento importante na construção da narrativa. Considerando o desenvolvimento do enredo e o significado da osga na obra, analise as afirmativas.<br><br>
@@ -350,6 +374,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Modernismo Brasileiro',
     numeroOriginal: 13,
+    dificuldade: 'facil',
+    obra: 'pauliceia',
     enunciado: `
       <b>QUESTÃO 13</b><br>
       “Todo escritor acredita na valia do que escreve. Si mostra é por vaidade. Si não mostra é por vaidade também.” O fragmento, extraído do “<i>Prefácio interessantíssimo</i>” da obra “<i>Pauliceia desvairada</i>”, de Mário de Andrade, apresenta uma característica linguística que é considerada uma das marcas da abordagem estética na produção literária do período literário do Modernismo no Brasil.<br><br>
@@ -370,6 +396,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 14,
+    dificuldade: 'media',
+    obra: 'insubmissas',
     enunciado: `
       <b>QUESTÃO 14</b><br>
       "<i>Insubmissas lágrimas de mulheres</i>" da autora brasileira Conceição Evaristo é uma obra da literatura contemporânea brasileira.<br><br>
@@ -398,6 +426,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 15,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2024_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 15</b><br>
@@ -424,6 +453,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2024_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -444,6 +474,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Falsos Cognatos (Heterosemánticos)',
     numeroOriginal: 17,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 17</b><br>
       El vocablo en español “taller”, presente en el título del texto 2, puede ser considerado un falso cognado, pues su escrita se asemeja mucho al vocablo en portugués <b>“<i>talher</i>”</b>, con todo, los significados de ellos son completamente distintos en las dos lenguas.<br><br>
@@ -471,6 +502,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Vocabulario (Días de la Semana)',
     numeroOriginal: 18,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 18</b><br>
       Señala la proposición que trae la secuencia <b>CORRECTA</b> de los días de la semana en español, empezando, por el día de “domingo”:
@@ -490,6 +522,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Las Horas en Español',
     numeroOriginal: 19,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Considera uno de los horarios presentes en texto 2 “de 8.30 a 10.15”, y señala la proposición que presenta su escritura de manera <b>CORRECTA</b>.
@@ -511,6 +544,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Gramática (Pronombres y Verbos)',
     numeroOriginal: 20,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Considera el siguiente recorte del texto 3, y señala la proposición <b>CORRECTA</b>.<br><br>
@@ -533,6 +567,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 21,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2024_INV_ESP_1,
     enunciado: `
       <b>QUESTÃO 21</b><br>
@@ -570,6 +605,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Analítica (Reta e Circunferência)',
     numeroOriginal: 22,
+    dificuldade: 'media',
+    conteudo: 'mat-4b1',
     enunciado: `
       <b>QUESTÃO 22</b><br>
       Analise as afirmações a respeito da reta <i>r</i>: <i>x</i> + <i>y</i> − 5 = 0.<br><br>
@@ -593,6 +630,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Função Exponencial',
     numeroOriginal: 23,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a4',
     enunciado: `
       <b>QUESTÃO 23</b><br>
       Com oito mortes confirmadas por dengue, Santa Catarina registrou aumento de 654,8% nos casos prováveis da doença em 2024 em comparação com o mesmo período do ano anterior, informou a Diretoria de Vigilância Epidemiológica (Dive). Ao todo, já foram registrados 13.002 casos prováveis de dengue, média de 282 casos por dia, em 175 municípios catarinenses. O documento, divulgado em 15 de fevereiro de 2024, considerou as ocorrências entre 31 de dezembro de 2023 e 14 de fevereiro de 2024.<br><br>
@@ -618,6 +657,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Probabilidade Condicional',
     numeroOriginal: 24,
+    dificuldade: 'media',
+    conteudo: 'mat-3b3',
     enunciado: `
       <b>QUESTÃO 24</b><br>
       Por causa da pandemia do coronavírus, causador da covid-19, o termo Síndrome Respiratória Aguda Grave (SRAG) passou a fazer parte do nosso cotidiano em noticiários e na mídia em geral. SRAG é uma condição grave, que pode evoluir rapidamente para complicações respiratórias e para óbito.<br><br>
@@ -638,6 +679,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Função Quadrática (Vértice)',
     numeroOriginal: 25,
+    dificuldade: 'facil',
+    conteudo: 'mat-2a3',
     enunciado: `
       <b>QUESTÃO 25</b><br>
       As vias de administração de medicamentos são as formas como a medicação entra em contato com o organismo para exercer sua ação farmacológica. Elas podem ser divididas em dois grupos principais: enterais (via oral, sublingual e retal) e parenterais (via endovenosa, intramuscular, subcutânea, entre outros). A via intravenosa é aquela que permite o acesso de um medicamento ou outra solução ao organismo pela injeção direta ou em uma veia. Para tanto, é necessário fazer uma punção venosa e utilizar uma agulha longa, capaz de penetrar os tecidos e alcançar o vaso sanguíneo. Um homem, ao procurar o pronto-socorro por estar com uma crise de enxaqueca, recebe uma medicação intravenosa para amenizar a sua dor. A função <b><i>f</i>: [0, 4] → ℝ</b>, tal que <b><i>f</i>(<i>t</i>) = −0,25<i>t</i>² + <i>t</i></b> expressa a concentração do medicamento no sangue do paciente, em mg/dL, em função do tempo, em horas. A aplicação do medicamento foi feita no instante <i>t</i> = 0, sabendo que a dor do paciente é amenizada quando a concentração do medicamento no sangue é a máxima, determine o instante exato em que o paciente tem a dor amenizada.
@@ -657,6 +700,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Plana (Área e Medianas)',
     numeroOriginal: 26,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2b2',
     enunciado: `
       <b>QUESTÃO 26</b><br>
       Seja um triângulo <i>ABC</i>, tal que <i>AB</i> = 16 <i>cm</i>, <i>AC</i> = 14 <i>cm</i> e <i>BC</i> = 10 <i>cm</i>. Os pontos <i>M</i> e <i>N</i> são os pontos médios dos respectivos lados <i>A̅C̅</i> e <i>B̅C̅</i>.<br><br>
@@ -677,6 +722,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções, Trigonometria e Conjuntos',
     numeroOriginal: 27,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a2',
     enunciado: `
       <b>QUESTÃO 27</b><br>
       Assinale a alternativa <b>CORRETA</b>.
@@ -696,6 +743,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Inequações Modulares, Logaritmos e Polinômios',
     numeroOriginal: 28,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a5',
     enunciado: `
       <b>QUESTÃO 28</b><br>
       Analise as afirmações.<br><br>
@@ -723,6 +772,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Cinemática (Velocidade Média)',
     numeroOriginal: 29,
+    dificuldade: 'dificil',
+    conteudo: 'fis-2a4',
     enunciado: `
       <b>QUESTÃO 29</b><br>
       Um motorista pretende percorrer a distância entre duas cidades A e B, fazendo uma parte do percurso a 30 km/h, uma segunda parte idêntica à primeira a 60 km/h, e à última parte, correspondente a 30% da distância até então percorrida, a 20 km/h.<br><br>
@@ -743,6 +794,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Cinemática (MUV)',
     numeroOriginal: 30,
+    dificuldade: 'media',
+    conteudo: 'fis-2a4',
     enunciado: `
       <b>QUESTÃO 30</b><br>
       As emergências dos hospitais estão cada vez mais cheias de pacientes, entre os quais estão os acidentados por colisões entre veículos e atropelamentos. Com o intuito de diminuir estes acidentes os carros atuais estão sendo fabricados com o sistema de frenagem AEB (<i>Automatic Emergrncy Braking</i>), o qual é capaz de detectar objetos, via sensores, instalados no veículo e acionar, automaticamente, os freios para evitar a colisão.<br><br>
@@ -763,6 +816,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Dinâmica (Leis de Newton)',
     numeroOriginal: 31,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3b1',
     enunciado: `
       <b>QUESTÃO 31</b><br>
       Quando Isaac Newton, por volta de 1686, publicou seu livro <i>Philosphiae Naturalis Principia Mathematica</i>, conhecido como os “<i>Principia</i>”, marcou profundamente todo conhecimento físico elaborado nos 200 anos seguintes, seja nos movimentos de corpos na superfície da Terra, seja nos movimentos celestes, até então estudados por Kepler, Galileu entre outros.<br><br>
@@ -789,6 +844,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Hidrostática (Pressão Hidrostática)',
     numeroOriginal: 32,
+    dificuldade: 'media',
+    conteudo: 'fis-2a2',
     enunciado: `
       <b>QUESTÃO 32</b><br>
       Hoje é noite de plantão na UTI em um hospital, em Florianópolis, e o jovem médico residente já pensa no paciente do “<i>Leito 20</i>”, um senhor de certa idade, inquieto e que apresenta resistência a permanecer com o soro venoso, dificultando a administração dos medicamentos. Lembrando das suas aulas de Física, o jovem doutor resolve explicar para o paciente como ocorre a “disputa” entre a pressão hidrostática do soro e a pressão sanguínea, e que quanto maior for a diferença entre a altura da bolsa de soro e o braço do paciente, mais fácil será para administrar o soro, evitando o retorno do sangue pela mangueira.<br><br>
@@ -810,6 +867,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Calorimetria (Capacidade Térmica)',
     numeroOriginal: 33,
+    dificuldade: 'media',
+    conteudo: 'fis-2b2',
     enunciado: `
       <b>QUESTÃO 33</b><br>
       H1N1, covid ou mesmo dengue, todas as três doenças apresentam como um dos sintomas em comum a febre, ou seja, um aumento da temperatura corporal. A febre não é uma causa, mas, sim, uma consequência, da reação do organismo, quando algo está errado. O aumento da temperatura tem como objetivo a eliminação de vírus ou de bactérias.<br><br>
@@ -830,6 +889,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Ondulatória',
     numeroOriginal: 34,
+    dificuldade: 'media',
+    conteudo: 'fis-1a1',
     enunciado: `
       <b>QUESTÃO 34</b><br>
       Vários exames de diagnósticos são feitos por meio de ondas, por exemplo, raio X, ultrassonografia, ressonância magnética, radioterapia ou até audiometria. Analisando o caráter ondulatório, no ponto de vista da Física, destes e de outros exames médicos.<br><br>
@@ -856,6 +917,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Magnetismo (Força Magnética e MCU)',
     numeroOriginal: 35,
+    dificuldade: 'dificil',
+    conteudo: 'fis-4b3',
     enunciado: `
       <b>QUESTÃO 35</b><br>
       Uma carga ao penetrar perpendicularmente as linhas de um campo magnético sofre a ação da força magnética, que não é capaz de alterar o módulo da sua velocidade, mas apenas direção e sentido do movimento, gerando o que se denomina deflexão magnética e o movimento realizado dentro do campo passa a ser um movimento circular uniforme (M.C.U.).<br><br>
@@ -881,6 +944,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Funções Orgânicas',
     numeroOriginal: 36,
+    dificuldade: 'media',
+    conteudo: 'qui-2b5',
     enunciado: `
       <b>QUESTÃO 36</b><br>
       A dengue tem sido um problema grave no estado de Santa Catarina durante o ano de 2024. Apenas no período de 1º de janeiro a 11 de março de 2024, quase 50.000 casos de dengue foram confirmados no Estado - um aumento de 390% em relação ao mesmo período do ano anterior, segundo a Diretoria de Vigilância Epidemiológica da Secretaria de Estado da Saúde de Santa Catarina. A dengue causa febre e dores fortes, e dois medicamentos seguros que podem ser utilizados para tratamento desses sintomas, são o Paracetamol e a Dipirona, seguros por não terem efeitos na coagulação do sangue. Esses medicamentos apenas amenizam os sintomas, mas não combatem, diretamente, o vírus da doença. Suas estruturas químicas encontram-se abaixo.<br><br>
@@ -906,6 +971,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Carboidratos e Enzimas',
     numeroOriginal: 37,
+    dificuldade: 'media',
+    conteudo: 'qui-c1',
     enunciado: `
       <b>QUESTÃO 37</b><br>
       A lactase é uma enzima que faz parte da secreção intestinal e é essencial para a digestão do leite, pois catalisa a hidrólise da lactose - o açúcar do leite - em glicose e galactose, como mostrado na figura abaixo. A deficiência ou ausência desta enzima causa uma incapacidade na digestão da lactose, problema conhecido como hipolactasia ou intolerância à lactose.<br><br>
@@ -926,6 +993,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'pH e Soluções Ácidas',
     numeroOriginal: 38,
+    dificuldade: 'dificil',
+    conteudo: 'qui-4a4',
     enunciado: `
       <b>QUESTÃO 38</b><br>
       Diferentes enzimas atuam primariamente em diferentes meios, e a alteração de condições como temperatura ou pH podem ativar ou inativar estas enzimas. A pepsina, por exemplo, é uma enzima proteolítica capaz de atuar em meio ácido, sendo que seu pH ideal é entre 1,8 e 3,5.<br><br>
@@ -946,6 +1015,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Modelos Atômicos (Bohr) e Emissão de Luz',
     numeroOriginal: 39,
+    dificuldade: 'media',
+    conteudo: 'qui-1a1',
     enunciado: `
       <b>QUESTÃO 39</b><br>
       O Prêmio Nobel de Química de 2023 foi concedido a Moungi G. Bawendi, Louis E. Brus e Alexei I. Ekimov pela descoberta e criação dos pontos quânticos, tecnologia que hoje é aplicada em diferentes dispositivos como televisores e lâmpadas LED. Essa tecnologia tem aplicações também dentro da medicina, pois pode ser utilizada para guiar cirurgias de remoção de tumores. Diferentes técnicas de uso desta nanotecnologia estão em desenvolvimento para várias aplicações na área da saúde. Um ponto quântico é uma partícula extremamente pequena, cujas dimensões estão na casa dos nanômetros, e que contém apenas algumas centenas ou milhares de átomos. Diferentes tamanhos de pontos quânticos “comprimem” os átomos contidos, alterando suas propriedades ópticas - pontos quânticos menores emitem luz de cor azul ou verde, enquanto pontos quânticos maiores emitem luz na faixa do amarelo, laranja e vermelho, como mostra a figura abaixo.<br><br>
@@ -966,6 +1037,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Estequiometria (Rendimento)',
     numeroOriginal: 40,
+    dificuldade: 'media',
+    conteudo: 'qui-3a2',
     enunciado: `
       <b>QUESTÃO 40</b><br>
       O fosgênio, COCl<sub>2</sub>, é um gás que, se inalado, pode produzir ácido clorídrico no interior dos pulmões, como mostra a equação química não balanceada:<br><br>
@@ -988,6 +1061,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Chuva Ácida, Nox e Oxirredução',
     numeroOriginal: 41,
+    dificuldade: 'facil',
+    conteudo: 'qui-2a2',
     enunciado: `
       <b>QUESTÃO 41</b><br>
       A poluição por queima de combustíveis fósseis causa graves problemas ambientais, entre eles a chuva ácida. A chuva ácida ocorre quando os óxidos formados nas reações de combustão são liberados para a atmosfera e reagem com moléculas de água, transformando-se em ácidos. Entre estes ácidos formados estão os ácidos sulfúrico e nítrico, considerados fortes e de grande periculosidade.<br><br>
@@ -1013,6 +1088,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Concentração de Soluções',
     numeroOriginal: 42,
+    dificuldade: 'dificil',
+    conteudo: 'qui-3a4',
     enunciado: `
       <b>QUESTÃO 42</b><br>
       O soro fisiológico é uma solução de mesmas concentrações quando comparada aos líquidos do corpo humano. Usualmente, sua concentração é de 0,9%, ou seja, para 100 mL de água encontramos 0,9 g de cloreto de sódio dissolvido. É necessário extremo cuidado na preparação de soro fisiológico, pois uma diferença de concentração pode causar sérios riscos à saúde de um paciente. A administração de soro em excesso, sem motivos, pode causar diversos efeitos colaterais, que vão de tonturas e dores de cabeça até insuficiência renal. Sabendo que a quantidade diária recomendada média de ingestão de sódio é de 2300 mg, o volume máximo aproximado de soro fisiológico 0,9% que pode ser administrado para que não seja ultrapassada essa quantidade máxima de sódio, em um dia, é:
@@ -1036,6 +1113,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Genética (Conceitos Básicos)',
     numeroOriginal: 43,
+    dificuldade: 'facil',
+    conteudo: 'bio-1b3',
     enunciado: `
       <b>QUESTÃO 43</b><br>
       Um dos eventos marcantes na área da Biologia foi a idealização e a conclusão do Projeto Genoma Humano (PGH). Esse projeto foi um empreendimento internacional iniciado em 1990, com o objetivo de identificar e mapear os genes existentes no DNA humano, algo em torno de 3,2 bilhões de sequências de bases nitrogenadas. Após essa tarefa, além do armazenamento dos dados recolhidos e mapeados, ocorreu a produção de inúmeras tecnologias de detecção, bem como novas formas de interpretação dos resultados genéticos.<br><br>
@@ -1056,6 +1135,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Citologia (Núcleo e Nucléolo)',
     numeroOriginal: 44,
+    dificuldade: 'facil',
+    conteudo: 'bio-1b1',
     enunciado: `
       <b>QUESTÃO 44</b><br>
       Entre 1663 e 1665 começava a jornada científica mais significativa na história da Biologia: os estudos sobre a célula. Nesse período, o cientista inglês Robert Hooke, utilizando um microscópio muito básico, analisando uma fatia de cortiça, pôde verificar estruturas que chamou de célula, por se parecerem, para ele, com as <i>cella</i> dos monges católicos de sua época. Logo em seguida, em 1674, Antonie van Leeuwenhoek, construtor de um microscópio mais sofisticado, usando lentes, conseguiu visualizar células de algas, protozoários e colônias de bactérias de sua boca. Já em 1833, Robert Brow, estudando tecidos vegetais, identificou uma estrutura interna com morfologia levemente esférica presente na maioria das células, que denominou de núcleo. As células que não o possuem foram denominadas de anucleadas.<br><br>
@@ -1076,6 +1157,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Ecologia (Ciclo do Nitrogênio)',
     numeroOriginal: 45,
+    dificuldade: 'facil',
+    conteudo: 'bio-4b4',
     enunciado: `
       <b>QUESTÃO 45</b><br>
       “A atmosfera apresenta aproximadamente 79% de gás nitrogênio (N<sub>2</sub>) em sua composição. Isso a torna o maior reservatório natural desse elemento químico. No entanto, a maioria dos seres vivos não consegue captar o nitrogênio diretamente dela. Ao longo do ciclo do nitrogênio, um grupo de bactérias transforma o nitrogênio atmosférico em substâncias que podem ser aproveitadas pelos produtores. O nitrogênio passa a ser usado na produção de biomoléculas importantes, como as proteínas e o DNA.”<br>
@@ -1097,6 +1180,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Epidemiologia (Endemia, Epidemia e Pandemia)',
     numeroOriginal: 46,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a2',
     enunciado: `
       <b>Texto 1</b><br>
       <b>DENGUE EM SC: INFORME EPIDEMIOLÓGICO APONTA AUMENTO DE 387% NO NÚMERO DE CASOS PROVÁVEIS DA DOENÇA EM COMPARAÇÃO COM O ANO PASSADO</b><br><br>
@@ -1120,6 +1205,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Infecções Sexualmente Transmissíveis',
     numeroOriginal: 47,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a2',
     enunciado: `
       <b>QUESTÃO 47</b><br>
       As infecções sexualmente transmissíveis (ISTs) são causadas por vírus, bactérias ou outros patógenos. São transmitidos, principalmente, através do contato sexual (oral, genital, anal) sem uso de preservativo masculino ou feminino, com pessoa infectada. As infecções por IST também podem ser transmitidas de mãe para filho durante a gravidez, parto ou amamentação. Menos comumente, as infecções sexualmente transmissíveis também podem ser transmitidas de forma não sexual, pelo contato de membranas mucosas ou pele solta, com fluidos corporais contaminados. Na tabela abaixo, pode-se analisar as principais ISTs, no Brasil.<br><br>
@@ -1149,6 +1236,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Embriologia (Tipos de Ovos e Segmentação)',
     numeroOriginal: 48,
+    dificuldade: 'media',
+    conteudo: 'bio-2b5',
     enunciado: `
       <b>QUESTÃO 48</b><br>
       Existem seres que vivem, frequentemente, em locais úmidos, como riachos, estuários e zonas úmidas. Isso ocorre porque seu estilo de vida está intimamente ligado à água. Muitas espécies vivem perto de rios e lagos porque as fêmeas precisam de água para botar ovos.<br><br>
@@ -1170,6 +1259,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Saúde Humana (Cigarros Eletrônicos e EVALI)',
     numeroOriginal: 49,
+    dificuldade: 'media',
+    conteudo: 'bio-3b4',
     enunciado: `
       <b>QUESTÃO 49</b><br>
       A Agência Nacional de Vigilância Sanitária (Anvisa) realizou uma consulta pública sobre cigarros eletrônicos no Brasil. A discussão girou em torno da manutenção da proibição dos cigarros eletrônicos no país e da proposta de uma norma que proibisse a fabricação, importação, venda, distribuição, armazenamento, transporte, publicidade e distribuição desses produtos ao público, sejam eles consumidores ou não. Dessa forma, todo cigarro eletrônico que alguém fuma, no Brasil, foi comprado ilegalmente.<br><br>
@@ -1198,6 +1289,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil República (Redemocratização)',
     numeroOriginal: 50,
+    dificuldade: 'media',
+    conteudo: 'his-4b3',
     enunciado: `
       <b>QUESTÃO 50</b><br>
       No Brasil, o período conhecido como “Redemocratização” teve início no governo de Ernesto Geisel e foi marcado por relevantes mudanças no campo político.<br><br>
@@ -1218,6 +1311,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil República (Governo JK)',
     numeroOriginal: 51,
+    dificuldade: 'facil',
+    conteudo: 'his-4b1',
     enunciado: `
       <b>QUESTÃO 51</b><br>
       O governo de Juscelino Kubitschek (JK), que abrangeu o período de 1956 a 1961 na história do Brasil, foi caracterizado por diversos avanços.<br><br>
@@ -1243,6 +1338,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'República Velha (Revolução Federalista)',
     numeroOriginal: 52,
+    dificuldade: 'media',
+    conteudo: 'his-3b1',
     enunciado: `
       <b>QUESTÃO 52</b><br>
       A Revolução Federalista foi um dos acontecimentos que marcaram a primeira fase da República no Brasil. Considerando o contexto histórico mencionado, assinale a alternativa <b>INCORRETA</b>.
@@ -1262,6 +1359,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Gripe Espanhola no Brasil (1918-1919)',
     numeroOriginal: 53,
+    dificuldade: 'media',
+    conteudo: 'his-3b2',
     enunciado: `
       <b>QUESTÃO 53</b><br>
       Sobre a pandemia de gripe Influenza, no Brasil, nos anos de 1918 e 1919, assinale a alternativa <b>CORRETA</b>.
@@ -1281,6 +1380,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Grandes Navegações',
     numeroOriginal: 54,
+    dificuldade: 'facil',
+    conteudo: 'his-1b1',
     enunciado: `
       <b>QUESTÃO 54</b><br>
       O avanço tecnológico naval, que viabilizou a construção das caravelas e outras embarcações, teve lugar entre os séculos XV e XVI e o período de descobertas que se seguiu ficou conhecido como Grandes Navegações. Considerando as características do contexto mencionado, assinale a alternativa <b>CORRETA</b>.
@@ -1300,6 +1401,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Iluminismo e Despotismo Esclarecido',
     numeroOriginal: 55,
+    dificuldade: 'media',
+    conteudo: 'his-2a6',
     enunciado: `
       <b>QUESTÃO 55</b><br>
       Durante o século XVIII, a Europa estava passando por significativas transformações sociais, culturais e políticas que reverberaram nos séculos seguintes, e ultrapassaram as fronteiras do continente, influenciando outros territórios.<br><br>
@@ -1325,6 +1428,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'História da Saúde Pública no Brasil',
     numeroOriginal: 56,
+    dificuldade: 'dificil',
+    conteudo: 'his-3b3',
     enunciado: `
       <b>QUESTÃO 56</b><br>
       Atualmente, no Brasil, O Sistema Único de Saúde (SUS) representa uma política pública essencial para o cuidado da saúde de nossa população.<br><br>
@@ -1354,6 +1459,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Cartografia (Escalas e Projeções)',
     numeroOriginal: 57,
+    dificuldade: 'media',
+    conteudo: 'geo-1u3',
     enunciado: `
       <b>QUESTÃO 57</b><br>
       A respeito de características da cartografia, assinale a alternativa <b>CORRETA</b>.
@@ -1373,6 +1480,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geopolítica (Oriente Médio)',
     numeroOriginal: 58,
+    dificuldade: 'facil',
+    conteudo: 'geo-c3',
     enunciado: `
       <b>QUESTÃO 58</b><br>
       A região do Oriente Médio, foco de tensões geopolíticas, foi acometida pelo ataque do grupo Hamas contra alvos israelenses em outubro de 2023, o que desencadeou ofensivas militares israelenses contra a Faixa de Gaza.<br><br>
@@ -1393,6 +1502,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Climatologia (Massas de Ar)',
     numeroOriginal: 59,
+    dificuldade: 'facil',
+    conteudo: 'geo-3u1',
     enunciado: `
       <b>QUESTÃO 59</b><br>
       Santa Catarina e Rio Grande do Sul são os únicos estados brasileiros que possuem seus territórios totalmente em condição de subtropicalidade. Nos meses mais frios do ano, nesses estados, ondas de frio, entre outros fatores e a circulação das massas de ar podem causar aumento de doenças respiratórias.<br><br>
@@ -1413,6 +1524,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Fusos Horários (Santa Catarina)',
     numeroOriginal: 60,
+    dificuldade: 'facil',
+    conteudo: 'geo-1u2',
     enunciado: `
       <b>QUESTÃO 60</b><br>
       A respeito dos fusos horários, no Brasil, e sua relação com o território catarinense, assinale a alternativa <b>CORRETA</b>.
@@ -1432,6 +1545,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia Agrária (Fome e Alimentação)',
     numeroOriginal: 61,
+    dificuldade: 'facil',
+    conteudo: 'geo-2u2',
     enunciado: `
       <b>QUESTÃO 61</b><br>
       Os temas fome e alimentação tornam-se cada vez mais relevantes dentro dos estudos geográficos.<br><br>
@@ -1452,6 +1567,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia da Saúde (Dengue)',
     numeroOriginal: 62,
+    dificuldade: 'facil',
+    conteudo: 'geo-3u1',
     enunciado: `
       <b>QUESTÃO 62</b><br>
       “O Brasil registrou nas quatro primeiras semanas de 2024 mais de 217 mil casos de dengue, segundo dados atualizados pelo Ministério da Saúde nesta terça-feira (30). O número é mais que o triplo de notificações do mesmo período em 2023: 65.366.”<br>
@@ -1474,6 +1591,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia de Santa Catarina (Densidade Demográfica)',
     numeroOriginal: 63,
+    dificuldade: 'media',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 63</b><br>
       A população catarinense tem aumentado conforme os últimos censos e estudos estatísticos promovidos pelo IBGE. A respeito da densidade demográfica, em Santa Catarina, assinale a alternativa <b>CORRETA</b>.
@@ -1497,6 +1616,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 15,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 15</b><br>
       Text 1 below is part of the article <b>Top 20 Current Global Issues We Must Address</b>. Read it and then analyze sentences I to V that follow.<br><br>
@@ -1527,6 +1647,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Inferência (Anúncio Publicitário)',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 16</b><br>
       Analyze the advertisement below.<br><br>
@@ -1553,6 +1674,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Ênfase, Perguntas Indiretas e Incontáveis)',
     numeroOriginal: 17,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 17</b><br>
       Mark the alternative that is <b>CORRECT</b> according to the standard grammar rules.
@@ -1572,6 +1694,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Plural Irregular)',
     numeroOriginal: 18,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 18</b><br>
       The underlined nouns in sentences I to VI below <b>must be</b> in the plural form for the sentences to be correct. Analyze if such nouns are in the <b>CORRECT</b> plural form.<br><br>
@@ -1598,6 +1721,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário em Contexto',
     numeroOriginal: 19,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Read the excerpt below taken from an article about Mental Health, and answer the question that follows.<br><br>
@@ -1623,6 +1747,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gramática (Lie × Lay)',
     numeroOriginal: 20,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Choose the correct verbs in parentheses to complete the sentences, according to the standard grammar rules.<br><br>
@@ -1649,6 +1774,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Advérbios e Coesão Textual',
     numeroOriginal: 21,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 21</b><br>
       Text 3 is part of an article entitled "The Funny Bone (also known as The Ulnar Nerve) Is No Laughter Matter", published by Neurosurgical Associates of Central Jersey. The words in box 1 were removed from the text. Fill in the blanks using each word only once.<br><br>

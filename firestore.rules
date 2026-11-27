@@ -8,7 +8,7 @@
   //   contas/{uid}       → { usuario } liga a conta ao usuário
   //   emails/{email}     → { usuario, uid } índice para "Esqueci meu usuário"
   //   alunos/{usuario}   → dados do aluno (ID = nome de usuário, para achar fácil no Console)
-  //   admins/{uid}       → administradores (ID = UID da conta), criados só pelo Console
+  //   admins/{uid}       → administradores (ID = UID da conta); primeiro criado pelo Console
   service cloud.firestore {
     match /databases/{banco}/documents {
 
@@ -30,10 +30,19 @@
         );
       }
 
-      // Administrador = existe admins/{UID da conta}. O UID é gerado pelo Firebase (ninguém
-      // escolhe) e a coleção admins só é alterada pelo Console: ninguém vira admin pelo site.
+      // Administrador = existe admins/{UID da conta}. O UID é gerado pelo Firebase.
       function admin() {
         return logado() && exists(caminho('admins', request.auth.uid));
+      }
+
+      function dadosAdminValidos(uid) {
+        return request.resource.data.keys().hasAll(['uid', 'usuario', 'funcao', 'adicionadoEm']) &&
+          request.resource.data.keys().hasOnly(['uid', 'usuario', 'nome', 'funcao', 'adicionadoEm']) &&
+          request.resource.data.uid == uid &&
+          request.resource.data.usuario is string &&
+          request.resource.data.funcao == 'admin' &&
+          request.resource.data.adicionadoEm is number &&
+          (!('nome' in request.resource.data) || request.resource.data.nome is string);
       }
 
       // Registro usuário → conta. É lido ANTES do login (para entrar pelo usuário), mas só
@@ -79,10 +88,13 @@
         allow write: if admin();
       }
 
-      // Lista de administradores (ID = UID da conta): criada só pelo Console do Firebase
+      // O primeiro admin é criado pelo Console. Depois, admins podem gerenciar outros admins.
       match /admins/{uid} {
-        allow read: if logado() && request.auth.uid == uid;
-        allow write: if false;
+        allow get: if admin() || (logado() && request.auth.uid == uid);
+        allow list: if admin();
+        allow create: if admin() && dadosAdminValidos(uid);
+        allow update: if false;
+        allow delete: if admin() && uid != request.auth.uid;
       }
     }
   }

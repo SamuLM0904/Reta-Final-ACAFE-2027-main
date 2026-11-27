@@ -13,9 +13,10 @@
 
 import { icone }          from './icones.js';
 import { confirmar } from './confirmar.js';
-import { slugify }        from './utils.js';
+import { slugify, escaparHtml } from './utils.js';
+import { conteudosDa, descreverConteudo, nomeConteudo, CAPITULOS } from './conteudos.js';
 import { htmlImagens, htmlAlternativa, vincularImagens, aplicarFeedback } from './render-questao.js';
-import { salvarResposta, lerRespostas, recomecarModulo, apagarRespostas, registrarNaMemoria } from './armazenamento.js';
+import { salvarResposta, lerRespostas, recomecarModulo, apagarRespostas, registrarNaMemoria, estatisticasModulo } from './armazenamento.js';
 
 /* ================================================================
    Estado interno da sessão de questões
@@ -50,6 +51,116 @@ function filtrarPorDisciplina(todasQuestoes, disciplina) {
   return todasQuestoes.filter(q => slugify(q.disciplina) === alvo);
 }
 
+/** Endereço da tela de um módulo (lista de conteúdos) ou de um conteúdo dele. */
+const hashModulo = (modulo, chave = null) =>
+  `#/questoes/${modulo.id}${chave ? `/${encodeURIComponent(chave)}` : ''}`;
+
+/** Nomes dos conteúdos de uma questão, para a tela. */
+const nomesConteudos = q => conteudosDa(q).map(c => escaparHtml(nomeConteudo(c))).join(' + ');
+
+/* ================================================================
+   Conteúdos do módulo (capítulos do material de estudo)
+   ================================================================ */
+
+/**
+ * Lista os conteúdos da matéria (capítulos do material, na ordem do livro), com quantas
+ * questões cada um tem e o progresso do aluno. A questão de dois capítulos aparece nos dois.
+ * @param {HTMLElement} container
+ * @param {Object[]}    todasQuestoes
+ * @param {Object}      modulo
+ */
+export function renderizarConteudosModulo(container, todasQuestoes, modulo) {
+  const questoes = filtrarPorDisciplina(todasQuestoes, modulo.disciplina);
+  if (questoes.length === 0) {
+    container.innerHTML = htmlSemQuestoes(modulo);
+    return;
+  }
+
+  const porConteudo = new Map();
+  questoes.forEach(q => conteudosDa(q).forEach(c => {
+    if (!porConteudo.has(c)) porConteudo.set(c, []);
+    porConteudo.get(c).push(q);
+  }));
+  const itens = [...porConteudo].map(([chave, lista]) => ({ chave, lista, ...descreverConteudo(chave) }))
+    .sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome, 'pt-BR'));
+
+  // Agrupa por livro e frente, como no material; os conteúdos sem capítulo ficam juntos no fim
+  const grupos = [];
+  itens.forEach(item => {
+    const c = CAPITULOS.get(item.chave);
+    const titulo = !c ? 'Conteúdos' : c.extra ? 'Complementares' : `Livro ${c.livro} · ${c.frente}`;
+    if (grupos.at(-1)?.titulo !== titulo) grupos.push({ titulo, itens: [] });
+    grupos.at(-1).itens.push(item);
+  });
+
+  container.innerHTML = `
+    <div class="tela-questoes">
+      <div class="container">
+        <header class="questoes-cabecalho">
+          <div class="questoes-nav-linha">
+            <a href="#/" class="btn-voltar" aria-label="Voltar ao início">${icone('arrow-left', 18)} Voltar ao início</a>
+          </div>
+          <h2 class="conteudos-titulo">${modulo.titulo}</h2>
+          <p class="conteudos-subtitulo">Questões de outros vestibulares, separadas pelos conteúdos do material de estudo.
+            Elas não aparecem nos simulados.</p>
+        </header>
+
+        <a href="${hashModulo(modulo, 'todas')}" class="conteudo-item conteudo-item--todas">
+          <span class="conteudo-item__nome">Todas as questões de ${modulo.disciplina}</span>
+          ${htmlProgressoConteudo(estatisticasModulo(questoes))}
+        </a>
+
+        ${grupos.map(g => `
+          <section class="conteudos-grupo">
+            <h3 class="conteudos-grupo__titulo">${escaparHtml(g.titulo)}</h3>
+            <ul class="conteudos-lista" role="list">
+              ${g.itens.map(item => `
+                <li>
+                  <a href="${hashModulo(modulo, item.chave)}" class="conteudo-item">
+                    <span class="conteudo-item__nome">${escaparHtml(rotuloNoGrupo(item))}</span>
+                    ${htmlProgressoConteudo(estatisticasModulo(item.lista))}
+                  </a>
+                </li>`).join('')}
+            </ul>
+          </section>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/** Nome do conteúdo dentro do grupo (o livro e a frente já estão no título do grupo). */
+function rotuloNoGrupo(item) {
+  const c = CAPITULOS.get(item.chave);
+  if (!c) return item.nome;
+  if (c.extra) return c.nome;
+  return `Cap. ${c.capitulo}: ${c.nome}${c.tambem ? ` (também em ${c.tambem})` : ''}`;
+}
+
+/** Quantidade de questões, respondidas e acertos de um conteúdo. */
+function htmlProgressoConteudo({ total, respondidas, acertos }) {
+  const pct = total ? Math.round((respondidas / total) * 100) : 0;
+  return `
+    <span class="conteudo-item__info">
+      ${total} ${total === 1 ? 'questão' : 'questões'} · ${respondidas} respondida${respondidas === 1 ? '' : 's'}${respondidas ? ` · ${acertos} certa${acertos === 1 ? '' : 's'}` : ''}
+    </span>
+    <span class="card-progresso__barra conteudo-item__barra" aria-hidden="true">
+      <span class="card-progresso__preenchimento" style="width: ${pct}%"></span>
+    </span>`;
+}
+
+/** Aviso de matéria (ou conteúdo) ainda sem questões. */
+function htmlSemQuestoes(modulo, chave = null) {
+  return `
+    <div class="container">
+      <div class="estado-vazio">
+        ${icone('alert-circle', 40)}
+        <p>Nenhuma questão encontrada para <strong>${chave ? escaparHtml(nomeConteudo(chave)) : modulo.titulo}</strong>.</p>
+        <a href="${chave ? hashModulo(modulo) : '#/'}" class="btn btn-primario">${icone('arrow-left', 18)} Voltar</a>
+      </div>
+    </div>
+  `;
+}
+
 /* ================================================================
    Ponto de entrada
    ================================================================ */
@@ -60,11 +171,14 @@ function filtrarPorDisciplina(todasQuestoes, disciplina) {
  * abre na primeira questão ainda não respondida.
  * @param {HTMLElement} container
  * @param {Object[]}    todasQuestoes
- * @param {Object}      modulo           - objeto do módulo (de modulos.js)
+ * @param {Object}      modulo           - objeto do módulo (de modulos.js), com `conteudo`:
+ *                                         o conteúdo escolhido ('todas' = a matéria inteira)
  * @param {string[]}    [idsParaRefazer] - quando "refazer só as erradas"
  */
 export function iniciarSessaoQuestoes(container, todasQuestoes, modulo, idsParaRefazer = null) {
   let questoesFiltradas = filtrarPorDisciplina(todasQuestoes, modulo.disciplina);
+  const chave = modulo.conteudo && modulo.conteudo !== 'todas' ? modulo.conteudo : null;
+  if (chave) questoesFiltradas = questoesFiltradas.filter(q => conteudosDa(q).includes(chave));
 
   // Modo "refazer só as erradas"
   if (idsParaRefazer && idsParaRefazer.length > 0) {
@@ -73,15 +187,7 @@ export function iniciarSessaoQuestoes(container, todasQuestoes, modulo, idsParaR
   }
 
   if (questoesFiltradas.length === 0) {
-    container.innerHTML = `
-      <div class="container">
-        <div class="estado-vazio">
-          ${icone('alert-circle', 40)}
-          <p>Nenhuma questão encontrada para <strong>${modulo.titulo}</strong>.</p>
-          <a href="#/" class="btn btn-primario">${icone('arrow-left', 18)} Voltar ao início</a>
-        </div>
-      </div>
-    `;
+    container.innerHTML = htmlSemQuestoes(modulo, chave);
     return;
   }
 
@@ -149,8 +255,8 @@ function renderizarQuestaoAtual(container, modulo) {
         <!-- Cabeçalho da sessão -->
         <header class="questoes-cabecalho">
           <div class="questoes-nav-linha">
-            <a href="#/" class="btn-voltar" aria-label="Voltar ao início">
-              ${icone('arrow-left', 18)} Voltar ao início
+            <a href="${hashModulo(modulo)}" class="btn-voltar" aria-label="Voltar aos conteúdos de ${modulo.disciplina}">
+              ${icone('arrow-left', 18)} Conteúdos
             </a>
             <span class="questoes-contador">
               Questão <strong>${numero}</strong> de <strong>${total}</strong>
@@ -158,11 +264,11 @@ function renderizarQuestaoAtual(container, modulo) {
             </span>
           </div>
 
-          <!-- Meta: disciplina / subtópico / prova -->
+          <!-- Meta: disciplina / conteúdo(s) / prova de origem -->
           <div class="questoes-meta" aria-label="Sobre esta questão">
             <span class="questoes-meta__disciplina">${questao.disciplina}</span>
             <span class="questoes-meta__separador" aria-hidden="true">•</span>
-            <span>${questao.subtopico}</span>
+            <span>${nomesConteudos(questao)}</span>
             <span class="questoes-meta__separador" aria-hidden="true">•</span>
             <span>${questao.prova}</span>
           </div>
@@ -437,8 +543,8 @@ function renderizarResultado(container, modulo) {
         <!-- Cabeçalho simplificado -->
         <header class="questoes-cabecalho">
           <div class="questoes-nav-linha">
-            <a href="#/" class="btn-voltar">
-              ${icone('arrow-left', 18)} Voltar ao início
+            <a href="${hashModulo(modulo)}" class="btn-voltar">
+              ${icone('arrow-left', 18)} Conteúdos
             </a>
           </div>
         </header>
@@ -475,7 +581,7 @@ function renderizarResultado(container, modulo) {
                   <li class="resultado-errada-item">
                     <button type="button" class="resultado-errada-link" data-indice="${questoes.indexOf(q)}">
                       <strong>${q.prova} — Q.${q.numeroOriginal}</strong><br>
-                      ${q.subtopico}
+                      ${nomesConteudos(q)}
                     </button>
                   </li>
                 `).join('')}
@@ -485,8 +591,8 @@ function renderizarResultado(container, modulo) {
 
           <!-- Ações -->
           <div class="resultado-acoes">
-            <a href="#/" class="btn btn-secundario">
-              ${icone('arrow-left', 16)} Início
+            <a href="${hashModulo(modulo)}" class="btn btn-secundario">
+              ${icone('arrow-left', 16)} Conteúdos
             </a>
             <button class="btn btn-secundario" id="btn-revisar" type="button">
               ${icone('arrow-left', 16)} Voltar às questões

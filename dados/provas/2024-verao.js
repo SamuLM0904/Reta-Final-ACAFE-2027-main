@@ -59,6 +59,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Pontuação',
     numeroOriginal: 1,
+    dificuldade: 'facil',
+    conteudo: 'por-3b4',
     enunciado: `
       <b>QUESTÃO 01</b><br>
       Leia as alternativas abaixo e selecione aquela em que o uso da pontuação está <b>INCORRETO</b>:
@@ -78,6 +80,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Charge',
     numeroOriginal: 2,
+    dificuldade: 'media',
+    conteudo: 'por-4a4',
     enunciado: `
       <b>QUESTÃO 02</b><br>
       Com base no texto 1, é <b>CORRETO</b> afirmar:
@@ -99,6 +103,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Classes de Palavras (Como)',
     numeroOriginal: 3,
+    dificuldade: 'dificil',
+    conteudo: 'por-1b5',
     enunciado: `
       <b>QUESTÃO 03</b><br>
       Em qual das frases abaixo a palavra “<b>como</b>” tem função gramatical equivalente à usada no texto 1?
@@ -120,6 +126,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Coesão Textual',
     numeroOriginal: 4,
+    dificuldade: 'media',
+    conteudo: 'por-2a3',
     textoApoio: TEXTO_ACAFE_2024_VER_2,
     enunciado: `
       <b>QUESTÃO 04</b><br>
@@ -140,6 +148,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Conectivos e Sentido',
     numeroOriginal: 5,
+    dificuldade: 'dificil',
+    conteudo: 'por-2a3',
     textoApoio: TEXTO_ACAFE_2024_VER_2,
     enunciado: `
       <b>QUESTÃO 05</b><br>
@@ -160,6 +170,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Polissemia e Semântica',
     numeroOriginal: 6,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a5',
     textoApoio: TEXTO_ACAFE_2024_VER_2,
     enunciado: `
       <b>QUESTÃO 06</b><br>
@@ -180,6 +192,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Leitura de Tabela/Infográfico',
     numeroOriginal: 7,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     enunciado: `
       <b>QUESTÃO 07</b><br>
       Com base no texto 4, é <b>CORRETO</b> afirmar que:
@@ -201,6 +215,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Leitura de Tabela/Infográfico',
     numeroOriginal: 8,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     enunciado: `
       <b>QUESTÃO 08</b><br>
       Assinale a alternativa <b>CORRETA</b> que apresenta a pergunta que pode ser respondida com base nas informações do texto 3.
@@ -222,6 +238,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Gêneros Digitais e Funções da Linguagem',
     numeroOriginal: 9,
+    dificuldade: 'media',
+    conteudo: 'por-1a4',
     enunciado: `
       <b>QUESTÃO 09</b><br>
       Com base no texto 4, é <b>CORRETO</b> afirmar que:
@@ -243,6 +261,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Funções da Linguagem',
     numeroOriginal: 10,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a4',
     enunciado: `
       <b>QUESTÃO 10</b><br>
       Com base no texto 4, analise as funções da linguagem e assinale a alternativa <b>CORRETA</b>.
@@ -268,6 +288,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 11,
+    dificuldade: 'media',
+    obra: 'insubmissas',
     enunciado: `
       <b>QUESTÃO 11</b><br>
       Com relação à obra Insubmissas lágrimas de mulheres, de Conceição Evaristo, é <b>CORRETO</b> afirmar:
@@ -287,6 +309,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 12,
+    dificuldade: 'dificil',
+    obra: 'exercicio-incerteza',
     enunciado: `
       <b>QUESTÃO 12</b><br>
       Sobre a obra O exercício da incerteza de Drauzio Varella, é <b>CORRETO</b> o que se afirma em:
@@ -306,6 +330,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Modernismo (Obras Literárias)',
     numeroOriginal: 13,
+    dificuldade: 'media',
+    obra: 'pauliceia',
     enunciado: `
       <b>QUESTÃO 13</b><br>
       A partir da leitura da obra Paulicéia desvairada, de Mário de Andrade, são verdadeiras todas as afirmativas, <b>EXCETO</b>.
@@ -325,6 +351,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 14,
+    dificuldade: 'dificil',
+    obra: 'fazenda-modelo',
     enunciado: `
       <b>QUESTÃO 14</b><br>
       Sobre a obra Fazenda Modelo de Chico Buarque, é <b>CORRETO</b> afirmar:
@@ -348,6 +376,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 15,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 15</b><br>
@@ -374,6 +403,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 16,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -394,6 +424,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Acentuación',
     numeroOriginal: 17,
+    dificuldade: 'dificil',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 17</b><br>
@@ -420,6 +451,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 18,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 18</b><br>
@@ -440,6 +472,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 19,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 19</b><br>
@@ -460,6 +493,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Paráfrasis',
     numeroOriginal: 20,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 20</b><br>
@@ -481,6 +515,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Géneros Textuales',
     numeroOriginal: 21,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2024_VER_ESP_1_E_2,
     enunciado: `
       <b>QUESTÃO 21</b><br>
@@ -505,6 +540,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário e Sinonímia',
     numeroOriginal: 15,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 15</b><br>
       Read Text 1 below.<br><br>
@@ -527,6 +563,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Preposições',
     numeroOriginal: 16,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 16</b><br>
       Text 2 below is part of the article "Everything you need to know about green technology in 2023". Some prepositions were removed from it. Mark the alternative in which the prepositions complete the blanks <b>CORRECTLY</b>.<br><br>
@@ -551,6 +588,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Expressões Idiomáticas',
     numeroOriginal: 17,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 17</b><br>
       Read the excerpt below taken from an article about Holistic Medicine, and answer the question that follows.<br><br>
@@ -573,6 +611,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Question Tags',
     numeroOriginal: 18,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 18</b><br>
       Analyse the sentences below.<br><br>
@@ -599,6 +638,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 19,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Read the story below, which is said to be true, and answer the question as follows.<br><br>
@@ -622,6 +662,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Classes de Palavras',
     numeroOriginal: 20,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 20</b><br>
       Read the text below.<br><br>
@@ -645,6 +686,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Tempos Verbais',
     numeroOriginal: 21,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 21</b><br>
       Identify the sentence in which the Verb Tense is <b>NOT CORRECT</b> according to the standard grammar rules.
@@ -668,6 +710,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Analítica (Circunferências)',
     numeroOriginal: 22,
+    dificuldade: 'media',
+    conteudo: 'mat-4b2',
     enunciado: `
       <b>QUESTÃO 22</b><br>
       Considere a definição: duas circunferências são ortogonais quando se interceptam em dois pontos distintos e em cada ponto de interseção suas tangentes são perpendiculares.<br><br>
@@ -689,6 +733,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções Trigonométricas',
     numeroOriginal: 23,
+    dificuldade: 'dificil',
+    conteudo: 'mat-4a2',
     enunciado: `
       <b>QUESTÃO 23</b><br>
       Cem metros rasos é uma modalidade de corrida de velocidade no atletismo. A mais curta das distâncias disputadas em eventos ao ar livre, é também uma das mais populares do esporte. <i>Usain Bolt</i> é o detentor do recorde mundial dessa prova com 9,58 segundos. Os treinos para um velocista quebrar a barreira dos 10 segundos são exaustivos e muitos deles são baseados em zonas de frequência cardíaca (FC) do atleta. Em alguns treinos regenerativos são utilizadas zonas que vão de 50% a 60% da FC máxima do atleta e em treinos mais intensos a zona pode chegar a 100% da FC máxima.<br><br>
@@ -714,6 +760,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Espacial (Esfera)',
     numeroOriginal: 24,
+    dificuldade: 'media',
+    conteudo: 'mat-3a3',
     enunciado: `
       <b>QUESTÃO 24</b><br>
       Obesidade é uma doença crônica, a qual se caracteriza pelo acúmulo excessivo de gordura corporal. É considerada fator de risco para uma série de outros problemas, como doenças cardiovasculares, diabetes e até mesmo câncer.<br><br>
@@ -738,6 +786,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Progressão Geométrica',
     numeroOriginal: 25,
+    dificuldade: 'facil',
+    conteudo: 'mat-3a4',
     enunciado: `
       <b>QUESTÃO 25</b><br>
       As bactérias são organismos microscópicos unicelulares. Elas estão entre as formas de vida mais primitivas da terra. Há milhares de tipos diferentes de bactérias, e elas vivem em todos os ambientes concebíveis em todo o mundo. Alguns tipos de bactérias causam doenças, elas são chamadas de patógenos. Após um organismo estar infectado por uma bactéria, seu crescimento envolve diferentes fases: Lag, Log, estacionária, declínio. Cada uma das fases apresenta uma particularidade, contudo, na fase Log os microrganismos se encontram na plenitude de suas capacidades, em um meio cujo suprimentos de nutrientes é superior às necessidades do microrganismo. As bactérias se reproduzem por fissão binária (se dividem ao meio). Um certo tipo de bactéria que se prolifera dobrando sua população a cada 15 minutos, está com 43 008 bactérias após 2h30min do momento em que um organismo foi infectado.<br><br>
@@ -758,6 +808,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Plana, Conjuntos e Probabilidade',
     numeroOriginal: 26,
+    dificuldade: 'dificil',
+    conteudo: 'mat-3b3',
     enunciado: `
       <b>QUESTÃO 26</b><br>
       Analise as afirmações:<br><br>
@@ -781,6 +833,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Polinômios, Trigonometria e Contagem',
     numeroOriginal: 27,
+    dificuldade: 'media',
+    conteudo: 'mat-4a1',
     enunciado: `
       <b>QUESTÃO 27</b><br>
       Assinale a alternativa <b>CORRETA</b>.
@@ -800,6 +854,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções e Inequações',
     numeroOriginal: 28,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a2',
     enunciado: `
       <b>QUESTÃO 28</b><br>
       Analise as afirmações.<br><br>
@@ -828,6 +884,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Biofísica',
     numeroOriginal: 29,
+    dificuldade: 'media',
+    conteudo: 'fis-3a2',
     enunciado: `
       <b>QUESTÃO 29</b><br>
       A Biofísica é uma ciência interdisciplinar, pois trabalha com a Biologia e com a Física. Busca pelos conhecimentos físicos soluções para problemas nos sistemas biológicos. O biofísico atua desde a medicina, passando pela nutrição, fisioterapia até terapias ocupacionais, tenta compreender a relação entre energia, matéria, tempo e espaço nas interações biológicas.<br><br>
@@ -848,6 +906,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Análise Dimensional',
     numeroOriginal: 30,
+    dificuldade: 'facil',
+    conteudo: 'fis-c1',
     enunciado: `
       <b>QUESTÃO 30</b><br>
       Seda de aranha produzida por bicho-da-seda é 6 vezes mais forte que material à prova de balas.<br><br>
@@ -873,6 +933,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Óptica da Visão',
     numeroOriginal: 31,
+    dificuldade: 'facil',
+    conteudo: 'fis-1b4',
     enunciado: `
       <b>QUESTÃO 31</b><br>
       Chamada de “ciência do olho” a oftalmologia é uma área da medicina que tem evoluído muito nas últimas décadas. A solução de várias ametropias passa pelo conhecimento de alguns conceitos físicos, mas especificamente na área da óptica.<br><br>
@@ -893,6 +955,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Circuitos Elétricos (Geradores e Receptores)',
     numeroOriginal: 32,
+    dificuldade: 'dificil',
+    conteudo: 'fis-4a2',
     enunciado: `
       <b>QUESTÃO 32</b><br>
       Um professor de física propôs aos seus alunos a construção de um simples circuito elétrico, para tanto forneceu-lhes duas baterias, A e B, sendo suas f.e.m., respectivamente, iguais a 3,0 V e 2,0 V e cada uma com uma resistência interna (r) de 0,5 Ω. Estas baterias em série, deveriam ser associadas a três resistores ôhmicos, R<sub>1</sub>, R<sub>2</sub> e R<sub>3</sub>, sendo R<sub>1</sub> e R<sub>2</sub> associados em paralelo e R<sub>3</sub> em série a estes e as baterias.<br><br>
@@ -915,6 +979,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Acústica',
     numeroOriginal: 33,
+    dificuldade: 'facil',
+    conteudo: 'fis-1a4',
     enunciado: `
       <b>QUESTÃO 33</b><br>
       A audição humana é um dos sentidos que nos une ao mundo exterior, facilita na compreensão e interação do meio em que vivemos. O ouvido humano é constituído de três partes, ouvido externo, ouvido médio, onde se encontra a membrana timpânica, os ossículos martelo, estribo e bigorna e o ouvido interno, onde pode-se observar o labirinto.<br><br>
@@ -935,6 +1001,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Ondulatória',
     numeroOriginal: 34,
+    dificuldade: 'dificil',
+    conteudo: 'fis-1a3',
     enunciado: `
       <b>QUESTÃO 34</b><br>
       A cada dia o avanço da tecnologia tem trazido uma maior praticidade na vida das pessoas. Um dos fatores que faz com que a ciência continue com este avanço é o estudo das ondas e seus fenômenos.<br><br>
@@ -961,6 +1029,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Eletrodinâmica (Potência e Calorimetria)',
     numeroOriginal: 35,
+    dificuldade: 'dificil',
+    conteudo: 'fis-4a1',
     enunciado: `
       <b>QUESTÃO 35</b><br>
       Um ebulidor é um equipamento utilizado para aquecer líquidos, popularmente conhecido como “rabo quente”, que utiliza do efeito joule criado por um resistor (ôhmico) percorrido por uma corrente elétrica.<br><br>
@@ -986,6 +1056,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Química Orgânica (Funções e Ligações)',
     numeroOriginal: 36,
+    dificuldade: 'dificil',
+    conteudo: 'qui-2b2',
     enunciado: `
       <b>QUESTÃO 36</b><br>
       A “Click Chemistry”, ou “Química do Clique”, é uma área da química caracterizada por reações simples, com alto rendimento, que criam produtos estereoespecíficos e de fácil purificação e separação sem a necessidade de cromatografia. Assim, ela possibilita ligar moléculas de maneira muito específica, evitando subprodutos indesejados, como na reação representada, abaixo. O termo “Click Chemistry” foi cunhado em 2001, e no decorrer do século XXI já foram encontradas aplicações para a “Química do Clique” no desenvolvimento de medicamentos, identificação de produtos naturais, entre outras diversas áreas da bioquímica, medicina e desenvolvimento de fármacos. Pelas suas contribuições e descobertas nesta área, o Prêmio Nobel de Química de 2022 foi dado a Carolyn R. Bertozzi, Morten Meldal e K. Barry Sharpless.<br><br>
@@ -1010,6 +1082,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Oxirredução e Funções Orgânicas',
     numeroOriginal: 37,
+    dificuldade: 'facil',
+    conteudo: 'qui-4b1',
     enunciado: `
       <b>QUESTÃO 37</b><br>
       A glicólise é um processo metabólico por meio do qual o corpo humano é capaz de transformar uma molécula de glicose em duas moléculas de ácido pirúvico. Este processo ocorre em uma grande variedade de seres vivos, podendo acontecer até mesmo em condições anaeróbicas e catalisadas por diferentes íons metálicos. Este ácido pirúvico pode, então, ser convertido em ácido láctico. Abaixo estão representadas as estruturas do ácido pirúvico e do ácido láctico<br><br>
@@ -1030,6 +1104,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'pH e Equilíbrio Ácido-Base',
     numeroOriginal: 38,
+    dificuldade: 'facil',
+    conteudo: 'qui-4a4',
     enunciado: `
       <b>QUESTÃO 38</b><br>
       O sangue humano é, em condições normais, levemente alcalino, com pH na faixa de 7,35 a 7,45. Quando o sangue tem seu pH fora deste valor, alcançando valores mais ácidos, ocorre a acidose, uma condição que pode ser proveniente de vários fatores metabólicos e respiratórios. Causando náuseas e vômito, batimento cardíaco acelerado e confusão mental, a acidose é uma condição grave que, se não revertida, pode evoluir para quadros mais graves, levando até mesmo à morte.<br><br>
@@ -1050,6 +1126,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Teorias Ácido-Base (Lewis)',
     numeroOriginal: 39,
+    dificuldade: 'media',
+    conteudo: 'qui-2a6',
     enunciado: `
       <b>QUESTÃO 39</b><br>
       A chuva ácida é um dos fenômenos atmosféricos mais importantes dentre os estudados na química, ocorrendo principalmente em países industrializados. Óxidos poluentes como o trióxido de enxofre podem reagir com a água da chuva, formando ácidos como o ácido sulfúrico, como mostrado na equação química abaixo.<br><br>
@@ -1071,6 +1149,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Estequiometria (Rendimento)',
     numeroOriginal: 40,
+    dificuldade: 'media',
+    conteudo: 'qui-3a2',
     enunciado: `
       <b>QUESTÃO 40</b><br>
       A decomposição térmica da azida de sódio, NaN<sub>3</sub>, é a reação química responsável por inflar os “airbags” dos automóveis em consequência de uma colisão. Esta reação produz grande quantidade de gás nitrogênio, além de sódio metálico. Considerando uma massa de 32,5 g de azida de sódio presente em um “airbag” e que a reação ocorre em condições ambientes com rendimento de 80%, o volume liberado de gás nitrogênio, aproximado, é:
@@ -1090,6 +1170,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Geometria Molecular e Nox',
     numeroOriginal: 41,
+    dificuldade: 'media',
+    conteudo: 'qui-1a5',
     enunciado: `
       <b>QUESTÃO 41</b><br>
       O efeito estufa é um fenômeno natural que causa a retenção de calor no planeta graças a certos gases. Os dois gases mais importantes para o efeito estufa são o gás carbônico (CO<sub>2</sub>) e o metano (CH<sub>4</sub>), sendo este último o maior causador deste efeito. O excesso desses gases na atmosfera aumenta a ação do efeito estufa para níveis indesejados, resultando no aquecimento global. Sobre esses dois gases citados, analise as afirmações a seguir.<br><br>
@@ -1114,6 +1196,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Interações Intermoleculares',
     numeroOriginal: 42,
+    dificuldade: 'facil',
+    conteudo: 'qui-2a1',
     enunciado: `
       <b>QUESTÃO 42</b><br>
       A glicerina é o nome comercial do 1,2,3-propanotriol, um composto químico com três grupos funcionais hidroxila, pertencente à função álcool. A glicerina é utilizada como matéria prima para diversos produtos como sabonetes, xampus, pomadas, tecidos, batons e tintas. Referente à glicerina e às suas interações com a água, assinale a alternativa <b>CORRETA</b>.
@@ -1137,6 +1221,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Citologia (Apoptose)',
     numeroOriginal: 43,
+    dificuldade: 'facil',
+    conteudo: 'bio-2b2',
     enunciado: `
       <b>QUESTÃO 43</b><br>
       Leia atentamente o texto abaixo:<br><br>
@@ -1161,6 +1247,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Reino Fungi e Relações Ecológicas',
     numeroOriginal: 44,
+    dificuldade: 'dificil',
+    conteudo: 'bio-2a5',
     enunciado: `
       <b>QUESTÃO 44</b><br>
       Leia e analise o texto abaixo:<br><br>
@@ -1194,6 +1282,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Citologia (Herança Extranuclear)',
     numeroOriginal: 45,
+    dificuldade: 'facil',
+    conteudo: 'bio-2b2',
     enunciado: `
       <b>QUESTÃO 45</b><br>
       No centro de todos os organismos vivos está a célula, que funciona como o alicerce da vida. Mesmo os vírus, embora não sendo tecnicamente seres vivos, requerem células para desempenhar as suas funções, como parasitas intracelulares obrigatórios. Essas células podem ser categorizadas em dois grupos distintos, com base em sua organização: procarióticas e eucarióticas.<br><br>
@@ -1219,6 +1309,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Saneamento Básico e Saúde',
     numeroOriginal: 46,
+    dificuldade: 'media',
+    conteudo: 'bio-c1',
     enunciado: `
       <b>QUESTÃO 46</b><br>
       No que diz respeito à qualidade de vida do cidadão, o acesso ao saneamento básico é um dos indicadores fundamentais para essa situação, e está diretamente relacionado à saúde pública e ao meio ambiente. Segundo dados da Organização Mundial da Saúde (OMS), em 2020, cerca de 2 bilhões de pessoas no mundo não tinham acesso a instalações de saneamento básico adequado.<br><br>
@@ -1242,6 +1334,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Fisiologia Humana (Hormônios)',
     numeroOriginal: 47,
+    dificuldade: 'media',
+    conteudo: 'bio-3b6',
     enunciado: `
       <b>QUESTÃO 47</b><br>
       A respeito dos hormônios humanos, analise as afirmativas.<br><br>
@@ -1266,6 +1360,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Origem da Vida',
     numeroOriginal: 48,
+    dificuldade: 'facil',
+    conteudo: 'bio-1a4',
     enunciado: `
       <b>Os ETs falsos no Congresso do México</b><br>
       Imagens de supostos cadáveres mumificados de alienígenas pegaram os usuários das redes sociais e até os cientistas de surpresa. É que o Congresso do México abriu as portas para um grupo que alega ter encontrado os ETs enterrados no Peru, mas desde o início da apresentação já estava claro que se tratava de uma farsa.<br>
@@ -1289,6 +1385,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Embriologia (Anexos Embrionários)',
     numeroOriginal: 49,
+    dificuldade: 'media',
+    conteudo: 'bio-2b5',
     enunciado: `
       <b>Covid e gravidez: risco de transmissão entre mãe e bebê é baixo, mas infecção pode 'desorganizar' placenta, aponta estudo da Unicamp</b><br>
       Pesquisa acompanhou mais de 700 mulheres em 15 maternidades do Brasil e indicou ainda que gestantes e puérperas são grupos de alto risco para o coronavírus. Trabalho reforça a importância da vacinação mesmo em meio à melhora da pandemia, diz professora.<br>
@@ -1317,6 +1415,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Joanino (1808)',
     numeroOriginal: 50,
+    dificuldade: 'media',
+    conteudo: 'his-2b2',
     enunciado: `
       <b>QUESTÃO 50</b><br>
       Em 1808, a Corte Portuguesa desembarcou no Brasil com todo o seu aparato administrativo. Tal ação estava relacionada a acontecimentos no cenário político da Europa.<br><br>
@@ -1337,6 +1437,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Idade Moderna',
     numeroOriginal: 51,
+    dificuldade: 'facil',
+    conteudo: 'his-2a2',
     enunciado: `
       <b>QUESTÃO 51</b><br>
       Na Europa, o nascimento do mundo moderno foi marcado por uma profunda transformação cultural, científica e social que moldou a sociedade e a maneira como vivemos até os dias de hoje.<br><br>
@@ -1357,6 +1459,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Era Vargas',
     numeroOriginal: 52,
+    dificuldade: 'media',
+    conteudo: 'his-3b5',
     enunciado: `
       <b>QUESTÃO 52</b><br>
       Getúlio Vargas ocupou a presidência do Brasil durante quinze anos consecutivos, sendo esse período composto por três governos distintos.<br><br>
@@ -1377,6 +1481,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'República Velha (Revolta da Vacina)',
     numeroOriginal: 53,
+    dificuldade: 'media',
+    conteudo: 'his-3b3',
     enunciado: `
       <b>QUESTÃO 53</b><br>
       “A vacina é considerada por especialistas como uma das maiores descobertas da ciência. Graças a elas, segundo a Organização Mundial da Saúde (OMS), cerca de três milhões de vidas são poupadas por ano.”<br>
@@ -1403,6 +1509,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Colonização da América',
     numeroOriginal: 54,
+    dificuldade: 'facil',
+    conteudo: 'his-2a3',
     enunciado: `
       <b>QUESTÃO 54</b><br>
       No processo de colonização da América, o contato entre europeus e os povos nativos é considerado por muitos historiadores como um choque entre dois mundos. Tal processo acarretou, entre outras consequências, o declínio das populações nativas.<br><br>
@@ -1423,6 +1531,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Revolução Francesa',
     numeroOriginal: 55,
+    dificuldade: 'media',
+    conteudo: 'his-3a1',
     enunciado: `
       <b>QUESTÃO 55</b><br>
       Sobre a Revolução Francesa, iniciada em 1789, analise as afirmativas.<br><br>
@@ -1448,6 +1558,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Antiguidade (Egito Antigo)',
     numeroOriginal: 56,
+    dificuldade: 'media',
+    conteudo: 'his-1a3',
     enunciado: `
       <b>QUESTÃO 56</b><br>
       No Egito Antigo, as práticas medicinais, frequentemente, entrelaçavam-se com a magia e outros rituais, resultando, assim, na integração entre o que hoje consideramos conhecimentos científicos e práticas religiosas.<br><br>
@@ -1477,6 +1589,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Indústria e Leitura de Gráfico',
     numeroOriginal: 57,
+    dificuldade: 'media',
+    conteudo: 'geo-2u4',
     enunciado: `
       <b>QUESTÃO 57</b><br>
       Leia a notícia abaixo.<br><br>
@@ -1502,6 +1616,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geopolítica (BRICS)',
     numeroOriginal: 58,
+    dificuldade: 'facil',
+    conteudo: 'geo-4u5',
     enunciado: `
       <b>QUESTÃO 58</b><br>
       Apesar de não funcionar como um bloco econômico que estabelece livre circulação de mercadorias e tarifas externas comuns, os BRICS concentram uma parte considerável e crescente parcela da população mundial e podem representar um eixo geopolítico, concentrado no chamado Sul-Global ao estabelecerem parcerias em âmbitos diversos. No ano de 2023, o grupo passou por uma expansão com a entrada de seis membros (novos BRICS).<br><br>
@@ -1528,6 +1644,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Poluição Atmosférica e Saúde',
     numeroOriginal: 59,
+    dificuldade: 'facil',
+    conteudo: 'geo-3u2',
     enunciado: `
       <b>QUESTÃO 59</b><br>
       Leia a notícia abaixo.<br><br>
@@ -1551,6 +1669,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia da Alimentação',
     numeroOriginal: 60,
+    dificuldade: 'facil',
+    conteudo: 'geo-2u2',
     enunciado: `
       <b>QUESTÃO 60</b><br>
       A Geografia da alimentação e a saúde são campos de estudo intimamente relacionados. A esse respeito, assinale a alternativa <b>INCORRETA</b>.
@@ -1570,6 +1690,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'África na Economia Mundial',
     numeroOriginal: 61,
+    dificuldade: 'facil',
+    conteudo: 'geo-4u5',
     enunciado: `
       <b>QUESTÃO 61</b><br>
       O continente africano como um todo não está plenamente integrado à economia mundial, à medida em que o fluxo de capitais produtivos é um dos mais baixos do mundo e há uma concentração de investimentos em poucos países.<br><br>
@@ -1590,6 +1712,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Mundo do Trabalho (Desemprego e Saúde Mental)',
     numeroOriginal: 62,
+    dificuldade: 'facil',
+    conteudo: 'geo-2u5',
     enunciado: `
       <b>QUESTÃO 62</b><br>
       Leia o excerto abaixo:<br><br>
@@ -1612,6 +1736,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Questão Agrária (Conflitos no Campo)',
     numeroOriginal: 63,
+    dificuldade: 'facil',
+    conteudo: 'geo-2u2',
     enunciado: `
       <b>QUESTÃO 63</b><br>
       Observe o mapa abaixo.<br><br>

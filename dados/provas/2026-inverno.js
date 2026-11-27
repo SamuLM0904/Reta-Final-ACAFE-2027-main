@@ -131,6 +131,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Introdução à Análise Textual',
     numeroOriginal: 1,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2026_INV_1,
     enunciado: `
       <b>QUESTÃO 01</b><br>
@@ -151,6 +153,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Introdução à Análise Textual',
     numeroOriginal: 2,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2026_INV_1,
     enunciado: `
       <b>QUESTÃO 02</b><br>
@@ -171,6 +175,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Gêneros Jornalísticos',
     numeroOriginal: 3,
+    dificuldade: 'media',
+    conteudo: 'por-4a2',
     textoApoio: TEXTO_ACAFE_2026_INV_1,
     enunciado: `
       <b>QUESTÃO 03</b><br>
@@ -191,6 +197,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Fatores de Textualidade',
     numeroOriginal: 4,
+    dificuldade: 'facil',
+    conteudo: 'por-2a3',
     textoApoio: TEXTO_ACAFE_2026_INV_1,
     enunciado: `
       <b>QUESTÃO 04</b><br>
@@ -211,6 +219,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Análise Sintática Interna',
     numeroOriginal: 5,
+    dificuldade: 'media',
+    conteudo: 'por-2b2',
     textoApoio: TEXTO_ACAFE_2026_INV_1,
     enunciado: `
       <b>QUESTÃO 05</b><br>
@@ -236,6 +246,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Variação Linguística',
     numeroOriginal: 6,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a3',
     textoApoio: TEXTOS_ACAFE_2026_INV_2_E_3,
     imagem: null,
     enunciado: `
@@ -264,6 +276,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Figuras de Linguagem',
     numeroOriginal: 7,
+    dificuldade: 'media',
     textoApoio: TEXTOS_ACAFE_2026_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 07</b><br>
@@ -288,6 +301,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Morfologia Lexical',
     numeroOriginal: 8,
+    dificuldade: 'media',
+    conteudo: 'por-1a5',
     textoApoio: TEXTOS_ACAFE_2026_INV_2_E_3,
     enunciado: `
       <b>QUESTÃO 08</b><br>
@@ -308,6 +323,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 11,
+    dificuldade: 'dificil',
+    obra: 'codigo-aguas',
     enunciado: `
       <b>QUESTÃO 11</b><br>
       Leia o poema da obra O Código das Águas, de Lindolf Bell.<br><br>
@@ -344,6 +361,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias',
     numeroOriginal: 12,
+    dificuldade: 'media',
+    obra: 'memorias-postumas',
     enunciado: `
       <b>QUESTÃO 12</b><br>
       Em Memórias Póstumas de Brás Cubas, de Machado de Assis, a relação entre a pneumonia que mata o protagonista, o emplastro anti-hipocondríaco que ele pretendia inventar e a melancolia humana que buscava curar revela aspectos fundamentais da estética realista.<br><br>
@@ -365,6 +384,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Interpretação e Obras Literárias',
     numeroOriginal: 13,
+    dificuldade: 'dificil',
+    obra: 'tristeza-infinita',
     enunciado: `
       <b>QUESTÃO 13</b><br>
       Em "Uma Tristeza Infinita" de Antônio Xerxenesky, a personagem Mary é diagnosticada como "histérica" e apresenta sintomas como crises nervosas, automutilação e pesadelos.<br><br>
@@ -385,6 +406,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Interpretação e Obras Literárias',
     numeroOriginal: 14,
+    dificuldade: 'media',
+    obra: 'insubmissas',
     enunciado: `
       <b>QUESTÃO 14</b><br>
       No conto "Lia Gabriel" da obra Insubmissas Lágrimas de Mulheres, a personagem-título narra a história da doença mental de seu filho Máximo.<br><br>
@@ -406,6 +429,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 15,
+    dificuldade: 'facil',
     enunciado: 
     `
       <b>QUESTÃO 15</b><br>
@@ -428,6 +452,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 16</b><br>
       Considera el título del texto 1, "ESTAR + CERCA ES CUIDARNOS +", y marca la opción CORRECTA en el contexto que se presenta.
@@ -449,6 +474,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Estructuras Lingüísticas y Voseo',
     numeroOriginal: 17,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 17</b><br>
       Analiza las estructuras lingüísticas presentes en los siguientes trechos del texto 1 y marca con (V) las proposiciones verdaderas y con (F) las falsas.<br><br>
@@ -480,6 +506,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 18,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_INV_ESP_2,
     enunciado: `
       <b>QUESTÃO 18</b><br>
@@ -500,6 +527,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 19,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_INV_ESP_2,
     enunciado: `
       <b>QUESTÃO 19</b><br>
@@ -520,6 +548,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 20,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_INV_ESP_2,
     enunciado: `
       <b>QUESTÃO 20</b><br>
@@ -540,6 +569,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 21,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_INV_ESP_2,
     enunciado: `
       <b>QUESTÃO 21</b><br>
@@ -572,6 +602,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções Logarítmicas',
     numeroOriginal: 22,
+    dificuldade: 'media',
+    conteudo: 'mat-2a5',
     enunciado: `
       <b>QUESTÃO 22</b><br>
       Tumores malignos, popularmente conhecidos como câncer, são caracterizados pelo crescimento desordenado e agressivo de células anormais. Diferente dos tumores benignos, essas células têm a capacidade de invadir tecidos e órgãos vizinhos, além de se espalharem para outras partes do corpo por meio da corrente sanguínea ou do sistema linfático, processo denominado metástase.<br><br>
@@ -597,6 +629,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Probabilidade e Estatística',
     numeroOriginal: 23,
+    dificuldade: 'dificil',
+    conteudo: 'mat-3b3',
     enunciado: `
       <b>QUESTÃO 23</b><br>
       Sensibilidade e especificidade são métricas cruciais que definem a acurácia de um teste diagnóstico. A sensibilidade mede a capacidade do teste identificar o resultado ser positivo em pacientes que têm a doença; é a porcentagem de resultados positivos entre pacientes que, realmente, têm a doença.<br>
@@ -634,6 +668,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções Trigonométricas',
     numeroOriginal: 24,
+    dificuldade: 'media',
+    conteudo: 'mat-4a2',
     enunciado: `
       <b>QUESTÃO 24</b><br>
       O teste ergométrico (ou teste da esteira) é um exame não invasivo que avalia a saúde do coração sob esforço físico controlado, com cerca de 10 a 12 minutos de exercícios mais alguns minutos de recuperação, em um total de uns 20 minutos de duração. Ele monitora eletrocardiograma, pressão arterial e frequência cardíaca, enquanto o paciente caminha/corre na esteira que aumenta a velocidade e inclinação gradativamente, monitorado por eletrodos, visando detectar arritmias, isquemias ou avaliar a capacidade funcional.<br><br>Durante um exame clínico, a frequência cardíaca de um paciente, em batimentos por minuto (bpm), em um modelo matemático simplificado é dada por:<br><br>f(t) = 80 + 20 · sen((π/6) · t)<br><br>em que t, com 0 ≤ t ≤ 12, representa o tempo, em minutos.<br><br>Determine o intervalo total de tempo, em minutos, durante o exame, em que a frequência cardíaca do paciente permanece acima de 90 bpm.
@@ -653,6 +689,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Inequações Modulares',
     numeroOriginal: 25,
+    dificuldade: 'media',
+    conteudo: 'mat-2a2',
     enunciado: `
       <b>QUESTÃO 25</b><br>
       O conjunto S = {x ∈ ℝ; a ≤ x ≤ b} é o conjunto solução da inequação:<br><br>|x − 3| + |3x| ≤ 7<br><br>A afirmação CORRETA sobre o valor b − a é um:
@@ -672,6 +710,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Analítica',
     numeroOriginal: 26,
+    dificuldade: 'media',
+    conteudo: 'mat-4b1',
     enunciado: `
       <b>QUESTÃO 26</b><br>
       Seja o triângulo ABC com A(5,10), B(11,4) e C(9,2).<br><br>Determine a área do círculo circunscrito ao triângulo ABC.
@@ -691,6 +731,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Combinatória, Polinômios, PA e Geometria Espacial',
     numeroOriginal: 28,
+    dificuldade: 'dificil',
+    conteudo: 'mat-3b2',
     enunciado: `
       <b>QUESTÃO 28</b><br>
       Assinale a alternativa que contém uma sentença CORRETA.
@@ -710,6 +752,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Dureza, Atrito e Energia',
     numeroOriginal: 30,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3b2',
     enunciado: `
       <b>QUESTÃO 30</b><br>
       No início do século XIX, o mineralogista alemão Friedrich Mohs propôs uma classificação empírica para comparar materiais quanto à sua resistência ao risco e ao desgaste superficial. Essa classificação, conhecida como escala de Mohs, organiza diferentes substâncias, segundo sua dureza relativa, definida pela capacidade de um material riscar outro.<br><br>Na escala de Mohs, materiais como o talco, o gesso e a calcita ocupam posições inferiores, enquanto o quartzo, o coríndon e o diamante encontram-se em posições mais elevadas, sendo o diamante o material de maior dureza nessa escala. A necessidade dessa classificação surge em contextos nos quais o desgaste mecânico por abrasão é relevante, como no polimento e acabamento de restaurações odontológicas com instrumentos revestidos por partículas de diamante, nos quais a interação entre superfícies sólidas e tecidos biológicos exige controle preciso do desgaste.<br>Do ponto de vista físico, a dureza está associada à resistência, à deformação localizada e ao risco, enquanto o atrito refere-se às forças que surgem quando há movimento relativo entre superfícies em contato. Embora ambos os fenômenos envolvam contato mecânico, dureza e atrito representam propriedades físicas distintas e independentes. Além disso, processos de abrasão e atrito envolvem transferência e transformação de energia, sendo comum a conversão de parte da energia mecânica em energia térmica, o que pode ser relevante em aplicações na saúde devido aos efeitos do aquecimento sobre tecidos vivos. Com base no texto relacionado à escala de Mohs e em conceitos físicos, à abrasão, ao atrito e à energia envolvida nesses processos, analise as afirmações.<br><br>I. A escala de Mohs é uma classificação comparativa e empírica, que ordena materiais de acordo com sua resistência ao risco, não fornecendo valores quantitativos de dureza.<br>II. Um material de maior dureza na escala de Mohs, necessariamente, produz menor atrito quando em contato com materiais menos duros.<br>III. Em processos de abrasão utilizados em aplicações na saúde, a eficiência do desgaste depende da dureza relativa entre os materiais em contato e da energia mecânica transferida durante o movimento.<br>IV. Materiais mais duros, por promoverem maior abrasão, apresentam necessariamente maior condutividade térmica, o que reduz o aquecimento em procedimentos na saúde.<br>V. Em qualquer processo real de atrito ou abrasão, parte da energia mecânica fornecida ao sistema é transformada em energia térmica.<br><br>Assinale a alternativa CORRETA.
@@ -729,6 +773,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Trabalho e Energia',
     numeroOriginal: 31,
+    dificuldade: 'media',
+    conteudo: 'fis-3b2',
     enunciado: `
       <b>QUESTÃO 31</b><br>
       Reportagens recentes têm destacado uma mudança de comportamento entre jovens adultos, que vêm substituindo baladas noturnas por práticas associadas à saúde e ao bem-estar. A reportagem “Suor e endorfina: geração Z troca baladas por comemorações fitness” relata que “um número crescente de jovens está substituindo baladas por aulões comemorativos em academias, parques e espaços de treino, associando lazer à prática de atividade física e à busca por saúde e bem-estar”.<br>(Adaptado de: METRÓPOLES. Suor e endorfina: geração Z troca baladas por comemorações fitness. Disponível em: https://www.metropoles.com/vida-e-estilo/suor-e-endorfina-gen-z-troca-festa-em-bar-por-comemoracoes-fitness. Acesso em: 2026.)<br><br>Do ponto de vista médico-científico, a prática regular de exercícios físicos está associada ao aumento do gasto energético e à utilização de energia química proveniente da alimentação para a contração muscular. Durante a atividade física, parte dessa energia contribui para o movimento do corpo, enquanto outra parte é convertida em calor, participando da regulação térmica do organismo.<br>Sob a ótica da Física, o exercício físico envolve a realização de trabalho mecânico, a transformação de diferentes formas de energia e a atuação de processos dissipativos, sendo possível analisar essas transformações a partir do comportamento do centro de massa do corpo humano e das trocas energéticas estabelecidas com o ambiente.<br><br>Com base nesses conceitos, analise as afirmações.<br><br>I. Durante a execução de exercícios como saltos ou agachamentos, parte da energia química, proveniente da alimentação, é convertida em trabalho mecânico associado ao deslocamento do centro de massa do corpo.<br>II. O corpo humano, durante a prática de exercícios físicos, pode ser tratado como um sistema ideal, no qual a energia química, utilizada pelos músculos, transforma-se exclusivamente, em energia mecânica.<br>III. Em um salto vertical, o gasto energético do corpo humano é nulo durante a fase em que não há contato com o solo, pois nesse intervalo não há forças musculares realizando trabalho mecânico.<br>IV. A prática de exercícios físicos envolve processos dissipativos, nos quais parte da energia, inicialmente, disponível é transformada em calor, de maneira irreversível, resultando em aumento da entropia do conjunto corpo–ambiente.<br>V. Em exercícios realizados em repouso aparente, como a sustentação estática de um peso, não há realização de trabalho mecânico, nem transformação de energia no corpo humano.<br><br>Assinale a alternativa CORRETA.
@@ -748,6 +794,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Eletrostática (Campo Elétrico)',
     numeroOriginal: 33,
+    dificuldade: 'media',
+    conteudo: 'fis-3a5',
     enunciado: `
       <b>QUESTÃO 33</b><br>
       Enquanto você lê esta questão e organiza o raciocínio para resolvê-la, bilhões de neurônios no seu sistema nervoso estão ativos. Cada pensamento, cada decisão e cada cálculo realizado durante a prova envolve a propagação de sinais elétricos ao longo de neurônios, fenômeno conhecido como potencial de ação. Esses sinais dependem do deslocamento ordenado de íons através da membrana neuronal, como o ion Na⁺, cuja movimentação altera a energia do sistema e sustenta processos essenciais como percepção, memória e movimento voluntário. Embora o funcionamento real de um neurônio seja biologicamente complexo, modelos físicos simplificados permitem compreender aspectos essenciais desse mecanismo.<br><br>Considere um modelo no qual um íon Na⁺ atravessa uma região da membrana celular onde existe um campo elétrico supostamente uniforme, que realiza trabalho sobre a carga ao longo de uma trajetória retilínea.<br><br>Durante a travessia, o íon sofre um aumento de energia (de natureza mecânica) em 4,8 × 10⁻²¹ J ao percorrer uma distância de 2,0 nm no sentido do campo. Despreze colisões, efeitos dissipativos e quaisquer outras forças além da força elétrica.<br><br>Assinale a alternativa que apresenta o módulo do campo elétrico uniforme nessa região da membrana.
@@ -767,6 +815,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Dinâmica (Forças)',
     numeroOriginal: 34,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3b1',
     enunciado: `
       <b>QUESTÃO 34</b><br>
       Em Física, as forças e os seus efeitos dinâmicos podem ser analisados e classificados segundo diferentes critérios conceituais. Algumas interações são consideradas fundamentais por não serem explicadas a partir de outras interações físicas conhecidas, enquanto outras surgem como manifestações macroscópicas dessas propriedades.<br><br>No domínio da Mecânica Clássica, há forças que atuam por contato mecânico direto entre os corpos, bem como forças que atuam à distância, mediadas por campos físicos. Além disso, a descrição do movimento e a própria identificação das forças dependem crucialmente do referencial adotado: enquanto nos referenciais inerciais aplicam-se estritamente as Leis de Newton baseadas em interações reais entre corpos, nos referenciais não inerciais (acelerados) faz-se necessária a introdução de forças fictícias para a correta descrição matemática do movimento a partir das equações newtonianas.<br><br>Com base nessas considerações, analise as afirmações.<br><br>I. No contexto macroscópico da Mecânica Clássica, forças de contato, como o atrito, diferenciam-se das forças de campo (como a gravitacional) pelo critério de proximidade geométrica das superfícies, sendo ambas consideradas interações reais por possuírem correspondência direta com a Terceira Lei de Newton (ação e reação).<br>II. A força centrífuga é classificada como uma força fictícia e, embora não possua um corpo agente que a origine e nem um par de ação e reação, sua existência e atuação são dinamicamente reais e mensuráveis para um observador situado em um referencial não inercial em rotação.<br>III. A força Normal é uma força fundamental, pois resulta diretamente da interação mecânica e do suporte mútuo estabelecido entre os corpos em contato direto.<br>IV. Forças fictícias, como a força centrífuga, não correspondem a interações físicas reais originadas por outros corpos e surgem exclusivamente quando a análise do movimento é feita a partir de referenciais não inerciais.<br>V. As forças gravitacional, elétrica e de atrito são classicamente classificadas como forças de campo, possuindo a capacidade de atuar à distância sem a necessidade de contato físico macroscópico direto entre os corpos.<br><br>Assinale a alternativa CORRETA.
@@ -786,6 +836,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Tabela Periódica (Terras Raras)',
     numeroOriginal: 36,
+    dificuldade: 'media',
+    conteudo: 'qui-1a3',
     enunciado: `
       <b>QUESTÃO 36</b><br>
       Um grupo de 17 elementos químicos tem chamado cada vez mais a atenção do mundo: as Terras Raras. Esse grupo é composto, principalmente, pelos lantanídeos, e são de grande importância estratégica, comercial e política, pois são bastante reativos, quando comparados com outros metais. Elementos como o Neodímio, o Praseodímio e o Gadolínio são utilizados, por exemplo, na fabricação de componentes eletrônicos presentes em smartphones e carros elétricos, ímãs de alta potência e até mesmo tecnologias militares. O Brasil possui a segunda maior reserva natural de elementos de Terras Raras do mundo, com cerca de 21 milhões de toneladas, atrás apenas da China.<br><br>Sobre as propriedades químicas e físicas dos elementos de Terras Raras, assinale a alternativa CORRETA.
@@ -805,6 +857,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'pH e Solubilidade de Gases',
     numeroOriginal: 37,
+    dificuldade: 'media',
+    conteudo: 'qui-4a4',
     enunciado: `
       <b>QUESTÃO 37</b><br>
       No primeiro semestre de 2026, cardumes inteiros foram vistos mortos no Rio Imaruim, que corta a cidade de Palhoça, na Grande Florianópolis. Um laudo feito pela Polícia Militar Ambiental, divulgado no final de abril, determinou que a situação foi resultado de uma combinação de fatores, concluindo que ação humana foi determinante. Os três principais fatores encontrados foram o pH da água, de 4,9, a temperatura elevada da água, de 28,6 ºC, e a presença de esgoto doméstico.<br><br>Sobre esse tema, analise as afirmações.<br><br>I. Quando comparado com o pH neutro da água, um pH de 4,9 é quase duas vezes mais ácido, algo muito prejudicial para os peixes.<br>II. O pH de 4,9 pode ter sido causado pelo vazamento de poluentes ricos em metais como sódio, cálcio ou potássio.<br>III. A temperatura elevada do rio é prejudicial, pois diminui a concentração de oxigênio dissolvido na água, prejudicando o metabolismo dos peixes.<br>IV. A presença de esgoto favorece a proliferação de microrganismos, que competem com os peixes pelo oxigênio disponível.<br><br>Destas afirmações, estão CORRETAS apenas:
@@ -828,6 +882,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Artes (Linguagem Corporal)',
     numeroOriginal: 9,
+    dificuldade: 'dificil',
+    conteudo: 'por-2a1',
     enunciado: `
       <b>QUESTÃO 09</b><br>
       Observe com atenção as imagens apresentadas nas Figuras 1 (balé contemporâneo) e 2 (capoeira).<br><br>
@@ -856,6 +912,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Artes (Linguagem Corporal)',
     numeroOriginal: 10,
+    dificuldade: 'media',
+    conteudo: 'por-2a1',
     enunciado: `
       <b>QUESTÃO 10</b><br>
       Apesar de diferentes, o balé contemporâneo (Figura 1) e a capoeira (Figura 2) são saberes corporais complexos.<br><br>
@@ -884,6 +942,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Plana (Teorema da Bissetriz)',
     numeroOriginal: 27,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2b2',
     enunciado: `
       <b>QUESTÃO 27</b><br>
       Na Figura 3, <i>ABC</i> é um triângulo retângulo em <i>A</i>. O ponto <i>E</i> sobre a hipotenusa <i>BC</i> e o ponto <i>D</i> sobre o cateto <i>AB</i> determinam um segmento paralelo ao lado <i>AC</i>.<br><br>
@@ -905,6 +965,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Estática (Tração em Fios)',
     numeroOriginal: 29,
+    dificuldade: 'media',
+    conteudo: 'fis-3a2',
     enunciado: `
       <b>QUESTÃO 29</b><br>
       Três corpos, de massas m<sub>1</sub>, m<sub>2</sub> e m<sub>3</sub>, estão suspensos verticalmente em equilíbrio por fios ideais, conforme a Figura 4.<br><br>
@@ -928,6 +990,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'MCU (Engrenagens) e Dilatação Térmica',
     numeroOriginal: 32,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3a1',
     enunciado: `
       <b>QUESTÃO 32</b><br>
       No final do século XVI, Tycho Brahe realizava medições astronômicas em uma época em que a marcação do tempo dependia de instrumentos rudimentares, como ampulhetas e relógios de água. A busca por maior precisão impulsionou o desenvolvimento dos relógios mecânicos, nos quais o tempo passou a ser definido pela contagem regular de movimentos periódicos.<br><br>
@@ -952,6 +1016,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Acústica (Nível Sonoro em Decibéis)',
     numeroOriginal: 35,
+    dificuldade: 'dificil',
+    conteudo: 'fis-1a4',
     enunciado: `
       <b>QUESTÃO 35</b><br>
       O ouvido humano é um sistema biológico altamente especializado, cujo estudo e diagnóstico das alterações auditivas são atribuições da Otorrinolaringologia. Estruturas como o ouvido externo, o ouvido médio e o ouvido interno, onde se localiza o labirinto, atuam de forma integrada para que as ondas sonoras sejam captadas, transmitidas e convertidas em sinais nervosos. Nesse processo, características físicas do som, como frequência e nível sonoro, estão diretamente associadas à percepção de sons graves ou agudos e fracos ou intensos.<br><br>
@@ -985,6 +1051,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Funções Inorgânicas (Óxidos Anfóteros)',
     numeroOriginal: 38,
+    dificuldade: 'media',
+    conteudo: 'qui-2a5',
     enunciado: `
       <b>QUESTÃO 38</b><br>
       O ácido fórmico é um ácido orgânico de baixa massa molecular, e é um contaminante comum em efluentes industriais, especialmente de setores têxteis. Ele pode ser neutralizado com o uso de óxido de zinco, segundo a reação química equacionada a seguir:<br><br>
@@ -1006,6 +1074,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Polímeros e Funções Orgânicas',
     numeroOriginal: 39,
+    dificuldade: 'dificil',
+    conteudo: 'qui-4b3',
     enunciado: `
       <b>QUESTÃO 39</b><br>
       A Policaprolactona (PCL) é um polímero biodegradável com ponto de fusão relativamente baixo (aproximadamente 60 ºC) utilizado de diversas formas na Medicina. Ele está presente, por exemplo, como um dos componentes do Monocryl, uma sutura cirúrgica sintética. Uma das aplicações mais interessantes e promissoras é o uso em impressão 3D de materiais implantáveis, inclusive órgãos vitais sintéticos. A equação química de polimerização do PCL por meio de abertura de anel, em presença de octanoato de estanho (II), está representada abaixo.<br><br>
@@ -1026,6 +1096,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Química Orgânica (Aminas e Hibridização)',
     numeroOriginal: 40,
+    dificuldade: 'dificil',
+    conteudo: 'qui-2b5',
     enunciado: `
       <b>QUESTÃO 40</b><br>
       A lidocaína é um anestésico local de ação rápida muito utilizado para alívio temporário em situações relativamente simples, como procedimentos odontológicos, endoscopias, ou mesmo pomadas para alívios de pequenas queimaduras. Sua ação depende da sua entrada pelas membranas lipídicas dos neurônios. Em meio ácido, a lidocaína pode sofrer protonação de um de seus átomos de nitrogênio, como demonstrado na equação química a seguir.<br><br>
@@ -1051,6 +1123,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Termoquímica (Entalpia de Combustão)',
     numeroOriginal: 41,
+    dificuldade: 'media',
+    conteudo: 'qui-4a1',
     enunciado: `
       <b>QUESTÃO 41</b><br>
       Uma das reações químicas mais importantes é a reação de combustão - uma reação exotérmica na qual um combustível é capaz de liberar grande quantidade de calor. Além de liberar calor, as reações de combustão também geram poluentes, como o gás carbônico, produto de qualquer reação de combustão completa de um combustível composto por carbono. É desejável, portanto, que o combustível seja “limpo”, ou seja, consiga liberar grande quantidade de energia, enquanto produz a menor quantidade possível de poluentes.<br><br>
@@ -1072,6 +1146,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Eletroquímica (Número de Oxidação)',
     numeroOriginal: 42,
+    dificuldade: 'facil',
+    conteudo: 'qui-4b4',
     enunciado: `
       <b>QUESTÃO 42</b><br>
       Carros elétricos modernos utilizam, em sua maioria, baterias de LFP - lítio ferro fosfato. Na reação dessa bateria, íons lítio são convertidos em lítio de carga zero na presença de uma forma de grafite com fórmula C<sub>6</sub>. A equação química da reação global dessa bateria encontra-se a seguir:<br><br>
@@ -1097,6 +1173,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Histologia Vegetal',
     numeroOriginal: 43,
+    dificuldade: 'facil',
+    conteudo: 'bio-3a3',
     enunciado: `
       <b>QUESTÃO 43</b><br>
       Em diferentes regiões de Santa Catarina, a vegetação está submetida a condições ambientais bastante distintas. Enquanto áreas de restinga e manguezal, no litoral, enfrentam elevada salinidade, ventos intensos e forte insolação; formações vegetais do interior convivem com variações térmicas marcantes e solos de características diversas. Essas condições selecionam estruturas e tecidos vegetais capazes de garantir proteção, sustentação, transporte e crescimento, caracterizando os diferentes tipos de vegetações de nosso estado.<br><br>
@@ -1117,6 +1195,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Classificação dos Seres Vivos',
     numeroOriginal: 44,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a1',
     enunciado: `
       <b>QUESTÃO 44</b><br>
       Leia o excerto abaixo:<br><br>
@@ -1147,6 +1227,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Zoologia (Cavidade Corporal / Celoma)',
     numeroOriginal: 45,
+    dificuldade: 'facil',
+    conteudo: 'bio-3a6',
     enunciado: `
       <b>QUESTÃO 45</b><br>
       A evolução animal envolveu o aparecimento de diferentes organizações corporais, especialmente quanto à presença e ao tipo de cavidade entre a parede do corpo e o tubo digestório. Considere três padrões corporais hipotéticos:<br><br>
@@ -1173,6 +1255,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Fisiologia Humana (Digestão e Pâncreas)',
     numeroOriginal: 46,
+    dificuldade: 'facil',
+    conteudo: 'bio-3b1',
     enunciado: `
       <b>QUESTÃO 46</b><br>
       Durante uma aula sobre integração entre digestão e regulação hormonal, uma professora de Biologia apresentou à turma o caso de um jovem que vinha relatando desconforto abdominal frequente, após refeições ricas em gordura, além de fezes mais volumosas e com aspecto oleoso. Em seu acompanhamento de saúde, observou-se que o fígado não apresentava alterações importantes, mas havia indícios de comprometimento da função exócrina pancreática. A professora pediu, então, que os estudantes relacionassem o caso às funções do pâncreas no duodeno.<br><br>
@@ -1193,6 +1277,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Fisiologia Humana (Tecido Ósseo e Hormônios)',
     numeroOriginal: 47,
+    dificuldade: 'facil',
+    conteudo: 'bio-2b7',
     enunciado: `
       <b>QUESTÃO 47</b><br>
       Em campanhas de prevenção de fraturas em idosos, é comum destacar que a perda de massa óssea não resulta apenas da redução na ingestão de cálcio, mas também de alterações hormonais capazes de modificar a atividade relativa de osteoblastos e osteoclastos. Em mulheres, após a menopausa, esse desequilíbrio pode tornar a reabsorção óssea mais intensa que a formação de novo tecido, aumentando a fragilidade do esqueleto ao longo do envelhecimento.<br><br>
@@ -1213,6 +1299,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Genética (Alelos Múltiplos)',
     numeroOriginal: 48,
+    dificuldade: 'dificil',
+    conteudo: 'bio-1b4',
     enunciado: `
       <b>QUESTÃO 48</b><br>
       Em uma espécie de planta ornamental, a cor das flores é determinada por três alelos de um mesmo gene, que mantêm, entre si, uma relação de dominância. Estudos experimentais mostraram os seguintes resultados:<br><br>
@@ -1238,6 +1326,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Parasitologia (Protozooses)',
     numeroOriginal: 49,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a4',
     enunciado: `
       <b>QUESTÃO 49</b><br>
       Em algumas parasitoses humanas, a infecção não ocorre no exato momento em que o inseto vetor perfura a pele para se alimentar. Nesses casos, o inseto hematófago elimina fezes contendo formas infectantes do protozoário próximo ao local da picada, e a irritação provocada na pele pode favorecer a penetração do parasita por pequenas lesões cutâneas ou por mucosas. Esse mecanismo distingue essa doença de outras em que a transmissão acontece diretamente durante a picada do vetor.<br><br>
@@ -1262,6 +1352,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Iluminismo',
     numeroOriginal: 50,
+    dificuldade: 'facil',
+    conteudo: 'his-2a6',
     enunciado: `
       <b>QUESTÃO 50</b><br>
       O Iluminismo foi um movimento intelectual dos séculos XVII e XVIII que criticou aspectos sociais e propôs novas formas de organização política.<br><br>
@@ -1282,6 +1374,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil República (Populismo)',
     numeroOriginal: 51,
+    dificuldade: 'media',
+    conteudo: 'his-4b1',
     enunciado: `
       <b>QUESTÃO 51</b><br>
       Os governos populistas tiveram grande importância e deixaram marcas significativas na história política do Brasil.<br><br>
@@ -1308,6 +1402,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Antiguidade Clássica (Cidadania)',
     numeroOriginal: 52,
+    dificuldade: 'facil',
+    conteudo: 'his-1a6',
     enunciado: `
       <b>QUESTÃO 52</b><br>
       A respeito dos conceitos de cidadania e organização política na Antiguidade Clássica, assinale a alternativa que descreve <b>CORRETAMENTE</b> a principal diferença entre os modelos grego (ateniense) e romano.
@@ -1327,6 +1423,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Gripe Espanhola e Saúde Pública',
     numeroOriginal: 53,
+    dificuldade: 'media',
+    conteudo: 'his-3b3',
     enunciado: `
       <b>QUESTÃO 53</b><br>
       A pandemia de Gripe Espanhola é frequentemente citada como a “mãe de todas as pandemias” modernas, impactando profundamente a sociedade e as políticas de saúde pública, no início do século XX.<br><br>
@@ -1347,6 +1445,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'História da Medicina',
     numeroOriginal: 54,
+    dificuldade: 'dificil',
+    conteudo: 'his-c1',
     enunciado: `
       <b>QUESTÃO 54</b><br>
       A história da medicina é marcada por rupturas paradigmáticas que alteraram a forma como a humanidade compreende o corpo, a doença e a cura.<br><br>
@@ -1373,6 +1473,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Regimes Totalitários (Século XX)',
     numeroOriginal: 55,
+    dificuldade: 'media',
+    conteudo: 'his-4a3',
     enunciado: `
       <b>QUESTÃO 55</b><br>
       Ao longo do século XX, diferentes regimes autoritários e totalitários se consolidaram na Europa, como o nazismo, o fascismo, o stalinismo, o franquismo e o salazarismo. Embora compartilhassem elementos comuns, esses regimes apresentavam diferenças importantes em suas formas de organização política e social.<br><br>
@@ -1393,6 +1495,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil República (Reformas Urbanas e Revolta da Vacina)',
     numeroOriginal: 56,
+    dificuldade: 'media',
+    conteudo: 'his-3b3',
     enunciado: `
       <b>QUESTÃO 56</b><br>
       No início do século XX, algumas cidades brasileiras passaram por transformações significativas nas áreas urbana e sanitária.<br><br>
@@ -1423,6 +1527,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia Agrária',
     numeroOriginal: 57,
+    dificuldade: 'media',
+    conteudo: 'geo-2u2',
     enunciado: `
       <b>QUESTÃO 57</b><br>
       <i>“Quando se consome um copo de suco, come-se feijão, carne ou uma salada, não se costuma pensar em como esses alimentos foram produzidos e quais trajetos percorreram para chegar ao mercado ou à feira nos quais foram comprados. Pode-se imaginar que têm origem no campo. Mas em que tipo de propriedade rural? Em qual município, Unidade da Federação (UF) ou país? A distância entre o local da produção e o do consumo é muito grande? Isso traz impactos? Que pessoas foram responsáveis pela produção? Esses alimentos foram produzidos por qual tipo de agricultor? Foram usados agrotóxicos nas plantações ou antibióticos e hormônios na criação dos animais? Existe relação entre a produção agropecuária e o desmatamento no Cerrado e na Amazônia?”</i><br>
@@ -1444,6 +1550,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Revoluções Industriais',
     numeroOriginal: 58,
+    dificuldade: 'media',
+    conteudo: 'geo-2u5',
     enunciado: `
       <b>QUESTÃO 58</b><br>
       A respeito das revoluções industriais e dos contextos geoeconômicos, assinale a alternativa <b>CORRETA</b>.
@@ -1463,6 +1571,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia Urbana',
     numeroOriginal: 59,
+    dificuldade: 'facil',
+    conteudo: 'geo-3u5',
     enunciado: `
       <b>QUESTÃO 59</b><br>
       Ao longo das últimas décadas a imagem a seguir tornou-se famosa em livros didáticos e palestras relacionados à geografia e aos processos urbanos. A imagem representa uma paisagem urbana brasileira, na capital paulista.<br><br>
@@ -1484,6 +1594,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia de Santa Catarina',
     numeroOriginal: 60,
+    dificuldade: 'media',
+    conteudo: 'geo-c1',
     enunciado: `
       <b>QUESTÃO 60</b><br>
       Localizado no Sul do Brasil, o estado de Santa Catarina é formado por 295 municípios em uma área de aproximadamente noventa e cinco mil quilômetros quadrados. A rede Urbana Catarinense pode ser vista como densa e complexa do ponto de vista das atividades econômicas, o estado também se caracteriza por importantes fluxos migratórios ao longo da história e atualmente.<br><br>
@@ -1504,6 +1616,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Teorias Demográficas',
     numeroOriginal: 61,
+    dificuldade: 'media',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 61</b><br>
       Os métodos contraceptivos, em diversos aspectos, podem ser observados do ponto de vista da saúde pública, contribuindo com o planejamento familiar.<br><br>
@@ -1524,6 +1638,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'América do Sul (Fronteiras)',
     numeroOriginal: 62,
+    dificuldade: 'media',
+    conteudo: 'geo-c3',
     enunciado: `
       <b>QUESTÃO 62</b><br>
       A Figura 9 adaptada representa a América do Sul.<br><br>
@@ -1545,6 +1661,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Globalização e Saúde Pública',
     numeroOriginal: 63,
+    dificuldade: 'facil',
+    conteudo: 'geo-4u5',
     enunciado: `
       <b>QUESTÃO 63</b><br>
       A globalização intensificou as relações entre diferentes lugares do mundo, impactando diversos setores, incluindo a saúde pública.<br><br>
@@ -1569,6 +1687,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto (Ideia Principal)',
     numeroOriginal: 15,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_1,
     enunciado: `
       <b>QUESTÃO 15</b><br>
@@ -1590,6 +1709,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário e Conectivos',
     numeroOriginal: 16,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_1,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -1610,6 +1730,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário (Polissemia)',
     numeroOriginal: 17,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_1,
     enunciado: `
       <b>QUESTÃO 17</b><br>
@@ -1635,6 +1756,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 18,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_1,
     enunciado: `
       <b>QUESTÃO 18</b><br>
@@ -1661,6 +1783,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Gênero Textual (Anúncio Publicitário)',
     numeroOriginal: 19,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_2,
     enunciado: `
       <b>QUESTÃO 19</b><br>
@@ -1683,6 +1806,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Inferência (Anúncio Publicitário)',
     numeroOriginal: 20,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_2,
     enunciado: `
       <b>QUESTÃO 20</b><br>
@@ -1705,6 +1829,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Expressões Idiomáticas',
     numeroOriginal: 21,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2026_INV_ING_2,
     enunciado: `
       <b>QUESTÃO 21</b><br>

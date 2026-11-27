@@ -1,5 +1,5 @@
 /**
- * modulos.js — Lista editável dos 12 módulos da plataforma.
+ * modulos.js — Lista editável dos módulos da plataforma.
  *
  * Para adicionar ou editar um módulo, basta alterar este array.
  * Campos:
@@ -91,6 +91,14 @@ export const MODULOS = [
     titulo: 'Questões de Espanhol',
     tipo: 'disciplina',
     disciplina: 'Espanhol',
+    icone: 'languages',
+    status: 'ativo',
+  },
+  {
+    id: 'ingles',
+    titulo: 'Questões de Inglês',
+    tipo: 'disciplina',
+    disciplina: 'Inglês',
     icone: 'languages',
     status: 'ativo',
   },

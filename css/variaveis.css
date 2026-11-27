@@ -102,16 +102,83 @@
 
   /* --- Cabeçalho --- */
   --altura-cabecalho:        68px;
+
+  /* --- Cores que mudam com o tema (o bloco acima é o tema "escuro", o padrão) --- */
+  --cor-texto-sobre-primaria: #0a1118;  /* texto em cima do dourado (botão principal etc.) */
+  --cor-card-hover:          #152432;
+  --cor-alternativa-marcada: rgba(42, 66, 52, 0.55);
+  --gradiente-destaque:      linear-gradient(135deg, rgba(22, 36, 51, 0.95), rgba(42, 66, 52, 0.65));
+  --sombra-destaque:         0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(197, 168, 105, 0.2);
+  --sombra-cabecalho:        0 4px 20px rgba(0, 0, 0, 0.5);
+  --cor-caixa-numero:        #0c151f;   /* caixinhas da contagem regressiva */
+  --cor-ajuda:               #3a4245;   /* botão "?" da contagem */
+  --cor-ajuda-texto:         #b4bcc0;
+  --cor-ajuda-hover:         #4a5357;
+  --cor-ajuda-texto-hover:   #dde3e6;
+  --cor-info:                #93c5fd;   /* dica azul do guia */
+  color-scheme: dark;
 }
 
-/* Mantém harmonia mesmo com preferência explícita do sistema para tema escuro */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --cor-fundo:             #0a1118;
-    --cor-fundo-card:        #111c27;
-    --cor-borda:             #1f3347;
-    --cor-texto:             #ffffff;
-    --cor-texto-suave:       #e2e8f0;
-    --cor-texto-fraco:       #94a3b8;
-  }
+/* ============================================================
+   Tema CLARO — redefine só as cores. Modelo para novos temas:
+   copie este bloco, troque o id e as cores, e registre o tema em js/tema.js.
+   ============================================================ */
+:root[data-tema="claro"] {
+  --cor-marinho-base:       #f4f6f8;
+  --cor-marinho-card:       #ffffff;
+  --cor-marinho-elevado:    #ffffff;
+  --cor-marinho-borda:      #d5dde5;
+  --cor-marinho-borda-leve: rgba(138, 106, 40, 0.2);
+
+  --cor-verde-militar:       #dfe9e2;
+  --cor-verde-militar-hover: #cfdfd4;
+  --cor-verde-militar-suave: rgba(61, 102, 81, 0.1);
+  --cor-verde-militar-borda: #9fbfaa;
+
+  --cor-dourado-fosco:       #8a6a28;
+  --cor-dourado-hover:       #75591f;
+  --cor-dourado-suave:       rgba(138, 106, 40, 0.1);
+  --cor-dourado-borda:       rgba(138, 106, 40, 0.35);
+  --cor-dourado-brilho:      rgba(138, 106, 40, 0.2);
+
+  --cor-primaria:            #8a6a28;
+  --cor-primaria-hover:      #75591f;
+  --cor-primaria-suave:      rgba(138, 106, 40, 0.1);
+  --cor-acento:              #3d6651;
+  --cor-acento-hover:        #315241;
+
+  --cor-fundo:               #f4f6f8;
+  --cor-fundo-card:          #ffffff;
+  --cor-borda:               #d5dde5;
+
+  --cor-texto:               #14202b;
+  --cor-texto-suave:         #334155;
+  --cor-texto-fraco:         #5b6b7b;
+
+  --cor-certa:               #2f855a;
+  --cor-certa-fundo:         #e6f4ea;
+  --cor-certa-borda:         #38a169;
+  --cor-errada:              #c53030;
+  --cor-errada-fundo:        #fdecec;
+  --cor-errada-borda:        #e53e3e;
+  --cor-progresso:           #8a6a28;
+
+  --sombra-sm:               0 1px 3px rgba(15, 25, 35, 0.12);
+  --sombra-md:               0 4px 14px rgba(15, 25, 35, 0.12);
+  --sombra-lg:               0 10px 28px rgba(15, 25, 35, 0.16);
+  --sombra-hover:            0 12px 30px rgba(15, 25, 35, 0.18), 0 0 12px rgba(138, 106, 40, 0.15);
+
+  --cor-texto-sobre-primaria: #ffffff;
+  --cor-card-hover:          #f7f3ea;
+  --cor-alternativa-marcada: rgba(138, 106, 40, 0.1);
+  --gradiente-destaque:      linear-gradient(135deg, #ffffff, #e8efe9);
+  --sombra-destaque:         0 6px 18px rgba(15, 25, 35, 0.1);
+  --sombra-cabecalho:        0 2px 10px rgba(15, 25, 35, 0.08);
+  --cor-caixa-numero:        #ffffff;
+  --cor-ajuda:               #d3d7da;
+  --cor-ajuda-texto:         #5f686e;
+  --cor-ajuda-hover:         #bcc2c6;
+  --cor-ajuda-texto-hover:   #3f474c;
+  --cor-info:                #2563eb;
+  color-scheme: light;
 }

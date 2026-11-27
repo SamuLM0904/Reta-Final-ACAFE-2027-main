@@ -86,6 +86,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 1,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 01</b><br>
@@ -106,6 +108,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Funções da Linguagem',
     numeroOriginal: 2,
+    dificuldade: 'dificil',
+    conteudo: 'por-1a4',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 02</b><br>
@@ -126,6 +130,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Conjunções e Coesão',
     numeroOriginal: 3,
+    dificuldade: 'facil',
+    conteudo: 'por-2b6',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 03</b><br>
@@ -146,6 +152,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 4,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 04</b><br>
@@ -166,6 +174,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Interpretação de Texto',
     numeroOriginal: 5,
+    dificuldade: 'media',
+    conteudo: 'por-2a5',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 05</b><br>
@@ -186,6 +196,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Níveis de Linguagem',
     numeroOriginal: 6,
+    dificuldade: 'media',
+    conteudo: 'por-1a3',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 06</b><br>
@@ -206,6 +218,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Crase',
     numeroOriginal: 7,
+    dificuldade: 'media',
+    conteudo: 'por-4b2',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 07</b><br>
@@ -226,6 +240,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Análise Sintática (Termos da Oração)',
     numeroOriginal: 8,
+    dificuldade: 'facil',
+    conteudo: 'por-3b1',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 08</b><br>
@@ -246,6 +262,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Discurso Direto e Indireto',
     numeroOriginal: 9,
+    dificuldade: 'media',
+    conteudo: 'por-3a4',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 09</b><br>
@@ -266,6 +284,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Português',
     subtopico: 'Semântica (Sentido das Palavras)',
     numeroOriginal: 10,
+    dificuldade: 'facil',
+    conteudo: 'por-1a5',
     textoApoio: TEXTO_ACAFE_2025_VER_1,
     enunciado: `
       <b>QUESTÃO 10</b><br>
@@ -290,6 +310,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Interpretação de Texto Literário',
     numeroOriginal: 11,
+    dificuldade: 'dificil',
+    obra: 'exercicio-incerteza',
     enunciado: `
       <b>QUESTÃO 11</b><br>
       Leia o fragmento do texto extraído do livro de memórias <i>O exercício da incerteza</i> de Drauzio Varella.<br><br>
@@ -319,6 +341,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (Escrevivência)',
     numeroOriginal: 12,
+    dificuldade: 'media',
+    obra: 'insubmissas',
     enunciado: `
       <b>QUESTÃO 12</b><br>
       Considere a reflexão de Conceição Evaristo no início de sua obra <i>Insubmissas lágrimas de mulheres</i> no Texto 3.<br><br>
@@ -346,6 +370,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Figuras de Linguagem (Lindolf Bell)',
     numeroOriginal: 13,
+    dificuldade: 'media',
+    obra: 'codigo-aguas',
     enunciado: `
       <b>QUESTÃO 13</b><br>
       Considere o movimento da <i>Catequese Poética</i>, criado pelo poeta catarinense Lindolf Bell, na década de 1960, juntamente com a simbologia das <i>águas</i> como eixo norteador da leitura do poema <i>VI</i>.<br><br>
@@ -376,6 +402,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Literatura',
     subtopico: 'Obras Literárias (O Vendedor de Passados)',
     numeroOriginal: 14,
+    dificuldade: 'dificil',
+    obra: 'vendedor-passados',
     enunciado: `
       <b>QUESTÃO 14</b><br>
       Analise as afirmativas seguintes em relação ao romance <i>O Vendededor de Passados</i>, de José Eduardo Agualusa.<br><br>
@@ -404,6 +432,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 15,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 15</b><br>
@@ -430,6 +459,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 16,
+    dificuldade: 'facil',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 16</b><br>
@@ -450,6 +480,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 17,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_1,
     enunciado: `
       <b>QUESTÃO 17</b><br>
@@ -470,6 +501,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Interpretación de Textos',
     numeroOriginal: 18,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 18</b><br>
@@ -490,6 +522,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Estructuras Lingüísticas',
     numeroOriginal: 19,
+    dificuldade: 'dificil',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 19</b><br>
@@ -516,6 +549,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Semántica y Vocabulario',
     numeroOriginal: 20,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 20</b><br>
@@ -536,6 +570,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Espanhol',
     subtopico: 'Gêneros Textuales',
     numeroOriginal: 21,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ESP_1 + TEXTO_ACAFE_2025_VER_ESP_2,
     enunciado: `
       <b>QUESTÃO 21</b><br>
@@ -566,6 +601,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Funções Trigonométricas',
     numeroOriginal: 22,
+    dificuldade: 'media',
+    conteudo: 'mat-4a2',
     enunciado: `
       <b>QUESTÃO 22</b><br>
       O ciclo respiratório é constituído de inspiração e expiração consecutivas. A inspiração, em que ocorre a entrada de ar nos pulmões, é causada pela contração muscular do diafragma e dos músculos intercostais. A expiração, em que ocorre a saída de ar dos pulmões, é causada pelo relaxamento da musculatura do diafragma e dos músculos intercostais. Em uma situação de repouso, um jovem adulto saudável inspira e expira, em média, 600 <i>mL</i> de ar a cada ciclo respiratório. O pulmão nunca fica completamente sem ar; mesmo após a expiração, um volume residual de ar permanece nos pulmões. Por ser um movimento periódico, o ciclo respiratório pode ser descrito por uma função trigonométrica. Assumindo como padrão as informações apresentadas nesse texto e adotando a função <i>V</i>(<i>t</i>) = 1500 − 300 ∙ cos(<i>πt</i>/3), em que <i>V</i>(<i>t</i>) expressa o volume de ar, em mililitro, nos pulmões em função do tempo <i>t</i>, em segundo, considerando <i>t</i> = 0 um instante em que a quantidade de ar nos pulmões seja apenas o volume residual.<br><br>
@@ -590,6 +627,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Função e Inequação Exponencial',
     numeroOriginal: 23,
+    dificuldade: 'media',
+    conteudo: 'mat-2a4',
     enunciado: `
       <b>QUESTÃO 23</b><br>
       Nas competições esportivas, o uso de drogas, que melhora artificialmente o desempenho de um atleta durante a competição, é considerada doping. Devido a uma enfermidade, um atleta ingeriu um medicamente que continha uma substância proibida pela Agência Nacional Antidoping (Anad). Ao relatar esse fato ao médico da sua equipe, este realizou um teste em uma amostra do sangue do atleta, constatando que o nível <i>N</i> dessa substância, em grama por litro de sangue, era maior do que o permitido pela Anad. O atleta estará apto para competir quando o nível dessa substância no sangue for menor que 0,0625 <i>g/L</i>. Supondo que o nível <i>N</i> dessa substância, em gramas por litro, no sangue do atleta decresça em função do tempo <i>t</i>, em hora, de acordo com a função <i>N</i>(<i>t</i>) = 2 ∙ (1/2)<sup><i>t</i></sup>.<br><br>
@@ -610,6 +649,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Logaritmos (Lei da Alometria)',
     numeroOriginal: 24,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2a5',
     enunciado: `
       <b>QUESTÃO 24</b><br>
       Nem todas as partes de um organismo vivo têm desenvolvimentos proporcionais. Um exemplo disso, é o desenvolvimento do corpo humano, no qual, os braços e as pernas crescem a uma taxa maior, se comparados ao crescimento da cabeça.<br><br>
@@ -636,6 +677,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Plana e Espacial',
     numeroOriginal: 25,
+    dificuldade: 'dificil',
+    conteudo: 'mat-2b4',
     enunciado: `
       <b>QUESTÃO 25</b><br>
       Analise as afirmações.<br><br>
@@ -659,6 +702,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Combinatória, PA e Equações Modulares',
     numeroOriginal: 26,
+    dificuldade: 'media',
+    conteudo: 'mat-3b2',
     enunciado: `
       <b>QUESTÃO 26</b><br>
       Analise as afirmações.<br><br>
@@ -682,6 +727,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Estatística, Polinômios, Trigonometria e Probabilidade',
     numeroOriginal: 27,
+    dificuldade: 'dificil',
+    conteudo: 'mat-3b1',
     enunciado: `
       <b>QUESTÃO 27</b><br>
       Assinale a alternativa <b>CORRETA</b>.
@@ -701,6 +748,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Matemática',
     subtopico: 'Geometria Analítica',
     numeroOriginal: 28,
+    dificuldade: 'media',
+    conteudo: 'mat-4b1',
     enunciado: `
       <b>QUESTÃO 28</b><br>
       Analise as afirmações.<br><br>
@@ -728,6 +777,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Eletrostática (Potencial Elétrico)',
     numeroOriginal: 29,
+    dificuldade: 'media',
+    conteudo: 'fis-3a6',
     enunciado: `
       <b>QUESTÃO 29</b><br>
       Radicais livres são moléculas ou átomos altamente reativos que têm um elétron desemparelhado. Um elétron desemparelhado é um elétron que não forma par com outro elétron em um orbital atômico. Em átomos ou moléculas estáveis, os elétrons, geralmente, se emparelham em orbitais, onde os spins (uma propriedade quântica) são opostos, tornando o sistema mais estável. Quando um elétron está desemparelhado, ele torna a molécula ou átomo altamente reativo, como acontece com os radicais livres. Isso ocorre porque o elétron desemparelhado procura se emparelhar, reagindo facilmente com outras moléculas para formar ligações. Em resumo, é esse elétron solitário que dá aos radicais livres suas características reativas e potencialmente danosas.<br>
@@ -750,6 +801,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Impulso e Quantidade de Movimento',
     numeroOriginal: 30,
+    dificuldade: 'media',
+    conteudo: 'fis-3b3',
     enunciado: `
       <b>QUESTÃO 30</b><br>
       A ortopedia é a especialidade médica que cuida do sistema musculoesquelético, abrangendo ossos, articulações, ligamentos, tendões e músculos. Um médico ortopedista, frequentemente, lida com lesões causadas por acidentes, incluindo fraturas e impactos.<br>
@@ -773,6 +826,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Termodinâmica (Ciclo de Carnot)',
     numeroOriginal: 31,
+    dificuldade: 'facil',
+    conteudo: 'fis-2b3-2',
     enunciado: `
       <b>QUESTÃO 31</b><br>
       Sadi Carnot, considerado o pai da termodinâmica, foi um físico francês do século XIX que desenvolveu conceitos fundamentais para o estudo da eficiência das máquinas térmicas. Em sua obra “<i>Reflexões sobre a Potência Motriz do Fogo</i>”, Carnot explorou o ciclo de operações de uma máquina térmica ideal, hoje conhecido como Ciclo de Carnot. Sua contribuição ajudou a formular a Segunda Lei da Termodinâmica, que estabelece limites fundamentais para o rendimento de qualquer máquina.<br><br>
@@ -793,6 +848,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Óptica (Reflexão Total)',
     numeroOriginal: 32,
+    dificuldade: 'media',
+    conteudo: 'fis-1b3',
     enunciado: `
       <b>QUESTÃO 32</b><br>
       Durante um exame oftalmológico, um médico utiliza uma lente de contato especial para observar o interior do olho do paciente. A lente tem um índice de refração igual a 1,50 e está em contato com o humor aquoso do olho, que possui um índice de refração igual a 1,23.<br><br>
@@ -813,6 +870,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Energia Potencial Gravitacional',
     numeroOriginal: 33,
+    dificuldade: 'dificil',
+    conteudo: 'fis-3b2',
     enunciado: `
       <b>QUESTÃO 33</b><br>
       <b>Gasto energético de uma criança obesa em atividade física.</b><br><br>
@@ -835,6 +894,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Movimento Circular (Força Centrípeta)',
     numeroOriginal: 34,
+    dificuldade: 'facil',
+    conteudo: 'fis-3a1',
     enunciado: `
       <b>QUESTÃO 34</b><br>
       Em uma das provas de ciclismo de pista dos Jogos Olímpicos de Paris 2024, um atleta, em sua tentativa de quebrar o recorde mundial, percorreu uma pista circular de raio R com velocidade angular constante ω. Considerando que a massa total do atleta com a bicicleta seja m, e que a força normal exercida pela pista sobre a bicicleta é N.<br><br>
@@ -855,6 +916,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Física',
     subtopico: 'Estática (Equilíbrio do Ponto Material)',
     numeroOriginal: 35,
+    dificuldade: 'media',
+    conteudo: 'fis-3a2',
     enunciado: `
       <b>QUESTÃO 35</b><br>
       Um sistema formado por três cordas coplanares, 1, 2 e 3, mantêm suspensa uma esfera homogênea de massa m, as três cordas são inextensíveis e de massas desprezíveis. A corda 1 exerce uma tração T₁ e a corda 2 uma tração T₂, ambas para cima. Considerando que ângulo entre T₁ e a vertical é de 30° e o ângulo entre T₂ e a vertical é de 60°, e que T₃, vertical para baixo, mantém a esfera em equilíbrio, determine a relação entre as intensidades das trações T₁, T₂ e T₃:
@@ -878,6 +941,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'pH e Indicadores Ácido-Base',
     numeroOriginal: 36,
+    dificuldade: 'dificil',
+    conteudo: 'qui-4a4',
     enunciado: `
       <b>QUESTÃO 36</b><br>
       O pH ou “acidez” é um importante indicativo para qualquer solução química, especialmente os presentes em nosso corpo. O suco gástrico, por exemplo, tem pH em torno de 2,0 por causa da presença do ácido clorídrico. O sangue de uma pessoa saudável tem pH de aproximadamente 7,4 e deve-se manter assim para que não ocorram problemas graves de saúde. A urina, por sua vez, tem pH aproximado igual a 6,0. Para determinação de valores de pH são utilizados os indicadores de pH, também chamados de indicadores “ácido-base”. Estes indicadores são substâncias de uso cotidiano em laboratórios de química, com um ponto de viragem em determinado pH característico. Um indicador comum é a fenolftaleína, cujo ponto de viragem é o pH de aproximadamente 8,2.<br><br>
@@ -900,6 +965,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Equilíbrio Químico (Kc)',
     numeroOriginal: 37,
+    dificuldade: 'dificil',
+    conteudo: 'qui-4a3',
     enunciado: `
       <b>QUESTÃO 37</b><br>
       Considere a equação química não balanceada:<br><br>
@@ -921,6 +988,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Geometria Molecular e Ligações (Amônia)',
     numeroOriginal: 38,
+    dificuldade: 'media',
+    conteudo: 'qui-1a5',
     enunciado: `
       <b>QUESTÃO 38</b><br>
       A amônia (NH<sub>3</sub>) é uma das mais importantes substâncias químicas do planeta, devido ao elevado número de aplicações. Desde a fabricação de fertilizantes e plásticos até a produção de explosivos, a amônia é utilizada em larga escala por várias áreas da química industrial.<br><br>
@@ -946,6 +1015,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Radioatividade (Fissão e Fusão Nuclear)',
     numeroOriginal: 39,
+    dificuldade: 'media',
+    conteudo: 'qui-4b5',
     enunciado: `
       <b>QUESTÃO 39</b><br>
       Leia o trecho a seguir, parte do livro “<i>Devoradores de Estrelas</i>”, do autor Andy Weir.<br><br>
@@ -967,6 +1038,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Reações Orgânicas (Ozonólise)',
     numeroOriginal: 40,
+    dificuldade: 'dificil',
+    conteudo: 'qui-4b1',
     enunciado: `
       <b>QUESTÃO 40</b><br>
       A ozonólise é uma reação química muito eficiente na conversão de alcenos em outras funções orgânicas, principalmente aldeídos e/ou cetonas. As aplicações desta reação são diversas, desde a indústria madeireira até a síntese orgânica em laboratórios de pesquisa. Algumas das aplicações mais comuns estão na área da química de produtos naturais, farmácia e química medicinal, como na conversão de ácidos graxos insaturados em derivados ou na síntese de medicamentos, como por exemplo, a oxandrolona, um esteróide indicado para o tratamento de certos tipos de hepatite.<br><br>
@@ -993,6 +1066,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Química Ambiental (Óxidos, Metais e Aromaticidade)',
     numeroOriginal: 41,
+    dificuldade: 'dificil',
+    conteudo: 'qui-2a5',
     enunciado: `
       <b>QUESTÃO 41</b><br>
       O descarte incorreto ou a queima de resíduos sólidos (“lixo”), em áreas urbanas, é um grave perigo ao meio ambiente, pois pode volatilizar substâncias tóxicas e materiais particulados com grande potencial de dispersão e deposição. Além de poluentes mais conhecidos como o monóxido de carbono (CO), o dióxido de carbono (CO<sub>2</sub>) e os óxidos de nitrogênio (NO, NO<sub>2</sub>), a queima destes resíduos pode dispersar metais pesados e elementos tóxicos como mercúrio (Hg), cádmio (Cd), cromo (Cr) e arsênio (As), além de várias outras substâncias orgânicas nocivas, como os compostos aromáticos, alguns dos quais são cancerígenos.<br><br>
@@ -1018,6 +1093,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Química',
     subtopico: 'Estequiometria (Rendimento)',
     numeroOriginal: 42,
+    dificuldade: 'dificil',
+    conteudo: 'qui-3a2',
     enunciado: `
       <b>QUESTÃO 42</b><br>
       Com os devidos investimentos na área, o Brasil tem grande potencial de produção de etanol a partir da fermentação da sacarose da cana de açúcar. A cana de açúcar tem alto teor de sacarose (13%), e essa sacarose pode ser convertida em glicose e frutose por meio de uma reação de hidrólise. A glicose é, então, convertida em etanol. O etanol é um combustível alternativo muito viável, tanto do ponto de vista econômico quanto do ponto de vista ambiental, quando comparado com combustíveis fósseis como o petróleo ou o carvão. Comparando, por exemplo, a emissão de gases de efeito estufa, o etanol libera aproximadamente 50% menos gases de efeito estufa, por energia gerada, do que os derivados de petróleo mais utilizados.<br><br>
@@ -1044,6 +1121,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Divisão Celular (Cariótipo)',
     numeroOriginal: 43,
+    dificuldade: 'facil',
+    conteudo: 'bio-1b2',
     enunciado: `
       <b>QUESTÃO 43</b><br>
       Quando analisadas, as gestações no Brasil, cerca de 3 a 5%, podem apresentar anomalias congênitas ou doenças genéticas. O exame conhecido como cariótipo é capaz de detectar mudanças numéricas e/ou estruturais por meio da fase do ciclo celular, onde os cromossomos atingem seu maior grau de compactação. Usando técnicas como exames de <i>screening</i>, é possível perceber possíveis riscos ou suspeitas de síndromes genéticas, tornando o exame de cariótipo no pré-natal, indispensável para o diagnóstico dos nascituros.<br><br>
@@ -1064,6 +1143,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Tecido Sanguíneo (Hematopoiese)',
     numeroOriginal: 44,
+    dificuldade: 'facil',
+    conteudo: 'bio-2b7',
     enunciado: `
       <b>QUESTÃO 44</b><br>
       A hematopoiese, também conhecida como hemocitopoiese, é o processo de produção de células sanguíneas, que inclui proliferação, diferenciação e maturação celular. Originam-se na medula óssea vermelha a partir de células indiferenciadas, que ao final do processo de diferenciação celular, assumem formas e funções especializadas.<br><br>
@@ -1085,6 +1166,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Botânica (Órgãos Vegetais)',
     numeroOriginal: 45,
+    dificuldade: 'media',
+    conteudo: 'bio-3a4',
     enunciado: `
       <b>QUESTÃO 45</b><br>
       <b>Santa Catarina na rota dos temperos</b><br><br>
@@ -1106,6 +1189,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Parasitologia (Teníase)',
     numeroOriginal: 46,
+    dificuldade: 'facil',
+    conteudo: 'bio-3a6',
     enunciado: `
       <b>QUESTÃO 46</b><br>
       <b>Pequena cidade de SC abrigava abatedouro clandestino com armas e quase uma tonelada de carne</b><br>
@@ -1129,6 +1214,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Genética (Aberrações Cromossômicas)',
     numeroOriginal: 47,
+    dificuldade: 'facil',
+    conteudo: 'bio-1b7',
     enunciado: `
       <b>QUESTÃO 47</b><br>
       “No decorrer da meiose na espécie humana podem ocorrer erros que caracterizam o processo conhecido como não disjunção (separação) dos cromossomos. Eles devem se separar na meiose I (anáfase I), ou durante a formação as cromátides-irmãs, na meiose II (anáfase II). Quando isso não acontece, são produzidas células com uma quantidade maior de informações genéticas ou sem informação alguma.<br>
@@ -1151,6 +1238,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Histologia (Tecido Nervoso e Células da Glia)',
     numeroOriginal: 48,
+    dificuldade: 'media',
+    conteudo: 'bio-2b8',
     enunciado: `
       <b>QUESTÃO 48</b><br>
       “A <b>Doença de Alzheimer (DA)</b> é um <b>transtorno neurodegenerativo progressivo</b> e fatal que se manifesta pela deterioração cognitiva e da memória, comprometimento progressivo das atividades de vida diária e uma variedade de sintomas neuropsiquiátricos e de alterações comportamentais. A doença instala-se quando o processamento de certas proteínas do sistema nervoso central começa a dar errado. Surgem, então, fragmentos de proteínas mal cortadas, tóxicas, dentro dos neurônios e nos espaços que existem entre eles. Como consequência dessa toxicidade, ocorre perda progressiva de neurônios, em certas regiões do cérebro, como o hipocampo, que controla a memória, e o córtex cerebral, essencial para a linguagem e, o raciocínio, a memória e o reconhecimento de estímulos sensoriais e pensamento abstrato”.<br>
@@ -1175,6 +1264,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Biologia',
     subtopico: 'Doenças Bacterianas (Leptospirose)',
     numeroOriginal: 49,
+    dificuldade: 'facil',
+    conteudo: 'bio-2a3',
     enunciado: `
       <b>QUESTÃO 49</b><br>
       Leia e analise o seguinte excerto.<br><br>
@@ -1203,6 +1294,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Colônia (Conjuração Baiana)',
     numeroOriginal: 50,
+    dificuldade: 'facil',
+    conteudo: 'his-2b1',
     enunciado: `
       <b>QUESTÃO 50</b><br>
       Em 1798, a Conjuração Baiana, também chamada de Revolta dos Alfaiates, exigiu transformações políticas, sociais e econômicas, contando com a participação de diferentes setores da sociedade entre os seus revoltosos.<br><br>
@@ -1223,6 +1316,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Primeira Guerra Mundial',
     numeroOriginal: 51,
+    dificuldade: 'media',
+    conteudo: 'his-4a1',
     enunciado: `
       <b>QUESTÃO 51</b><br>
       A Primeira Guerra Mundial marcou profundamente o início do século XX, e teve como resultados a transformação da geopolítica na Europa.<br><br>
@@ -1248,6 +1343,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Formação das Monarquias Nacionais',
     numeroOriginal: 52,
+    dificuldade: 'facil',
+    conteudo: 'his-2a1',
     enunciado: `
       <b>QUESTÃO 52</b><br>
       Durante o processo de centralização do poder nas monarquias nacionais da Europa, especialmente entre os séculos XV e XVI, diversos fatores contribuíram para o fortalecimento dessas monarquias e da consolidação de um poder central.<br><br>
@@ -1268,6 +1365,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'História da Saúde Pública',
     numeroOriginal: 53,
+    dificuldade: 'facil',
+    conteudo: 'his-c1',
     enunciado: `
       <b>QUESTÃO 53</b><br>
       Ao longo da história, a saúde pública e o entendimento sobre doenças evoluíram significativamente.<br><br>
@@ -1288,6 +1387,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Ditadura Militar no Brasil (Saúde)',
     numeroOriginal: 54,
+    dificuldade: 'media',
+    conteudo: 'his-4b2',
     enunciado: `
       <b>QUESTÃO 54</b><br>
       Durante o período da Ditadura Militar, no Brasil (1964-1985), o governo implementou diversas políticas públicas, incluindo algumas voltadas para a saúde.<br><br>
@@ -1308,6 +1409,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Escravidão Moderna',
     numeroOriginal: 55,
+    dificuldade: 'facil',
+    conteudo: 'his-1b4',
     enunciado: `
       <b>QUESTÃO 55</b><br>
       A escravidão moderna, entre os séculos XV e XIX, foi marcada por diversas práticas e eventos históricos.<br><br>
@@ -1328,6 +1431,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'História',
     subtopico: 'Brasil Colônia e Império (Saúde)',
     numeroOriginal: 56,
+    dificuldade: 'facil',
+    conteudo: 'his-c1',
     enunciado: `
       <b>QUESTÃO 56</b><br>
       Durante os períodos colonial e imperial do Brasil, a saúde e os cuidados médicos eram muito precários, principalmente para as populações marginalizadas, como os escravizados. Nesse contexto, surgiram diferentes formas de cuidado e tratamento que incluíam as ações de curandeiros e barbeiros.<br><br>
@@ -1352,6 +1457,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Hidrografia do Brasil',
     numeroOriginal: 57,
+    dificuldade: 'media',
+    conteudo: 'geo-3u3',
     enunciado: `
       <b>QUESTÃO 57</b><br>
       “O Brasil, em razão de sua grande extensão territorial e da predominância de climas úmidos, possui uma extensa e densa rede hidrográfica. Os rios brasileiros têm diversos usos, como abastecimento urbano e rural, a irrigação, o lazer e a pesca.”<br>
@@ -1373,6 +1480,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Regionalização do Brasil (Complexos Geoeconômicos)',
     numeroOriginal: 58,
+    dificuldade: 'dificil',
+    conteudo: 'geo-c2',
     enunciado: `
       <b>QUESTÃO 58</b><br>
       No ano de 2023 o geógrafo, Pedro Pinchas Geiger, comemorou seu centenário, graduado na época pela antiga Faculdade Nacional de Filosofia. Foi importante na regionalização econômica e na pesquisa acerca da Geografia Urbana e Industrial. No IBGE, entre outros estudos, propôs uma regionalização de acordo com os complexos geoeconômicos. Conforme ilustra o Mapa:<br><br>
@@ -1394,6 +1503,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Geografia de Santa Catarina',
     numeroOriginal: 59,
+    dificuldade: 'facil',
+    conteudo: 'geo-c1',
     enunciado: `
       <b>QUESTÃO 59</b><br>
       O Instituto Brasileiro de Geografia e Estatística estima que a população catarinense, no momento, está próxima a oito milhões de habitantes, com a terceira melhor posição no IDH entre as unidades da federação brasileira e a décima maior população, Santa Catarina apresenta desafios e possibilidades para o futuro.<br><br>
@@ -1414,6 +1525,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Demografia (Crescimento Populacional)',
     numeroOriginal: 60,
+    dificuldade: 'media',
+    conteudo: 'geo-1u5',
     enunciado: `
       <b>QUESTÃO 60</b><br>
       O Gráfico abaixo apresenta dados relacionados ao crescimento populacional na cidade de São Paulo. A dinâmica do crescimento populacional está relacionada a fatores como a política de saúde pública e a inserção das mulheres no mercado de trabalho, bem como a taxa média de anos de escolaridade da população.<br><br>
@@ -1434,6 +1547,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Globalização e Meios de Comunicação',
     numeroOriginal: 61,
+    dificuldade: 'facil',
+    conteudo: 'geo-4u5',
     enunciado: `
       <b>QUESTÃO 61</b><br>
       Na edição de agosto de 2024 a revista Super Interessante trouxe como tema de capa, uma reportagem intitulada “TDAH: O que o TikTok não conta”. O Transtorno do Déficit de Atenção com Hiperatividade, distúrbio neurobiológico é, de acordo com a reportagem, abordado bastante na rede social TikTok, por vezes, com informações falsas. Além disso o uso excessivo da tecnologia através das telas de celulares, tablets, jogos eletrônicos podem contribuir com um aumento dos sintomas do TDAH, ainda de acordo com a reportagem. Uma sociedade hiper conectada debatida dentro da Geografia pelo tema da Globalização, por exemplo, pode ocasionar efeitos negativos para a saúde coletiva.<br><br>
@@ -1454,6 +1569,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Questões Ambientais (Queimadas)',
     numeroOriginal: 62,
+    dificuldade: 'facil',
+    conteudo: 'geo-3u2',
     enunciado: `
       <b>QUESTÃO 62</b><br>
       Incêndios no Brasil: sintomas da tragédia ambiental já são percebidos na saúde das pessoas. O país registrou, até o fim de agosto, 224 mil km² de incêndios, o equivalente ao tamanho de Roraima.<br><br>
@@ -1476,6 +1593,8 @@ QUESTOES_PROVAS.push(
     disciplina: 'Geografia',
     subtopico: 'Industrialização Asiática (Tigres Asiáticos)',
     numeroOriginal: 63,
+    dificuldade: 'media',
+    conteudo: 'geo-2u4',
     enunciado: `
       <b>QUESTÃO 63</b><br>
       O termo Tigres Asiáticos é utilizado para se referir a um conjunto de países e áreas no Continente Asiático, que se industrializaram, principalmente após a Segunda Guerra Mundial, e participam de maneira considerável do comércio internacional. Existem os Primeiros Tigres Asiáticos e os chamados Tigres Asiáticos de Segunda Geração.<br><br>
@@ -1500,6 +1619,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Imagem (Brain Drain)',
     numeroOriginal: 15,
+    dificuldade: 'facil',
     enunciado: `
       <b>QUESTÃO 15</b><br>
       The image below represents a phenomenon widely recognized around the world, particularly in poorer and developing countries, known as <b>'Brain Drain.'</b><br><br>
@@ -1521,6 +1641,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Interpretação de Texto (Verdadeiro ou Falso)',
     numeroOriginal: 16,
+    dificuldade: 'dificil',
     enunciado: `
       <b>QUESTÃO 16</b><br>
       Read the information in Text 1, published by the Johns Hopkins Bloomberg School of Public Health.<br><br>
@@ -1553,6 +1674,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Voz Passiva (Passive Voice)',
     numeroOriginal: 17,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 17</b><br>
       Mark the alternative in which the Passive Voice sentence corresponds to its Active Voice form, in accordance with standard grammar rules.
@@ -1572,6 +1694,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário e Preposições',
     numeroOriginal: 18,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 18</b><br>
       The text below was extracted from the article <b>What excessive screen time does to the adult brain</b>, and some words have been removed from it.<br><br>
@@ -1595,6 +1718,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Pronomes Relativos (Relative Pronouns)',
     numeroOriginal: 19,
+    dificuldade: 'media',
     enunciado: `
       <b>QUESTÃO 19</b><br>
       Complete the sentences with one of the <b>Relative Pronouns,</b> in parentheses, in order to make them grammatically <b>CORRECT,</b> based on the standard rules.<br><br>
@@ -1621,6 +1745,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Vocabulário (Sinônimos no Contexto)',
     numeroOriginal: 20,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ING_2,
     enunciado: `
       <b>QUESTÃO 20</b><br>
@@ -1642,6 +1767,7 @@ QUESTOES_PROVAS.push(
     disciplina: 'Inglês',
     subtopico: 'Classes Gramaticais',
     numeroOriginal: 21,
+    dificuldade: 'media',
     textoApoio: TEXTO_ACAFE_2025_VER_ING_2,
     enunciado: `
       <b>QUESTÃO 21</b><br>

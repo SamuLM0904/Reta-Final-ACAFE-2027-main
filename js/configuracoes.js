@@ -2,6 +2,7 @@
  * configuracoes.js — Painel de configurações (botão de engrenagem no cabeçalho).
  *
  * Por enquanto tem:
+ *   - Aparência: botão de sol/lua que troca o tema (ver js/tema.js) — aparece mesmo sem login;
  *   - Dados da conta (nome completo e usuário) e "Trocar senha" (todos). A senha não pode
  *     ser exibida: o Firebase guarda só uma versão embaralhada dela.
  *   - Sair da conta (todos);
@@ -16,8 +17,10 @@ import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
 import { resetarMemoriaLocal } from './armazenamento.js';
+import { htmlBotaoTema, vincularBotoesTema } from './tema.js';
 import {
-  eAdmin, listarAlunos, resetarMemoriaDoAluno, usuarioAtual, usuarioExibido, sair, trocarSenha,
+  eAdmin, listarAdministradores, adicionarAdministrador, removerAdministrador,
+  listarAlunos, resetarMemoriaDoAluno, usuarioAtual, usuarioExibido, sair, trocarSenha,
   redefinirSenha, temEmailReal, cadastrarEmailRecuperacao, alterarNome, alterarUsuario,
 } from './nuvem.js';
 
@@ -38,6 +41,15 @@ export async function abrirConfiguracoes() {
         <button type="button" class="configuracoes__fechar" data-fechar aria-label="Fechar">${icone('x', 20)}</button>
       </div>
 
+      <section class="configuracoes__secao" aria-label="Aparência">
+        <h3 class="configuracoes__subtitulo">Aparência</h3>
+        <div class="configuracoes__linha">
+          ${htmlBotaoTema({ texto: true, classe: 'btn btn-secundario' })}
+        </div>
+        <p class="configuracoes__info">Vale para este navegador.</p>
+      </section>
+
+      ${user ? `
       <section class="configuracoes__secao" aria-label="Conta">
         <h3 class="configuracoes__subtitulo">Conta</h3>
         <dl class="configuracoes__dados">
@@ -86,7 +98,7 @@ export async function abrirConfiguracoes() {
         <p class="configuracoes__info" id="config-senha-status" role="status"></p>
       </section>
 
-      <div id="config-admin"><p class="configuracoes__info">Verificando permissões...</p></div>
+      <div id="config-admin"><p class="configuracoes__info">Verificando permissões...</p></div>` : ''}
     </div>`;
   document.body.appendChild(dialogo);
   dialogo.addEventListener('close', () => dialogo.remove());
@@ -94,6 +106,9 @@ export async function abrirConfiguracoes() {
     if (e.target === dialogo || e.target.closest('[data-fechar]')) dialogo.close();
   });
   dialogo.showModal();
+
+  vincularBotoesTema(dialogo);
+  if (!user) return;   // sem login (modo local): só a aparência
 
   dialogo.querySelector('#config-sair').addEventListener('click', async () => {
     if (!(await confirmar({
@@ -117,6 +132,18 @@ export async function abrirConfiguracoes() {
 /** Seção de administração: resetar a memória de erros e acertos de um aluno. */
 function renderizarAreaAdmin(area) {
   area.innerHTML = `
+    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Administradores">
+      <h3 class="configuracoes__subtitulo">Níveis de acesso</h3>
+      <p class="configuracoes__info">Usuários comuns acessam apenas os próprios dados. Administradores também podem resetar a memória dos alunos e gerenciar outros administradores. O primeiro administrador é definido pelo Console do Firebase.</p>
+      <form class="configuracoes__linha" id="config-form-admin">
+        <input type="text" id="config-novo-admin" class="guia-texto"
+          placeholder="usuário da conta (ex.: maria_souza)" autocomplete="off" aria-label="Usuário a promover a administrador" required>
+        <button type="submit" class="btn btn-primario" id="config-adicionar-admin">Definir como administrador</button>
+      </form>
+      <p class="configuracoes__info" id="config-admin-status" role="status"></p>
+      <ul class="configuracoes__admins" id="config-lista-admins" aria-label="Administradores cadastrados"></ul>
+    </section>
+
     <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Administração">
       <h3 class="configuracoes__subtitulo">Administração</h3>
       <p class="configuracoes__info"><strong>Resetar a memória de um aluno</strong><br>
@@ -132,6 +159,72 @@ function renderizarAreaAdmin(area) {
     </section>`;
 
   const status = area.querySelector('#config-status');
+  const statusAdmins = area.querySelector('#config-admin-status');
+  const listaAdmins = area.querySelector('#config-lista-admins');
+  const atualizarAdmins = async () => {
+    listaAdmins.innerHTML = '<li>Carregando administradores...</li>';
+    try {
+      const admins = await listarAdministradores();
+      listaAdmins.innerHTML = admins.map(admin => `
+        <li class="configuracoes__admin">
+          <span>${escaparHtml(admin.usuario)}${admin.uid === usuarioAtual()?.uid ? ' (você)' : ''}</span>
+          ${admin.uid === usuarioAtual()?.uid ? '' : `<button type="button" class="btn btn-perigo-contorno" data-remover-admin="${escaparHtml(admin.uid)}">Remover</button>`}
+        </li>`).join('');
+      if (!admins.length) listaAdmins.innerHTML = '<li>Nenhum administrador cadastrado.</li>';
+    } catch (e) {
+      listaAdmins.innerHTML = '';
+      statusAdmins.textContent = e.code === 'permission-denied'
+        ? 'Sem permissão para listar administradores. Publique as regras atualizadas do Firestore.'
+        : 'Não foi possível carregar os administradores: ' + e.message;
+    }
+  };
+  atualizarAdmins();
+
+  area.querySelector('#config-form-admin').addEventListener('submit', async e => {
+    e.preventDefault();
+    const input = area.querySelector('#config-novo-admin');
+    const botao = area.querySelector('#config-adicionar-admin');
+    botao.disabled = true;
+    statusAdmins.textContent = 'Atualizando permissões...';
+    try {
+      const usuario = await adicionarAdministrador(input.value);
+      input.value = '';
+      statusAdmins.textContent = `${usuario} agora é administrador.`;
+      await atualizarAdmins();
+    } catch (erro) {
+      statusAdmins.textContent = erro.code === 'permission-denied'
+        ? 'Sem permissão. Confira se sua conta está na coleção admins e se as regras atualizadas foram publicadas.'
+        : erro.message;
+    } finally {
+      botao.disabled = false;
+    }
+  });
+
+  listaAdmins.addEventListener('click', async e => {
+    const botao = e.target.closest('[data-remover-admin]');
+    if (!botao) return;
+    const uid = botao.dataset.removerAdmin;
+    const nome = botao.parentElement.querySelector('span').textContent;
+    if (!(await confirmar({
+      titulo: `Remover ${escaparHtml(nome)} da administração?`,
+      mensagem: 'A conta continuará existindo como usuário comum.',
+      textoConfirmar: 'Remover administrador',
+      perigo: true,
+    }))) return;
+    botao.disabled = true;
+    statusAdmins.textContent = 'Atualizando permissões...';
+    try {
+      await removerAdministrador(uid);
+      statusAdmins.textContent = `${nome} agora é um usuário comum.`;
+      await atualizarAdmins();
+    } catch (erro) {
+      statusAdmins.textContent = erro.code === 'permission-denied'
+        ? 'Sem permissão. Confira se as regras atualizadas do Firestore foram publicadas.'
+        : erro.message;
+      botao.disabled = false;
+    }
+  });
+
   listarAlunos()
     .then(alunos => {
       area.querySelector('#config-lista-alunos').innerHTML = alunos.map(a =>

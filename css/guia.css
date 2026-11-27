@@ -6,14 +6,12 @@
 
 /* Cor de "atenção" (avisos do chat), legível nos dois temas */
 :root {
+  --guia-atencao: #f4b860;
+  --guia-atencao-fundo: rgba(244, 162, 97, 0.15);
+}
+:root[data-tema="claro"] {
   --guia-atencao: #8a5300;
   --guia-atencao-fundo: #fff4e5;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --guia-atencao: #f4b860;
-    --guia-atencao-fundo: rgba(244, 162, 97, 0.15);
-  }
 }
 
 /* ---- Questionário ---- */
@@ -60,6 +58,7 @@
 }
 
 .guia-numero { width: 5.5rem; }
+.guia-numero--largo { width: 8rem; }
 .guia-texto  { flex: 1 1 16rem; min-width: 0; }
 
 .guia-select:focus,
@@ -277,7 +276,7 @@
 .guia-msg--aluno {
   align-self: flex-end;
   background-color: var(--cor-primaria);
-  color: #fff;
+  color: var(--cor-texto-sobre-primaria);
   white-space: pre-wrap;
 }
 
@@ -372,7 +371,7 @@
   border-left: 4px solid #3b82f6;
   border-radius: var(--raio-sm);
   background-color: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+  color: var(--cor-info);
   font-size: var(--tamanho-sm);
   line-height: 1.5;
 }
@@ -395,9 +394,6 @@
 }
 .agenda-faixa span { font-size: var(--tamanho-sm); font-weight: var(--peso-medio); opacity: 0.95; }
 
-@media (prefers-color-scheme: dark) {
-  .agenda-dica { color: #93c5fd; }
-}
 
 .agenda {
   position: relative;
@@ -601,3 +597,27 @@
   .agenda-item--hoje.agenda-item--esquerda .agenda-cartao::before { border-right-color: var(--cor-primaria); }
   .agenda-faixa { padding: var(--espaco-md); }
 }
+
+/* ---- Ritmo da fase, correção de erros e mini-simulado do dia ---- */
+.guia-fase {
+  align-self: center;
+  max-width: 46rem;
+  text-align: center;
+  font-size: var(--tamanho-sm);
+  color: var(--cor-texto-suave);
+}
+.guia-bloco--revisao { border-left: 4px solid var(--cor-errada-borda); }
+.guia-mini {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-md);
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: 1px dashed var(--cor-dourado-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-dourado-suave);
+  font-size: var(--tamanho-sm);
+}
+.guia-mini p { flex: 1 1 18rem; }

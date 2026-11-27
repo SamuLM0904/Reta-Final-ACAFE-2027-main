@@ -95,16 +95,23 @@ export function renderizarLogin(container) {
       previa.textContent = !campoU.value.trim()
         ? 'Sugerido a partir do seu nome; você pode mudar.'
         : campoU.value.includes('@') ? 'O usuário não pode ter "@" (o e-mail vai no campo de recuperação).'
-        : u ? `Seu usuário: ${u}` : 'Use pelo menos 3 letras.';
+        : u ? '' : 'Use pelo menos 3 letras.';
     };
     // Aviso de "sem e-mail" visível enquanto o campo de e-mail estiver vazio
     const avisoEmail = container.querySelector('#login-aviso-email');
     form.elements.email?.addEventListener('input', () => { avisoEmail.hidden = Boolean(form.elements.email.value.trim()); });
     campoU.addEventListener('input', atualizarPrevia);
     form.elements.nome?.addEventListener('input', () => {
-      if (!campoU.dataset.editado) { campoU.value = form.elements.nome.value; atualizarPrevia(); }
+      // sugere o usuário já no formato de login (ex.: "Felipe Zonta" → felipe_zonta)
+      if (!campoU.dataset.editado) { campoU.value = normalizarUsuario(form.elements.nome.value); atualizarPrevia(); }
     });
     campoU.addEventListener('input', () => { campoU.dataset.editado = '1'; });
+    // ao sair do campo, o que o aluno digitou fica no formato de login
+    campoU.addEventListener('blur', () => {
+      if (!criar || campoU.value.includes('@')) return;
+      const u = normalizarUsuario(campoU.value);
+      if (u) { campoU.value = u; atualizarPrevia(); }
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();

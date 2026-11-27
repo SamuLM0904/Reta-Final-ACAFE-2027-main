@@ -10,14 +10,17 @@
  *      Se o aluno já fez um simulado na semana, ele não é repetido.
  *   4. Cada bloco recebe uma matéria pela PRIORIDADE dela, que muda conforme o uso:
  *        peso na prova (nº de questões) × dificuldade marcada × desempenho
- *        (taxa de erro recente, com as respostas recentes valendo mais) × tempo sem praticar.
+ *        (taxa de erro recente, com as respostas recentes valendo mais) × tempo sem praticar
+ *        × distância até a taxa de acerto que a nota de corte do aluno exige.
  *      As matérias são distribuídas olhando os blocos dos últimos dias, para que,
  *      somando a semana, cada uma receba a sua fatia.
- *   5. Cada bloco traz o FOCO: os conteúdos (subtópicos) da matéria com mais erros.
+ *   5. Cada bloco traz o FOCO: os conteúdos (capítulos do material) da matéria com mais erros.
  *
  * Fonte do desempenho: a memória de erros e acertos (lerMemoria), que junta os
  * simulados e as questões de estudo.
  */
+
+import { conteudosDa, nomeConteudo } from './conteudos.js';
 
 /* ================================================================
    Matérias da prova (formato ACAFE: 63 questões)
@@ -39,14 +42,54 @@ export const MATERIAS = [
 export const nomeMateria = (materia, perfil) =>
   materia.nome || `Língua Estrangeira (${perfil?.idioma || 'Espanhol'})`;
 
-/** Módulo de questões de estudo da matéria (só existe módulo de Espanhol, não de Inglês). */
+/** Módulo de questões de estudo da matéria (a língua estrangeira usa o módulo do idioma escolhido). */
 export const moduloMateria = (materia, perfil) =>
-  materia.modulo || ((perfil?.idioma || 'Espanhol') === 'Espanhol' ? 'espanhol' : null);
+  materia.modulo || ((perfil?.idioma || 'Espanhol') === 'Espanhol' ? 'espanhol' : 'ingles');
 
 /** Matéria de uma disciplina (campo `disciplina` das questões). */
 export function materiaDaDisciplina(disciplina) {
   return MATERIAS.find(m => m.disciplinas.includes(disciplina)) || null;
 }
+
+/* ================================================================
+   Nota de corte (escore ACAFE)
+   A ACAFE classifica pela soma dos escores padronizados das 9 disciplinas, com a
+   redação (edital Verão 2027, item 17.1): cada uma vale 500 + 100 × (acertos − média)
+   / desvio × peso, e a soma fica perto de 4.500. Por depender da média dos candidatos,
+   não dá para converter acertos em escore com exatidão; a relação abaixo foi estimada
+   pelos 24 primeiros e últimos classificados do Verão 2024 (erro típico de ±1,3 questão):
+     escore ≈ 4234 + 8,17 × acertos nas objetivas
+   ================================================================ */
+
+const ESCORE_BASE = 4234;
+const ESCORE_POR_ACERTO = 8.17;
+
+/** Escore ACAFE estimado para um número de acertos nas 63 objetivas. */
+export const escoreDosAcertos = acertos => ESCORE_BASE + ESCORE_POR_ACERTO * acertos;
+
+/** Acertos (de 63) que levam, em média, à nota de corte informada. */
+export const acertosParaNota = nota =>
+  Math.min(63, Math.max(0, Math.ceil((nota - ESCORE_BASE) / ESCORE_POR_ACERTO)));
+
+/** Nota de corte do perfil (perfis antigos guardavam a meta de acertos em `meta`). */
+export const notaCorteDoPerfil = perfil =>
+  perfil?.notaCorte || (perfil?.meta ? Math.round(escoreDosAcertos(perfil.meta) * 100) / 100 : null);
+
+/** Escore do último classificado em Medicina no Verão 2024 (lista oficial da ACAFE), para preencher o campo. */
+export const NOTAS_CORTE_2024 = [
+  { instituicao: 'UNIVALI (Itajaí)',        nota: 4611.8785 },
+  { instituicao: 'FURB (Blumenau)',         nota: 4589.3726 },
+  { instituicao: 'UNIVILLE (Joinville)',    nota: 4585.6467 },
+  { instituicao: 'UNESC (Criciúma)',        nota: 4583.9916 },
+  { instituicao: 'UNIPLAC (Lages)',         nota: 4560.6691 },
+  { instituicao: 'UNOCHAPECÓ (Chapecó)',    nota: 4555.0761 },
+  { instituicao: 'UNOESC (Joaçaba)',        nota: 4549.2303 },
+  { instituicao: 'UNIFEBE (Brusque)',       nota: 4547.0820 },
+  { instituicao: 'UNIDAVI (Rio do Sul)',    nota: 4537.4772 },
+  { instituicao: 'UnC (Mafra)',             nota: 4502.6410 },
+  { instituicao: 'UnC (Concórdia)',         nota: 4479.5983 },
+  { instituicao: 'UnC (Porto União)',       nota: 4405.5239 },
+];
 
 export const DURACAO_SIMULADO = 300;          // minutos (prova ACAFE: 5h)
 const MEIA_VIDA_DIAS = 14;                     // respostas de 14 dias atrás valem metade
@@ -118,14 +161,15 @@ const novoAcumulador = () => ({ n: 0, acertos: 0, w: 0, wAcertos: 0, ultima: 0, 
 function acumular(acc, registro, peso, recente) {
   acc.n++; acc.w += peso;
   if (registro.ok) { acc.acertos++; acc.wAcertos += peso; }
+  else if (registro.m === 'atencao') acc.wAcertos += peso / 2;   // erro por falta de atenção não é falta de conteúdo: vale meio erro
   if (recente) { acc.n14++; if (registro.ok) acc.acertos14++; }
   acc.ultima = Math.max(acc.ultima, registro.t);
 }
 
 /**
- * Resume a memória por matéria e por conteúdo (subtópico).
+ * Resume a memória por matéria e por conteúdo (capítulo do material ou subtópico).
  * @returns {{ materias: Object<string, Object>, conteudos: Object<string, Object> }}
- *   conteudos: chave "<materia>|<subtópico>" → acumulador + { materia, subtopico }
+ *   conteudos: chave "<materia>|<conteúdo>" → acumulador + { materia, chave, nome } (conteúdo: ver js/conteudos.js)
  */
 export function analisarMemoria(memoria, indice, agora = Date.now()) {
   const materias = {}, conteudos = {};
@@ -136,9 +180,9 @@ export function analisarMemoria(memoria, indice, agora = Date.now()) {
     const peso = Math.pow(0.5, Math.max(0, agora - r.t) / (MEIA_VIDA_DIAS * DIA_MS));
     const recente = agora - r.t <= 14 * DIA_MS;
     acumular(materias[materia.id] ||= novoAcumulador(), r, peso, recente);
-    const sub = (q.subtopico || 'Geral').trim();
-    const chave = `${materia.id}|${sub}`;
-    acumular(conteudos[chave] ||= { ...novoAcumulador(), materia: materia.id, subtopico: sub }, r, peso, recente);
+    for (const c of conteudosDa(q)) {     // a questão de dois capítulos conta para os dois
+      acumular(conteudos[`${materia.id}|${c}`] ||= { ...novoAcumulador(), materia: materia.id, chave: c, nome: nomeConteudo(c) }, r, peso, recente);
+    }
   }
   return { materias, conteudos };
 }
@@ -151,18 +195,25 @@ export const taxaErro = acc => (acc ? ((acc.w - acc.wAcertos) + 1) / (acc.w + 2)
    ================================================================ */
 
 /**
- * @returns {{ id, materia, prioridade, fatia, fatores: { peso, dificuldade, desempenho, frescor } }[]}
+ * A fase da preparação (FASES) define o quanto os erros pesam.
+ * A nota de corte define a taxa de acerto necessária (acertos para a nota ÷ 63): matérias
+ * abaixo dela ganham peso extra, proporcional ao quanto falta; as que já chegaram, não.
+ * @returns {{ id, materia, prioridade, fatia, fatores: { peso, dificuldade, desempenho, frescor, corte } }[]}
  */
-export function calcularPrioridades(perfil, analise, agora = Date.now()) {
+export function calcularPrioridades(perfil, analise, agora = Date.now(), fase = FASES[FASES.length - 1]) {
   const dificeis = new Set(perfil.dificeis || []);
+  const nota = notaCorteDoPerfil(perfil);
+  const alvo = nota ? acertosParaNota(nota) / 63 : null;
+  const f = fase.focoErros;     // quanto o desempenho pesa: menos na fase de base, mais na reta final
   const lista = MATERIAS.map(materia => {
     const acc = analise.materias[materia.id];
-    const desempenho = 0.6 + 1.6 * taxaErro(acc);                    // 0,6 (acerta tudo) … 2,2 (erra tudo)
+    const desempenho = (1 - f / 4) + f * taxaErro(acc);              // reta final: 0,6 (acerta tudo) … 2,2 (erra tudo)
     const dificuldade = dificeis.has(materia.id) ? 1.4 : 1;
     const diasSemPraticar = acc ? (agora - acc.ultima) / DIA_MS : 14;
     const frescor = 1 + Math.min(diasSemPraticar, 14) / 28;          // até +50% se está parada
-    const prioridade = materia.peso * dificuldade * desempenho * frescor;
-    return { id: materia.id, materia, prioridade, fatores: { peso: materia.peso, dificuldade, desempenho, frescor } };
+    const corte = alvo === null ? 1 : 1 + 1.5 * Math.max(0, alvo - (1 - taxaErro(acc)));   // até ~+100%
+    const prioridade = materia.peso * dificuldade * desempenho * frescor * corte;
+    return { id: materia.id, materia, prioridade, fatores: { peso: materia.peso, dificuldade, desempenho, frescor, corte } };
   });
   const total = lista.reduce((s, p) => s + p.prioridade, 0);
   lista.forEach(p => { p.fatia = p.prioridade / total; });
@@ -177,17 +228,107 @@ export function conteudosFracos(analise, materiaId) {
 }
 
 /* ================================================================
+   Ritmo da preparação (conforme os dias que faltam para a prova)
+   ================================================================ */
+
+/**
+ * Fases da preparação. Mudam a frequência e o tamanho dos simulados, quanto o plano
+ * se concentra nos erros e a frequência da correção de erros:
+ *   - base (mais de 120 dias): teoria de tudo, sem pressa; simulado de 31 questões por mês
+ *     e simuladão completo (63) a cada 3 meses;
+ *   - intensiva (36 a 120 dias): teoria + questões; 31 questões a cada 2 semanas e
+ *     simuladão completo a cada 2 meses;
+ *   - reta final (até 5 semanas): revisão e questões; simulado completo toda semana.
+ */
+export const FASES = [
+  { id: 'base',      nome: 'Base',       ateDias: Infinity, focoErros: 0.8, revisaoMinima: 5,
+    descricao: 'teoria de todas as matérias, com simulado de 31 questões por mês e simuladão completo a cada 3 meses' },
+  { id: 'intensiva', nome: 'Intensiva',  ateDias: 120,      focoErros: 1.2, revisaoMinima: 3,
+    descricao: 'teoria e muitas questões, com simulado de 31 questões a cada 2 semanas e simuladão completo a cada 2 meses' },
+  { id: 'reta',      nome: 'Reta final', ateDias: 35,       focoErros: 1.6, revisaoMinima: 1,
+    descricao: 'revisão e questões, com foco nos seus erros e simulado completo toda semana' },
+];
+
+/** Fase da preparação num dia (ver FASES). */
+export function faseDaPreparacao(chave, diaProva) {
+  const dias = diasEntre(chave, diaProva);
+  return [...FASES].reverse().find(f => dias <= f.ateDias) || FASES[0];
+}
+
+/** Duração de um simulado de `total` questões (proporcional às 5h da prova de 63). */
+const duracaoSimulado = total => Math.round(DURACAO_SIMULADO * total / 63);
+
+/**
+ * Simulado previsto para a semana do dia, conforme a fase: { total, nome, minutos } ou null.
+ * As semanas são contadas para trás a partir da semana da prova, para o ciclo terminar nela.
+ */
+export function simuladoDaSemana(chave, diaProva) {
+  const fase = faseDaPreparacao(chave, diaProva);
+  const k = Math.floor(diasEntre(inicioDaSemana(chave), inicioDaSemana(diaProva)) / 7);
+  const completo = { total: 63, nome: 'Simulado completo', minutos: DURACAO_SIMULADO };
+  const metade = { total: 31, nome: 'Simulado de 31 questões', minutos: duracaoSimulado(31) };
+  if (fase.id === 'reta') return completo;
+  if (fase.id === 'intensiva') return k % 8 === 0 ? { ...completo, nome: 'Simuladão acumulativo (bimestral)' }
+    : k % 2 === 0 ? metade : null;
+  return k % 12 === 0 ? { ...completo, nome: 'Simuladão acumulativo (trimestral)' }
+    : k % 4 === 0 ? { ...metade, nome: 'Simulado mensal (31 questões)' } : null;
+}
+
+/** Uma tentativa finalizada vale como o simulado previsto da semana? (prova completa pode ter anuladas) */
+export const valeComoSimuladoDaSemana = (tentativa, diaProva) => {
+  const previsto = simuladoDaSemana(chaveDia(new Date(tentativa.data)), diaProva);
+  return Boolean(previsto) && tentativa.total >= previsto.total * 0.9;
+};
+
+/* ================================================================
+   Correção de erros: questões erradas para refazer
+   ================================================================ */
+
+/** Dias até refazer uma questão, conforme quantas vezes seguidas o aluno errou (1ª, 2ª, 3ª, 4ª+). */
+const INTERVALOS_ERRO = [1, 2, 4, 7];
+
+/**
+ * Questões cuja última resposta foi errada, com a data em que devem ser refeitas.
+ * Errar de novo afasta a próxima tentativa (1, 2, 4 e depois 7 dias): a questão nunca
+ * trava o aluno, só volta mais tarde. Acertar tira a questão da lista.
+ * @param {Object[]} memoria
+ * @param {{ agora?: number, ignorarSimulado?: string }} [opcoes] - ignorarSimulado: id do simulado
+ *   em andamento (as marcações dele ainda não são erros "de verdade")
+ * @returns {{ q: string, seguidos: number, ultimo: number, devidaEm: number, devida: boolean, motivo?: string }[]}
+ *   da mais antiga para a mais nova
+ */
+export function errosPendentes(memoria, { agora = Date.now(), ignorarSimulado = null } = {}) {
+  const porQuestao = new Map();
+  memoria
+    .filter(r => !(ignorarSimulado && r.s === ignorarSimulado))
+    .forEach(r => { if (!porQuestao.has(r.q)) porQuestao.set(r.q, []); porQuestao.get(r.q).push(r); });
+  const lista = [];
+  porQuestao.forEach((regs, q) => {
+    regs.sort((a, b) => a.t - b.t);
+    const ultimo = regs[regs.length - 1];
+    if (ultimo.ok) return;
+    let seguidos = 0;
+    for (let i = regs.length - 1; i >= 0 && !regs[i].ok; i--) seguidos++;
+    const devidaEm = ultimo.t + INTERVALOS_ERRO[Math.min(seguidos, INTERVALOS_ERRO.length) - 1] * DIA_MS;
+    lista.push({ q, seguidos, ultimo: ultimo.t, devidaEm, devida: devidaEm <= agora, motivo: ultimo.m });
+  });
+  return lista.sort((a, b) => a.devidaEm - b.devidaEm);
+}
+
+/* ================================================================
    Simulado semanal
    ================================================================ */
 
 /**
- * Simulado previsto para o dia: { minutos, tipo: 'interno'|'externo', continuacao } ou null.
+ * Simulado previsto para o dia: { minutos, tipo: 'interno'|'externo', continuacao, total?, nome? } ou null.
+ *   - O tamanho e a frequência vêm da fase da preparação (simuladoDaSemana): semana sem
+ *     simulado previsto não tem simulado (a não ser um externo).
  *   - Simulado externo marcado na semana (ex.: do cursinho): ocupa o dia marcado e
  *     conta como o simulado da semana.
  *   - Simulado movido pelo aluno (guia.simuladoNoDia[segunda] = dia): vai para o dia escolhido.
  *   - Padrão: sábado; o que não couber no sábado continua no domingo.
- *   - Nada se o aluno já finalizou um simulado na semana, nem na véspera da prova.
- * @param {boolean} feitoNaSemana - já finalizou um simulado do site nesta semana
+ *   - Nada se o aluno já finalizou o simulado da semana, nem na véspera da prova.
+ * @param {boolean} feitoNaSemana - já finalizou, nesta semana, um simulado do site que vale como o previsto
  */
 export function simuladoDoDia(guia, chave, feitoNaSemana, diaProva) {
   const semana = inicioDaSemana(chave);
@@ -199,18 +340,20 @@ export function simuladoDoDia(guia, chave, feitoNaSemana, diaProva) {
       ? { minutos: Math.min(externos[chave], minutosDe(chave)), tipo: 'externo', continuacao: false }
       : null;
   }
-  if (feitoNaSemana || diasEntre(chave, diaProva) <= 1) return null;
+  const previsto = simuladoDaSemana(chave, diaProva);
+  if (!previsto || feitoNaSemana || diasEntre(chave, diaProva) <= 1) return null;
+  const { total, nome, minutos: duracao } = previsto;
   const movido = guia.simuladoNoDia?.[semana];
   if (movido) {
     if (movido !== chave) return null;
-    const minutos = Math.min(DURACAO_SIMULADO, minutosDe(chave));
-    return minutos > 0 ? { minutos, tipo: 'interno', continuacao: false } : null;
+    const minutos = Math.min(duracao, minutosDe(chave));
+    return minutos > 0 ? { minutos, tipo: 'interno', continuacao: false, total, nome } : null;
   }
   if (!eFimDeSemana(chave)) return null;
   const sabado = diaDaSemana(chave) === 6 ? chave : somarDias(chave, -1);
-  const noSabado = diasEntre(sabado, diaProva) <= 1 ? 0 : Math.min(DURACAO_SIMULADO, minutosDe(sabado));
-  const minutos = chave === sabado ? noSabado : Math.min(DURACAO_SIMULADO - noSabado, minutosDe(chave));
-  return minutos > 0 ? { minutos, tipo: 'interno', continuacao: chave !== sabado && noSabado > 0 } : null;
+  const noSabado = diasEntre(sabado, diaProva) <= 1 ? 0 : Math.min(duracao, minutosDe(sabado));
+  const minutos = chave === sabado ? noSabado : Math.min(duracao - noSabado, minutosDe(chave));
+  return minutos > 0 ? { minutos, tipo: 'interno', continuacao: chave !== sabado && noSabado > 0, total, nome } : null;
 }
 
 /* ================================================================
@@ -260,9 +403,10 @@ export function distribuirMaterias(n, prioridades, historico = {}) {
 }
 
 /** O que fazer no bloco, conforme a fase da preparação e o perfil do aluno. */
-function atividade({ foco, faseFinal, vespera, cursinho, temQuestoes }) {
+function atividade({ foco, faseFinal, vespera, cursinho, temQuestoes, fase }) {
   if (vespera) return 'Revisão leve: releia seus resumos e anotações. Nada de conteúdo novo; descanse bem.';
   const praticar = temQuestoes ? 'faça as questões da matéria' : 'faça exercícios';
+  if (fase?.id === 'base' && !foco.length) return `Fase de base: estude a teoria com calma, faça seus resumos e ${praticar}.`;
   if (faseFinal) return foco.length
     ? `Reta final: revise ${foco.length > 1 ? 'esses conteúdos' : 'esse conteúdo'} em resumos e ${praticar}.`
     : `Reta final: revise seus resumos e ${praticar}.`;
@@ -284,10 +428,11 @@ function atividade({ foco, faseFinal, vespera, cursinho, temQuestoes }) {
  * @param {Object}   p.historico       - blocos por matéria nos últimos dias
  * @param {Set}      p.materiasComQuestoes - ids de matérias com questões de estudo cadastradas
  * @param {string}   p.diaProva
- * @returns {{ chave, minutos, blocos: { tipo: 'simulado'|'externo'|'materia', minutos, materia?, foco?, atividade }[] }}
+ * @param {number}   [p.errosDevidos]  - questões erradas que já devem ser refeitas (errosPendentes)
+ * @returns {{ chave, minutos, blocos: { tipo: 'simulado'|'externo'|'materia'|'revisao', minutos, materia?, foco?, atividade }[] }}
  */
 export function montarDia({ perfil, chave, minutos, simulado = null,
-  prioridades, analise, historico = {}, materiasComQuestoes = new Set(), diaProva }) {
+  prioridades, analise, historico = {}, materiasComQuestoes = new Set(), diaProva, errosDevidos = 0 }) {
   const { estudo, pausa } = perfil.bloco;
   const blocos = [];
   const minutosSimulado = simulado?.minutos || 0;
@@ -295,25 +440,36 @@ export function montarDia({ perfil, chave, minutos, simulado = null,
     blocos.push({ tipo: 'externo', minutos: minutosSimulado,
       atividade: 'Simulado externo (ex.: do cursinho). Depois, revise as questões que errou.' });
   } else if (minutosSimulado > 0) {
+    const total = simulado.total || 63;
+    const duracao = duracaoSimulado(total);
     blocos.push({
       tipo: 'simulado',
       minutos: minutosSimulado,
+      total,
+      nome: simulado.nome || 'Simulado completo',
       atividade: simulado.continuacao
         ? 'Continue o simulado de ontem (ele fica salvo) e finalize para ver o resultado.'
-        : minutosSimulado < DURACAO_SIMULADO
-          ? 'Comece o simulado completo como no dia da prova; ele fica salvo e você termina depois.'
-          : 'Simulado completo, como no dia da prova: 63 questões em até 5 horas, sem consultar nada.',
+        : minutosSimulado < duracao
+          ? `Comece o simulado (${total} questões) como no dia da prova; ele fica salvo e você termina depois.`
+          : total >= 63
+            ? 'Simulado completo, como no dia da prova: 63 questões em até 5 horas, sem consultar nada.'
+            : `Simulado de ${total} questões, na proporção da prova, em até ${formatarHoras(duracao)}, sem consultar nada.`,
     });
   }
   const restante = minutos - minutosSimulado - (minutosSimulado > 0 ? pausa : 0);
   const duracoes = dividirEmBlocos(Math.max(0, restante), estudo, pausa);
+  // Correção de erros: o último bloco de matéria do dia vira um bloco para refazer as questões
+  // erradas que já estão no dia de voltar (com o mínimo de pendências de cada fase)
+  const fase = faseDaPreparacao(chave, diaProva);
+  const revisar = errosDevidos >= fase.revisaoMinima && duracoes.length >= 2 && diasEntre(chave, diaProva) > 1;
+  const blocoRevisao = revisar ? duracoes.pop() : 0;
   const materias = distribuirMaterias(duracoes.length, prioridades, historico);
   const usados = {};    // quantos conteúdos fracos de cada matéria já entraram no dia
   const diasParaProva = diasEntre(chave, diaProva);
   duracoes.forEach((min, i) => {
     const id = materias[i];
     const materia = MATERIAS.find(m => m.id === id);
-    const fracos = conteudosFracos(analise, id).map(c => c.subtopico);
+    const fracos = conteudosFracos(analise, id).map(c => c.nome);
     const inicio = usados[id] || 0;
     const foco = fracos.slice(inicio, inicio + 2);
     usados[id] = inicio + foco.length;
@@ -329,9 +485,19 @@ export function montarDia({ perfil, chave, minutos, simulado = null,
         vespera: diasParaProva === 1,
         cursinho: perfil.cursinho,
         temQuestoes: materiasComQuestoes.has(id),
+        fase,
       }),
     });
   });
+  if (blocoRevisao) {
+    blocos.push({
+      tipo: 'revisao',
+      minutos: blocoRevisao,
+      quantidade: errosDevidos,
+      atividade: `Correção de erros: refaça ${errosDevidos === 1 ? 'a questão que você errou' : `as ${errosDevidos} questões que você errou`}
+        e leia as explicações. Errou de novo? Ela volta daqui a alguns dias; siga o cronograma normalmente.`,
+    });
+  }
   return { chave, minutos, blocos };
 }
 
@@ -382,9 +548,13 @@ export function projetarAcertos(analise, minimo = 5) {
  * @returns {Object[]} planos dos dias, em ordem
  */
 export function planejarPeriodo(guia, ctx) {
-  const { de, ate, diaProva, planosFixos = {}, semanasComSimuladoFeito = new Set() } = ctx;
+  const { de, ate, diaProva, planosFixos = {}, semanasComSimuladoFeito = new Set(), errosPendentes: pendentes = [] } = ctx;
   const planos = {};
   const resultado = [];
+  // questões a refazer em cada dia: no 1º dia, todas as já vencidas; depois, as que vencem naquele dia
+  const fimDoDia = k => meioDia(k).getTime() + DIA_MS / 2;
+  const errosNoDia = dia => pendentes.filter(p => p.devidaEm <= fimDoDia(dia)
+    && (dia === de || p.devidaEm > fimDoDia(somarDias(dia, -1)))).length;
   for (let dia = de; dia <= ate; dia = somarDias(dia, 1)) {
     let plano = planosFixos[dia];
     if (!plano) {
@@ -403,6 +573,7 @@ export function planejarPeriodo(guia, ctx) {
         historico: contarBlocos(ultimos),
         materiasComQuestoes: ctx.materiasComQuestoes,
         diaProva,
+        errosDevidos: errosNoDia(dia),
       });
       plano = aplicarEdicoes(plano, guia.edicoes?.[dia], guia.perfil);
     }
