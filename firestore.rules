@@ -9,6 +9,7 @@
   //   emails/{email}     → { usuario, uid } índice para "Esqueci meu usuário"
   //   alunos/{usuario}   → dados do aluno (ID = nome de usuário, para achar fácil no Console)
   //   admins/{uid}       → administradores (ID = UID da conta); primeiro criado pelo Console
+  //   resumos/{usuario}  → números de cada conta para a lista de Usuários (só informação)
   service cloud.firestore {
     match /databases/{banco}/documents {
 
@@ -102,6 +103,14 @@
           request.resource.data.plano in ['gratuito', 'basico', 'pro', 'ultra'] &&
           request.resource.data.usuario is string &&
           request.resource.data.atualizadoEm is number;
+      }
+
+      // Resumo de cada conta (números para a lista de Usuários da Administração): o próprio
+      // aluno grava o dele ao usar o site; administradores leem todos e podem recalcular.
+      // Não dá acesso a nada: é só informação.
+      match /resumos/{usuario} {
+        allow read, write: if eDono(usuario);
+        allow get, list, create, update: if admin();
       }
 
       // Banco de questões: alunos logados leem; só administradores gravam

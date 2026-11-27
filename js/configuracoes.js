@@ -20,9 +20,9 @@ import { escaparHtml } from './utils.js';
 import { resetarMemoriaLocal } from './armazenamento.js';
 import { htmlBotaoTema, vincularBotoesTema, htmlTemaAutomatico, vincularTemaAutomatico } from './tema.js';
 import {
-  eAdmin, listarAdministradores, adicionarAdministrador, removerAdministrador,
-  listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, gravarDadosDeTeste, usuarioAtual,
-  listarContasEPlanos, definirPlanoDoAluno, sincronizarPlanos, usuarioExibido, sair, trocarSenha,
+  eAdmin, adicionarAdministrador, removerAdministrador,
+  resetarMemoriaDoAluno, lerMemoriasAlunos, gravarDadosDeTeste, usuarioAtual,
+  listarUsuarios, recalcularUsuarios, definirPlanoDoAluno, usuarioExibido, sair, trocarSenha,
   redefinirSenha, temEmailReal, cadastrarEmailRecuperacao, alterarNome, alterarUsuario,
 } from './nuvem.js';
 
@@ -124,6 +124,7 @@ export async function abrirConfiguracoes() {
   dialogo.querySelectorAll('[data-aba-config]').forEach(aba => aba.addEventListener('click', () => {
     dialogo.querySelectorAll('[data-aba-config]').forEach(a => a.setAttribute('aria-selected', String(a === aba)));
     dialogo.querySelectorAll('[data-painel-config]').forEach(p => { p.hidden = p.dataset.painelConfig !== aba.dataset.abaConfig; });
+    dialogo.classList.toggle('configuracoes--larga', aba.dataset.abaConfig === 'admin');   // a tabela de usuários precisa de largura
   }));
   if (!user) return;   // sem login (modo local): só a aparência
 
@@ -149,37 +150,40 @@ export async function abrirConfiguracoes() {
   renderizarAreaAdmin(area);
 }
 
-/** Seção de administração: resetar a memória de erros e acertos de um aluno. */
+/** Aba Administração: a tabela de Usuários (com todas as ações) e a conferência da dificuldade. */
 function renderizarAreaAdmin(area) {
   area.innerHTML = `
-    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Contas e planos">
-      <h3 class="configuracoes__subtitulo">Contas e planos</h3>
-      <div class="contas-planos__resumo" id="config-planos-resumo">Carregando as contas...</div>
-      <div class="configuracoes__linha">
-        <input type="search" id="config-planos-busca" class="guia-texto" placeholder="Buscar por usuário ou nome" aria-label="Buscar conta">
-        <select id="config-planos-filtro" class="tema-auto__hora" aria-label="Filtrar por plano">
-          <option value="">Todos os planos</option>
+    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Usuários">
+      <h3 class="configuracoes__subtitulo">Usuários</h3>
+      <div class="usuarios__resumo" id="usuarios-resumo">Carregando os usuários...</div>
+      <div class="usuarios__controles">
+        <input type="search" id="usuarios-busca" class="guia-texto" placeholder="Buscar por usuário, nome ou e-mail" aria-label="Buscar usuário">
+        <select id="usuarios-filtro" class="tema-auto__hora" aria-label="Filtrar">
+          <option value="">Todos</option>
           <option value="admin">Administradores</option>
           <option value="gratuito">Gratuito</option><option value="basico">Básico</option>
           <option value="pro">Pro</option><option value="ultra">Ultra</option>
+          <option value="ativos">Ativos nos últimos 7 dias</option>
+          <option value="parados">Sem acessar há 30+ dias</option>
+        </select>
+        <select id="usuarios-ordem" class="tema-auto__hora" aria-label="Ordenar">
+          <option value="usuario">Ordenar: usuário</option>
+          <option value="nome">Ordenar: nome</option>
+          <option value="acesso">Ordenar: último acesso</option>
+          <option value="respostas">Ordenar: mais questões</option>
+          <option value="criado">Ordenar: conta mais nova</option>
         </select>
       </div>
-      <div class="configuracoes__tabela contas-planos__tabela" id="config-planos-lista"></div>
-      <div class="configuracoes__linha">
-        <button type="button" class="btn btn-secundario" id="config-planos-sincronizar">Criar os registros que faltam no Firebase</button>
-      </div>
-      <p class="configuracoes__info" id="config-planos-status" role="status"></p>
-    </section>
-    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Administradores">
-      <h3 class="configuracoes__subtitulo">Níveis de acesso</h3>
-      <p class="configuracoes__info">Usuários comuns acessam apenas os próprios dados. Administradores também podem resetar a memória dos alunos e gerenciar outros administradores. O primeiro administrador é definido pelo Console do Firebase.</p>
-      <form class="configuracoes__linha" id="config-form-admin">
-        <input type="text" id="config-novo-admin" class="guia-texto"
-          placeholder="usuário da conta (ex.: maria_souza)" autocomplete="off" aria-label="Usuário a promover a administrador" required>
-        <button type="submit" class="btn btn-primario" id="config-adicionar-admin">Definir como administrador</button>
-      </form>
-      <p class="configuracoes__info" id="config-admin-status" role="status"></p>
-      <ul class="configuracoes__admins" id="config-lista-admins" aria-label="Administradores cadastrados"></ul>
+      <div class="usuarios__lista" id="usuarios-lista" role="table" aria-label="Usuários"></div>
+      <div class="usuarios__mais" id="usuarios-mais"></div>
+      <p class="configuracoes__info" id="usuarios-status" role="status"></p>
+      <details class="usuarios__manutencao">
+        <summary>Manutenção</summary>
+        <p class="configuracoes__info">Os números de cada aluno se atualizam sozinhos quando ele usa o site.
+          <strong>Recalcular</strong> lê o histórico completo de todos os alunos e atualiza os números de quem ainda não entrou
+          desde a mudança; também cria o registro de plano que faltar. Use só de vez em quando (com muitos alunos, gasta leituras do Firebase).</p>
+        <button type="button" class="btn btn-secundario" id="usuarios-recalcular">Recalcular os números de todos</button>
+      </details>
     </section>
 
     <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Dificuldade das questões">
@@ -192,101 +196,9 @@ function renderizarAreaAdmin(area) {
         <a href="#/planos" class="btn btn-secundario" id="config-planos">Ver tela de planos (teste)</a>
       </div>
       <div class="configuracoes__info" id="config-dificuldade-saida" role="status"></div>
-    </section>
-
-    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Administração">
-      <h3 class="configuracoes__subtitulo">Administração</h3>
-      <p class="configuracoes__info"><strong>Resetar a memória de um aluno</strong><br>
-        Zera o perfil do aluno: questões feitas, simulados (inclusive o histórico), erros e acertos e o
-        Guia de Estudos. A conta e o login continuam. Não dá para desfazer.</p>
-      <div class="configuracoes__linha">
-        <input type="text" id="config-usuario" class="guia-texto" list="config-lista-alunos"
-          placeholder="usuário do aluno (ex.: joao_silva)" autocomplete="off" aria-label="Usuário do aluno">
-        <datalist id="config-lista-alunos"></datalist>
-        <button type="button" class="btn btn-primario btn-perigo" id="config-resetar">Resetar memória</button>
-      </div>
-      <p class="configuracoes__info" id="config-status" role="status"></p>
-
-      <p class="configuracoes__info"><strong>Dados de teste</strong><br>
-        Grava um ano simulado de uso na conta escolhida (questões feitas, simulados, correção de erros
-        e erros e acertos), para testar as telas. Substitui o que a conta já tem; o Guia e o login não mudam.
-        Use só em contas de teste.</p>
-      <div class="configuracoes__linha">
-        <input type="text" id="config-usuario-teste" class="guia-texto" list="config-lista-alunos"
-          placeholder="usuário da conta de teste" autocomplete="off" aria-label="Usuário da conta de teste">
-        <button type="button" class="btn btn-secundario" id="config-dados-teste">Gerar 1 ano de dados de teste</button>
-      </div>
-      <p class="configuracoes__info" id="config-status-teste" role="status"></p>
     </section>`;
 
-  vincularContasEPlanos(area);
-  const status = area.querySelector('#config-status');
-  const statusAdmins = area.querySelector('#config-admin-status');
-  const listaAdmins = area.querySelector('#config-lista-admins');
-  const atualizarAdmins = async () => {
-    listaAdmins.innerHTML = '<li>Carregando administradores...</li>';
-    try {
-      const admins = await listarAdministradores();
-      listaAdmins.innerHTML = admins.map(admin => `
-        <li class="configuracoes__admin">
-          <span>${escaparHtml(admin.usuario)}${admin.uid === usuarioAtual()?.uid ? ' (você)' : ''}</span>
-          ${admin.uid === usuarioAtual()?.uid ? '' : `<button type="button" class="btn btn-perigo-contorno" data-remover-admin="${escaparHtml(admin.uid)}">Remover</button>`}
-        </li>`).join('');
-      if (!admins.length) listaAdmins.innerHTML = '<li>Nenhum administrador cadastrado.</li>';
-    } catch (e) {
-      listaAdmins.innerHTML = '';
-      statusAdmins.textContent = e.code === 'permission-denied'
-        ? 'Sem permissão para listar administradores. Publique as regras atualizadas do Firestore.'
-        : 'Não foi possível carregar os administradores: ' + e.message;
-    }
-  };
-  atualizarAdmins();
-
-  area.querySelector('#config-form-admin').addEventListener('submit', async e => {
-    e.preventDefault();
-    const input = area.querySelector('#config-novo-admin');
-    const botao = area.querySelector('#config-adicionar-admin');
-    botao.disabled = true;
-    statusAdmins.textContent = 'Atualizando permissões...';
-    try {
-      const usuario = await adicionarAdministrador(input.value);
-      input.value = '';
-      statusAdmins.textContent = `${usuario} agora é administrador.`;
-      await atualizarAdmins();
-    } catch (erro) {
-      statusAdmins.textContent = erro.code === 'permission-denied'
-        ? 'Sem permissão. Confira se sua conta está na coleção admins e se as regras atualizadas foram publicadas.'
-        : erro.message;
-    } finally {
-      botao.disabled = false;
-    }
-  });
-
-  listaAdmins.addEventListener('click', async e => {
-    const botao = e.target.closest('[data-remover-admin]');
-    if (!botao) return;
-    const uid = botao.dataset.removerAdmin;
-    const nome = botao.parentElement.querySelector('span').textContent;
-    if (!(await confirmar({
-      titulo: `Remover ${escaparHtml(nome)} da administração?`,
-      mensagem: 'A conta continuará existindo como usuário comum.',
-      textoConfirmar: 'Remover administrador',
-      perigo: true,
-    }))) return;
-    botao.disabled = true;
-    statusAdmins.textContent = 'Atualizando permissões...';
-    try {
-      await removerAdministrador(uid);
-      statusAdmins.textContent = `${nome} agora é um usuário comum.`;
-      await atualizarAdmins();
-    } catch (erro) {
-      statusAdmins.textContent = erro.code === 'permission-denied'
-        ? 'Sem permissão. Confira se as regras atualizadas do Firestore foram publicadas.'
-        : erro.message;
-      botao.disabled = false;
-    }
-  });
-
+  vincularUsuarios(area);
   area.querySelector('#config-planos').addEventListener('click', () => area.closest('dialog')?.close?.());
   area.querySelector('#config-dificuldade').addEventListener('click', async () => {
     const saida = area.querySelector('#config-dificuldade-saida');
@@ -295,63 +207,6 @@ function renderizarAreaAdmin(area) {
       saida.innerHTML = htmlConferenciaDificuldade(await lerMemoriasAlunos());
     } catch (e) {
       saida.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão de administrador.' : e.message);
-    }
-  });
-
-  listarAlunos()
-    .then(alunos => {
-      area.querySelector('#config-lista-alunos').innerHTML = alunos.map(a =>
-        `<option value="${escaparHtml(a.usuario)}">${escaparHtml(a.nome || a.usuario)} — ${a.respostas} respostas</option>`).join('');
-    })
-    .catch(() => {
-      status.textContent = 'Não foi possível listar os alunos: publique as regras novas (firestore.rules) no Console do Firebase.';
-    });
-
-  area.querySelector('#config-dados-teste').addEventListener('click', async () => {
-    const statusTeste = area.querySelector('#config-status-teste');
-    const usuario = area.querySelector('#config-usuario-teste').value.trim();
-    if (!usuario) { statusTeste.textContent = 'Digite o usuário da conta de teste.'; return; }
-    const nome = escaparHtml(usuario);
-    if (!(await confirmar({
-      titulo: `Gravar dados de teste em ${nome}?`,
-      mensagem: `As questões feitas, os simulados e os erros e acertos de <strong>${nome}</strong> serão <strong>substituídos</strong> por um ano simulado de uso. Não dá para desfazer.`,
-      textoConfirmar: 'Gravar dados de teste', perigo: true,
-    }))) return;
-    statusTeste.textContent = 'Gerando e gravando...';
-    try {
-      const { gerarAnoDeTeste } = await import('./dados-teste.js');
-      const dados = gerarAnoDeTeste(window.QUESTOES_PROVAS || [], window.QUESTOES || []);
-      const r = await gravarDadosDeTeste(usuario, dados);
-      statusTeste.textContent = `Pronto: ${dados.memoria.length} respostas e ${dados.simulado.tentativas.length} simulados gravados em ${r.usuario}.`
-        + (r.usuario === usuarioExibido(usuarioAtual()) ? ' A página vai recarregar.' : ' Se a conta estiver aberta em outro lugar, a página dela recarrega sozinha.');
-    } catch (e) {
-      statusTeste.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão de administrador.' : e.message);
-    }
-  });
-
-  area.querySelector('#config-resetar').addEventListener('click', async () => {
-    const usuario = area.querySelector('#config-usuario').value.trim();
-    if (!usuario) { status.textContent = 'Digite o usuário do aluno.'; return; }
-    const nome = escaparHtml(usuario);
-    if (!(await confirmar({
-      titulo: `Resetar a memória de ${nome}?`,
-      mensagem: 'Tudo o que esse aluno fez será apagado: questões respondidas, simulados, erros e acertos e o Guia de Estudos. A conta continua.',
-      textoConfirmar: 'Continuar', perigo: true,
-    }))) return;
-    if (!(await confirmar({
-      titulo: 'Tem certeza? Não dá para desfazer.',
-      mensagem: `Confirme para apagar <strong>definitivamente</strong> todo o progresso de <strong>${nome}</strong>.`,
-      textoConfirmar: 'Apagar a memória', perigo: true,
-    }))) return;
-    status.textContent = 'Apagando...';
-    try {
-      const r = await resetarMemoriaDoAluno(usuario);
-      if (r.usuario === usuarioExibido(usuarioAtual())) resetarMemoriaLocal(r.resetEm);   // resetou a própria conta
-      status.textContent = `Progresso de ${r.usuario} zerado (${r.apagadas} registros de erros e acertos). Se o aluno estiver com o site aberto, a página dele recomeça sozinha.`;
-    } catch (e) {
-      status.textContent = 'Erro: ' + (e.code === 'permission-denied'
-        ? 'sem permissão. Confira se a sua conta está na coleção admins e se as regras novas foram publicadas.'
-        : e.message);
     }
   });
 }
@@ -615,84 +470,242 @@ function htmlConferenciaDificuldade(alunos) {
 }
 
 /* ================================================================
-   Contas e planos (só administradores)
-   Lista todas as contas com o plano de cada uma; trocar o plano grava em planos/<usuário>
-   (é o que libera o plano depois do pagamento, enquanto ele não é automático).
+   Usuários (só administradores)
+   Uma linha por conta: nome, usuário, e-mail, plano (troca ali mesmo), questões feitas e
+   acerto, simulados, último acesso e data da conta. Em "Ações": tornar ou tirar
+   administrador, resetar a memória e gravar dados de teste.
+   Lê só os documentos pequenos (resumos, planos, admins): com centenas de alunos continua
+   leve. Mostra 40 por vez ("Mostrar mais"). No computador, as colunas cabem na largura;
+   no celular, cada usuário vira um cartão.
    ================================================================ */
 
 const NOMES_PLANOS = { gratuito: 'Gratuito', basico: 'Básico', pro: 'Pro', ultra: 'Ultra' };
+const POR_PAGINA = 40;
+const DIA = 24 * 60 * 60 * 1000;
 
-function vincularContasEPlanos(area) {
-  const resumo = area.querySelector('#config-planos-resumo');
-  const lista = area.querySelector('#config-planos-lista');
-  const busca = area.querySelector('#config-planos-busca');
-  const filtro = area.querySelector('#config-planos-filtro');
-  const status = area.querySelector('#config-planos-status');
+const numero = n => (n == null ? '—' : n.toLocaleString('pt-BR'));
+const dataCurta = t => (t ? new Date(t).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '—');
+function quandoFoi(t) {
+  if (!t) return '—';
+  const dias = Math.floor((Date.now() - t) / DIA);
+  if (dias <= 0) return 'hoje';
+  if (dias === 1) return 'ontem';
+  if (dias < 30) return `há ${dias} dias`;
+  return dataCurta(t);
+}
+
+function vincularUsuarios(area) {
+  const resumo = area.querySelector('#usuarios-resumo');
+  const lista = area.querySelector('#usuarios-lista');
+  const mais = area.querySelector('#usuarios-mais');
+  const busca = area.querySelector('#usuarios-busca');
+  const filtro = area.querySelector('#usuarios-filtro');
+  const ordem = area.querySelector('#usuarios-ordem');
+  const status = area.querySelector('#usuarios-status');
+  const eu = usuarioExibido(usuarioAtual());
   let contas = [];
+  let limite = POR_PAGINA;
+  let aberto = null;   // usuário com o painel de ações aberto
+
+  const erroFirebase = e => (e.code === 'permission-denied'
+    ? 'sem permissão (publique o firestore.rules novo no Console do Firebase).' : e.message);
+
+  const visiveis = () => {
+    const termo = busca.value.trim().toLowerCase();
+    const f = filtro.value;
+    const agora = Date.now();
+    const lst = contas.filter(c => (!termo || [c.usuario, c.nome, c.email].some(v => (v || '').toLowerCase().includes(termo)))
+      && (!f
+        || (f === 'admin' && c.admin)
+        || (f === 'ativos' && c.ultimoAcesso && agora - c.ultimoAcesso < 7 * DIA)
+        || (f === 'parados' && (!c.ultimoAcesso || agora - c.ultimoAcesso >= 30 * DIA))
+        || (NOMES_PLANOS[f] && !c.admin && c.plano === f)));
+    const por = {
+      usuario: (a, b) => a.usuario.localeCompare(b.usuario),
+      nome: (a, b) => (a.nome || a.usuario).localeCompare(b.nome || b.usuario, 'pt-BR'),
+      acesso: (a, b) => (b.ultimoAcesso || 0) - (a.ultimoAcesso || 0),
+      respostas: (a, b) => (b.respostas || 0) - (a.respostas || 0),
+      criado: (a, b) => (b.criadoEm || 0) - (a.criadoEm || 0),
+    }[ordem.value];
+    return lst.sort(por);
+  };
+
+  const htmlLinha = c => {
+    const acerto = c.respostas ? `${Math.round((c.acertos / c.respostas) * 100)}%` : '';
+    const proprio = c.usuario === eu;
+    return `
+      <div class="usuarios__linha${aberto === c.usuario ? ' usuarios__linha--aberta' : ''}" role="row" data-usuario="${escaparHtml(c.usuario)}">
+        <div class="usuarios__celula usuarios__quem" role="cell">
+          <strong>${escaparHtml(c.nome || '—')}</strong>
+          <span class="usuarios__usuario">${escaparHtml(c.usuario)}${c.admin ? ' <span class="contas-planos__admin">admin</span>' : ''}${proprio ? ' <span class="usuarios__voce">você</span>' : ''}</span>
+        </div>
+        <div class="usuarios__celula usuarios__email" role="cell" data-rotulo="E-mail" title="${escaparHtml(c.email || '')}">${c.email ? escaparHtml(c.email) : '<span class="usuarios__fraco">sem e-mail</span>'}</div>
+        <div class="usuarios__celula" role="cell" data-rotulo="Plano">${c.admin ? '<span class="usuarios__ilimitado">Ilimitado</span>'
+          : `<select class="tema-auto__hora usuarios__plano" data-plano-de="${escaparHtml(c.usuario)}" aria-label="Plano de ${escaparHtml(c.usuario)}">
+              ${Object.entries(NOMES_PLANOS).map(([id, nome]) => `<option value="${id}"${id === c.plano ? ' selected' : ''}>${nome}</option>`).join('')}
+            </select>`}</div>
+        <div class="usuarios__celula usuarios__num" role="cell" data-rotulo="Questões">${numero(c.respostas)}${acerto ? ` <span class="usuarios__fraco">· ${acerto}</span>` : ''}</div>
+        <div class="usuarios__celula usuarios__num" role="cell" data-rotulo="Simulados">${numero(c.simulados)}</div>
+        <div class="usuarios__celula" role="cell" data-rotulo="Último acesso">${quandoFoi(c.ultimoAcesso)}</div>
+        <div class="usuarios__celula" role="cell" data-rotulo="Conta criada">${dataCurta(c.criadoEm)}</div>
+        <div class="usuarios__celula usuarios__acoes-celula" role="cell">
+          <button type="button" class="btn btn-secundario btn-pequeno" data-acoes="${escaparHtml(c.usuario)}" aria-expanded="${aberto === c.usuario}">Ações</button>
+        </div>
+        ${aberto === c.usuario ? `
+        <div class="usuarios__painel">
+          ${c.admin
+            ? (proprio ? '<span class="usuarios__fraco">Você não pode tirar o seu próprio acesso de administrador.</span>'
+              : `<button type="button" class="btn btn-perigo-contorno btn-pequeno" data-acao="tirar-admin">Tirar administrador</button>`)
+            : `<button type="button" class="btn btn-secundario btn-pequeno" data-acao="dar-admin">Tornar administrador</button>`}
+          <button type="button" class="btn btn-perigo-contorno btn-pequeno" data-acao="resetar">Resetar memória</button>
+          <button type="button" class="btn btn-secundario btn-pequeno" data-acao="teste">Gerar 1 ano de dados de teste</button>
+          ${c.planoAlteradoPor ? `<span class="usuarios__fraco">Plano mudado por ${escaparHtml(c.planoAlteradoPor)} em ${dataCurta(c.planoAlteradoEm)}</span>` : ''}
+        </div>` : ''}
+      </div>`;
+  };
 
   const desenhar = () => {
     const contar = id => contas.filter(c => c.plano === id && !c.admin).length;
-    resumo.innerHTML = `<strong>${contas.length}</strong> contas · ${contas.filter(c => c.admin).length} administradores · `
+    const ativos = contas.filter(c => c.ultimoAcesso && Date.now() - c.ultimoAcesso < 7 * DIA).length;
+    resumo.innerHTML = `<strong>${contas.length}</strong> contas · <strong>${ativos}</strong> ativas nos últimos 7 dias · ${contas.filter(c => c.admin).length} admin · `
       + Object.entries(NOMES_PLANOS).map(([id, nome]) => `${nome}: <strong>${contar(id)}</strong>`).join(' · ');
-    const termo = busca.value.trim().toLowerCase();
-    const f = filtro.value;
-    const visiveis = contas.filter(c => (!termo || c.usuario.includes(termo) || c.nome.toLowerCase().includes(termo))
-      && (!f || (f === 'admin' ? c.admin : c.plano === f && !c.admin)));
-    lista.innerHTML = visiveis.length ? `
-      <table>
-        <thead><tr><th>Usuário</th><th>Nome</th><th>Plano</th></tr></thead>
-        <tbody>${visiveis.map(c => `
-          <tr>
-            <td>${escaparHtml(c.usuario)}${c.admin ? ' <span class="contas-planos__admin">admin</span>' : ''}</td>
-            <td>${escaparHtml(c.nome || '—')}</td>
-            <td>${c.admin ? 'Ilimitado'
-              : `<select class="tema-auto__hora" data-plano-de="${escaparHtml(c.usuario)}" data-nome="${escaparHtml(c.nome || '')}" aria-label="Plano de ${escaparHtml(c.usuario)}">
-                  ${Object.entries(NOMES_PLANOS).map(([id, nome]) => `<option value="${id}"${id === c.plano ? ' selected' : ''}>${nome}</option>`).join('')}
-                </select>`}</td>
-          </tr>`).join('')}</tbody>
-      </table>` : '<p class="configuracoes__info">Nenhuma conta encontrada.</p>';
-    lista.querySelectorAll('[data-plano-de]').forEach(sel => sel.addEventListener('change', async () => {
-      const usuario = sel.dataset.planoDe;
-      const anterior = contas.find(c => c.usuario === usuario)?.plano;
-      if (!(await confirmar({
-        titulo: `Mudar o plano de ${escaparHtml(usuario)}?`,
-        mensagem: `De <strong>${NOMES_PLANOS[anterior] || anterior}</strong> para <strong>${NOMES_PLANOS[sel.value]}</strong>. A conta passa a ter acesso ao novo plano na próxima vez que abrir o site.`,
-        textoConfirmar: 'Mudar o plano',
-      }))) { sel.value = anterior; return; }
-      sel.disabled = true;
-      try {
-        await definirPlanoDoAluno(usuario, sel.value, sel.dataset.nome);
-        const c = contas.find(x => x.usuario === usuario);
-        if (c) { c.plano = sel.value; c.temRegistro = true; }
-        status.textContent = `Plano de ${usuario} mudado para ${NOMES_PLANOS[sel.value]}.`;
-        desenhar();
-      } catch (e) {
-        sel.value = anterior;
-        status.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão (publique o firestore.rules novo no Console).' : e.message);
-      } finally { sel.disabled = false; }
-    }));
+    const lst = visiveis();
+    const pagina = lst.slice(0, limite);
+    lista.innerHTML = lst.length ? `
+      <div class="usuarios__linha usuarios__cabecalho" role="row">
+        <div role="columnheader">Nome / usuário</div><div role="columnheader">E-mail</div><div role="columnheader">Plano</div>
+        <div role="columnheader">Questões · acerto</div><div role="columnheader">Simulados</div>
+        <div role="columnheader">Último acesso</div><div role="columnheader">Conta criada</div><div role="columnheader"></div>
+      </div>
+      ${pagina.map(htmlLinha).join('')}` : '<p class="configuracoes__info">Nenhum usuário encontrado.</p>';
+    mais.innerHTML = lst.length > limite
+      ? `<button type="button" class="btn btn-secundario btn-pequeno" id="usuarios-mostrar-mais">Mostrar mais (${lst.length - limite} restantes)</button>`
+      : (lst.length ? `<span class="usuarios__fraco">${lst.length} usuário(s)</span>` : '');
   };
 
   const carregar = async () => {
     try {
-      contas = await listarContasEPlanos();
+      contas = await listarUsuarios();
       desenhar();
     } catch (e) {
-      resumo.textContent = 'Não foi possível listar as contas: ' + (e.code === 'permission-denied'
-        ? 'publique o firestore.rules novo no Console do Firebase.' : e.message);
+      resumo.textContent = 'Não foi possível listar os usuários: ' + erroFirebase(e);
     }
   };
-  busca.addEventListener('input', desenhar);
-  filtro.addEventListener('change', desenhar);
-  area.querySelector('#config-planos-sincronizar').addEventListener('click', async () => {
-    status.textContent = 'Criando os registros...';
+
+  busca.addEventListener('input', () => { limite = POR_PAGINA; desenhar(); });
+  filtro.addEventListener('change', () => { limite = POR_PAGINA; desenhar(); });
+  ordem.addEventListener('change', desenhar);
+  mais.addEventListener('click', e => { if (e.target.closest('#usuarios-mostrar-mais')) { limite += POR_PAGINA; desenhar(); } });
+
+  // trocar o plano
+  lista.addEventListener('change', async e => {
+    const sel = e.target.closest('[data-plano-de]');
+    if (!sel) return;
+    const c = contas.find(x => x.usuario === sel.dataset.planoDe);
+    const anterior = c.plano;
+    if (!(await confirmar({
+      titulo: `Mudar o plano de ${escaparHtml(c.usuario)}?`,
+      mensagem: `De <strong>${NOMES_PLANOS[anterior] || anterior}</strong> para <strong>${NOMES_PLANOS[sel.value]}</strong>. A conta passa a ter acesso ao novo plano na próxima vez que abrir o site.`,
+      textoConfirmar: 'Mudar o plano',
+    }))) { sel.value = anterior; return; }
+    sel.disabled = true;
     try {
-      const r = await sincronizarPlanos();
-      status.textContent = `Pronto: ${r.criados} registro(s) criado(s) como Gratuito e ${r.marcados} conferido(s). Veja a coleção "planos" no Console do Firebase.`;
-      await carregar();
-    } catch (e) {
-      status.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão (publique o firestore.rules novo no Console).' : e.message);
+      await definirPlanoDoAluno(c.usuario, sel.value, c.nome || '');
+      Object.assign(c, { plano: sel.value, planoAlteradoPor: eu, planoAlteradoEm: Date.now() });
+      status.textContent = `Plano de ${c.usuario} mudado para ${NOMES_PLANOS[sel.value]}.`;
+      desenhar();
+    } catch (erro) {
+      sel.value = anterior; sel.disabled = false;
+      status.textContent = 'Erro: ' + erroFirebase(erro);
     }
   });
+
+  // abrir/fechar as ações e executar cada uma
+  lista.addEventListener('click', async e => {
+    const btnAcoes = e.target.closest('[data-acoes]');
+    if (btnAcoes) { aberto = aberto === btnAcoes.dataset.acoes ? null : btnAcoes.dataset.acoes; desenhar(); return; }
+    const btn = e.target.closest('[data-acao]');
+    if (!btn) return;
+    const c = contas.find(x => x.usuario === btn.closest('[data-usuario]').dataset.usuario);
+    const nome = escaparHtml(c.usuario);
+    const acao = btn.dataset.acao;
+    try {
+      if (acao === 'dar-admin') {
+        if (!(await confirmar({
+          titulo: `Tornar ${nome} administrador?`,
+          mensagem: 'Administradores têm acesso a tudo (Ilimitado), veem todos os usuários, mudam planos e podem apagar o progresso dos alunos.',
+          textoConfirmar: 'Tornar administrador',
+        }))) return;
+        btn.disabled = true;
+        await adicionarAdministrador(c.usuario);
+        status.textContent = `${c.usuario} agora é administrador.`;
+        await carregar();
+      } else if (acao === 'tirar-admin') {
+        if (!(await confirmar({
+          titulo: `Tirar ${nome} da administração?`,
+          mensagem: `A conta continua existindo e volta para o plano <strong>${NOMES_PLANOS[c.plano] || 'Gratuito'}</strong>.`,
+          textoConfirmar: 'Tirar administrador', perigo: true,
+        }))) return;
+        btn.disabled = true;
+        await removerAdministrador(c.adminUid);
+        status.textContent = `${c.usuario} agora é um usuário comum.`;
+        await carregar();
+      } else if (acao === 'resetar') {
+        if (!(await confirmar({
+          titulo: `Resetar a memória de ${nome}?`,
+          mensagem: 'Tudo o que esse aluno fez será apagado: questões respondidas, simulados, erros e acertos e o Guia de Estudos. A conta e o plano continuam.',
+          textoConfirmar: 'Continuar', perigo: true,
+        }))) return;
+        if (!(await confirmar({
+          titulo: 'Tem certeza? Não dá para desfazer.',
+          mensagem: `Confirme para apagar <strong>definitivamente</strong> todo o progresso de <strong>${nome}</strong>.`,
+          textoConfirmar: 'Apagar a memória', perigo: true,
+        }))) return;
+        btn.disabled = true;
+        status.textContent = 'Apagando...';
+        const r = await resetarMemoriaDoAluno(c.usuario);
+        if (r.usuario === eu) resetarMemoriaLocal(r.resetEm);
+        Object.assign(c, { respostas: 0, acertos: 0, simulados: 0 });
+        status.textContent = `Progresso de ${r.usuario} zerado (${r.apagadas} registros). Se o aluno estiver com o site aberto, a página dele recomeça sozinha.`;
+        desenhar();
+      } else if (acao === 'teste') {
+        if (!(await confirmar({
+          titulo: `Gravar dados de teste em ${nome}?`,
+          mensagem: `As questões feitas, os simulados e os erros e acertos de <strong>${nome}</strong> serão <strong>substituídos</strong> por um ano simulado de uso. Use só em contas de teste. Não dá para desfazer.`,
+          textoConfirmar: 'Gravar dados de teste', perigo: true,
+        }))) return;
+        btn.disabled = true;
+        status.textContent = 'Gerando e gravando...';
+        const { gerarAnoDeTeste } = await import('./dados-teste.js');
+        const dados = gerarAnoDeTeste(window.QUESTOES_PROVAS || [], window.QUESTOES || []);
+        const r = await gravarDadosDeTeste(c.usuario, dados);
+        Object.assign(c, { respostas: dados.memoria.length, acertos: dados.memoria.filter(m => m.ok).length, simulados: dados.simulado.tentativas.length });
+        status.textContent = `Pronto: ${dados.memoria.length} respostas e ${dados.simulado.tentativas.length} simulados gravados em ${r.usuario}.`
+          + (r.usuario === eu ? ' A página vai recarregar.' : ' Se a conta estiver aberta em outro lugar, a página dela recarrega sozinha.');
+        desenhar();
+      }
+    } catch (erro) {
+      btn.disabled = false;
+      status.textContent = 'Erro: ' + erroFirebase(erro);
+    }
+  });
+
+  area.querySelector('#usuarios-recalcular').addEventListener('click', async ev => {
+    if (!(await confirmar({
+      titulo: 'Recalcular os números de todos?',
+      mensagem: `Vai ler o histórico completo de ${contas.length || 'todas as'} contas. Não apaga nem muda nada do aluno, só atualiza os números desta lista.`,
+      textoConfirmar: 'Recalcular',
+    }))) return;
+    ev.target.disabled = true;
+    status.textContent = 'Recalculando...';
+    try {
+      const r = await recalcularUsuarios();
+      status.textContent = `Pronto: ${r.resumos} conta(s) atualizada(s)${r.planos ? ` e ${r.planos} registro(s) de plano criado(s)` : ''}.`;
+      await carregar();
+    } catch (erro) {
+      status.textContent = 'Erro: ' + erroFirebase(erro);
+    } finally { ev.target.disabled = false; }
+  });
+
   carregar();
 }

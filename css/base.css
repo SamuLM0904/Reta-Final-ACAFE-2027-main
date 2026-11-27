@@ -1024,3 +1024,68 @@ body { overflow-wrap: break-word; word-break: normal; hyphens: manual; }
   .menu-recolhido .menu-site__borda { display: block; position: fixed; inset: 0 auto 0 0; width: 10px; z-index: 105; }
 }
 @media (prefers-reduced-motion: reduce) { .menu-site, body { transition: none; } }
+
+/* ===== Administração › Usuários ===== */
+/* Na aba Administração o painel fica largo (cerca de 70% da tela no computador) */
+.configuracoes.configuracoes--larga { width: min(94vw, 1500px); }
+@media (min-width: 1024px) { .configuracoes.configuracoes--larga { width: max(70vw, 960px); max-width: 96vw; } }
+
+.usuarios__resumo { font-size: var(--tamanho-sm); color: var(--cor-texto-fraco); margin-bottom: var(--espaco-sm); }
+.usuarios__resumo strong { color: var(--cor-texto); }
+.usuarios__controles { display: flex; flex-wrap: wrap; gap: var(--espaco-sm); margin-bottom: var(--espaco-md); }
+.usuarios__controles .guia-texto { flex: 1 1 260px; }
+.usuarios__fraco { color: var(--cor-texto-fraco); font-size: var(--tamanho-xs); }
+.usuarios__usuario { font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); font-family: var(--fonte-mono, monospace); }
+.usuarios__voce { font-size: 10px; padding: 1px 6px; border-radius: var(--raio-pill); background: var(--cor-verde-militar); color: var(--cor-texto); font-family: var(--fonte-base); }
+.usuarios__ilimitado { font-weight: 600; color: var(--cor-primaria); }
+.usuarios__plano { min-width: 0; width: 100%; max-width: 130px; }
+
+/* Computador: uma grade com colunas fixas que cabem na largura (sem rolar para o lado) */
+.usuarios__lista { display: flex; flex-direction: column; border: 1px solid var(--cor-borda); border-radius: var(--raio-md); overflow: hidden; }
+.usuarios__linha {
+  display: grid;
+  grid-template-columns: minmax(160px, 1.6fr) minmax(140px, 1.6fr) 130px 120px 80px 105px 95px 76px;
+  gap: var(--espaco-sm) var(--espaco-md);
+  align-items: center;
+  padding: 10px var(--espaco-md);
+  border-top: 1px solid var(--cor-borda);
+  font-size: var(--tamanho-sm);
+}
+.usuarios__linha:first-child { border-top: 0; }
+.usuarios__linha:not(.usuarios__cabecalho):hover, .usuarios__linha--aberta { background-color: var(--cor-verde-militar); }
+.usuarios__cabecalho { position: sticky; top: 0; z-index: 1; background-color: var(--cor-fundo-card); font-size: var(--tamanho-xs); font-weight: 600; color: var(--cor-texto-fraco); text-transform: uppercase; letter-spacing: 0.03em; }
+.usuarios__celula { min-width: 0; }
+.usuarios__quem { display: flex; flex-direction: column; gap: 2px; }
+.usuarios__quem strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usuarios__email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usuarios__num { font-variant-numeric: tabular-nums; }
+.usuarios__acoes-celula { text-align: right; }
+.usuarios__painel { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--espaco-sm); padding-top: var(--espaco-sm); border-top: 1px dashed var(--cor-borda); }
+.usuarios__mais { display: flex; justify-content: center; margin-top: var(--espaco-sm); }
+.usuarios__manutencao { margin-top: var(--espaco-md); font-size: var(--tamanho-sm); }
+.usuarios__manutencao summary { cursor: pointer; color: var(--cor-texto-fraco); }
+
+/* Telas médias: esconde "Conta criada" e "Simulados" para tudo caber */
+@media (max-width: 1180px) {
+  .usuarios__linha { grid-template-columns: minmax(150px, 1.5fr) minmax(130px, 1.5fr) 125px 115px 100px 76px; }
+  .usuarios__linha > :nth-child(5), .usuarios__linha > :nth-child(7) { display: none; }
+}
+
+/* Celular: cada usuário vira um cartão, com o rótulo antes de cada informação */
+@media (max-width: 760px) {
+  .usuarios__lista { border: 0; gap: var(--espaco-sm); overflow: visible; }
+  .usuarios__cabecalho { display: none; }
+  .usuarios__linha {
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--cor-borda); border-radius: var(--raio-md);
+    padding: var(--espaco-md);
+  }
+  .usuarios__linha:first-child { border-top: 1px solid var(--cor-borda); }
+  .usuarios__linha > :nth-child(5), .usuarios__linha > :nth-child(7) { display: block; }
+  .usuarios__quem, .usuarios__email { grid-column: 1 / -1; }
+  .usuarios__celula[data-rotulo]::before { content: attr(data-rotulo); display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--cor-texto-fraco); margin-bottom: 2px; }
+  .usuarios__email { white-space: normal; overflow-wrap: anywhere; }
+  .usuarios__acoes-celula { grid-column: 1 / -1; text-align: left; }
+  .usuarios__acoes-celula .btn { width: 100%; }
+  .usuarios__plano { max-width: none; }
+}

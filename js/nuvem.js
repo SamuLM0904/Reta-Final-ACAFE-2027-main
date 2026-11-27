@@ -360,6 +360,7 @@ export async function lerDadosAluno() {
   const snap = await fb.f.getDoc(docAluno());
   const dados = snap.exists() ? snap.data() : null;
   nomeDoPerfil = dados?.perfil?.nome || nomeDoPerfil;
+  atualizarResumo(dados || {}, true);
   return dados;
 }
 
@@ -406,6 +407,7 @@ export function gravarAgora() {
   clearTimeout(temporizador);
   if (!pendente || !usuario || !fb) return Promise.resolve();
   const dados = pendente; pendente = null;
+  atualizarResumo(dados);
   return fb.f.setDoc(docAluno(), dados, { merge: true })
     .catch(e => console.warn('[Nuvem] Falha ao salvar (vai tentar de novo na próxima alteração):', e));
 }
@@ -461,35 +463,6 @@ export async function lerPlanoDaConta() {
 
 /* ---------------- Contas e planos (só administradores) ---------------- */
 
-/**
- * Todas as contas cadastradas com o plano de cada uma e se é administrador.
- * @returns {Promise<{ usuario, nome, plano, admin, temRegistro, atualizadoEm, alteradoPor }[]>}
- */
-export async function listarContasEPlanos() {
-  const [alunos, planos, admins] = await Promise.all([
-    fb.f.getDocs(fb.f.collection(fb.db, 'alunos')),
-    fb.f.getDocs(fb.f.collection(fb.db, 'planos')),
-    fb.f.getDocs(fb.f.collection(fb.db, 'admins')),
-  ]);
-  const porUsuario = new Map(planos.docs.map(d => [d.id, d.data()]));
-  const usuariosAdmin = new Set(admins.docs.map(d => d.data().usuario).filter(Boolean));
-  const contas = new Map();
-  alunos.docs.forEach(d => contas.set(d.id, { usuario: d.id, nome: d.data().perfil?.nome || '' }));
-  planos.docs.forEach(d => { if (!contas.has(d.id)) contas.set(d.id, { usuario: d.id, nome: d.data().nome || '' }); });
-  return [...contas.values()].map(c => {
-    const p = porUsuario.get(c.usuario);
-    return {
-      ...c,
-      nome: c.nome || p?.nome || '',
-      plano: p?.plano || 'gratuito',
-      admin: usuariosAdmin.has(c.usuario),
-      temRegistro: Boolean(p),
-      atualizadoEm: p?.atualizadoEm || null,
-      alteradoPor: p?.alteradoPor || null,
-    };
-  }).sort((a, b) => a.usuario.localeCompare(b.usuario));
-}
-
 /** Troca o plano de uma conta (só administradores). */
 export async function definirPlanoDoAluno(textoUsuario, plano, nome = '') {
   const u = normalizarUsuario(textoUsuario) || (textoUsuario || '').trim().toLowerCase();
@@ -498,27 +471,6 @@ export async function definirPlanoDoAluno(textoUsuario, plano, nome = '') {
     usuario: u, nome, plano, atualizadoEm: Date.now(), alteradoPor: usuarioExibido(usuario),
   }, { merge: true });
   return u;
-}
-
-/**
- * Cria o registro de plano (gratuito) das contas que ainda não têm e marca quem é
- * administrador, para tudo aparecer certinho no Console do Firebase (só administradores).
- * @returns {Promise<{ criados: number, marcados: number }>}
- */
-export async function sincronizarPlanos() {
-  const contas = await listarContasEPlanos();
-  let criados = 0, marcados = 0;
-  for (const c of contas) {
-    const ref = fb.f.doc(fb.db, 'planos', c.usuario);
-    if (!c.temRegistro) {
-      await fb.f.setDoc(ref, { usuario: c.usuario, nome: c.nome, plano: 'gratuito', admin: c.admin, atualizadoEm: Date.now(), alteradoPor: usuarioExibido(usuario) });
-      criados++;
-    } else {
-      await fb.f.setDoc(ref, { admin: c.admin, nome: c.nome, atualizadoEm: c.atualizadoEm || Date.now() }, { merge: true });
-      marcados++;
-    }
-  }
-  return { criados, marcados };
 }
 
 export async function eAdmin() {
@@ -553,14 +505,6 @@ export async function enviarQuestoes(estudo, provas) {
    Administração de alunos (Guia de Estudos)
    ================================================================ */
 
-/** Lista os administradores cadastrados (só administradores podem). */
-export async function listarAdministradores() {
-  const snap = await fb.f.getDocs(fb.f.collection(fb.db, 'admins'));
-  return snap.docs
-    .map(d => ({ uid: d.id, usuario: d.data().usuario || d.id }))
-    .sort((a, b) => a.usuario.localeCompare(b.usuario));
-}
-
 /** Promove uma conta existente identificada pelo nome de usuário. */
 export async function adicionarAdministrador(textoUsuario) {
   const u = normalizarUsuario(textoUsuario);
@@ -584,17 +528,6 @@ export async function adicionarAdministrador(textoUsuario) {
 export async function removerAdministrador(uid) {
   if (!usuario || uid === usuario.uid) throw new Error('Não é possível remover o próprio acesso de administrador.');
   await fb.f.deleteDoc(fb.f.doc(fb.db, 'admins', uid));
-}
-
-/**
- * Lista os alunos cadastrados (só administradores podem).
- * @returns {Promise<{ usuario: string, nome: string, respostas: number }[]>}
- */
-export async function listarAlunos() {
-  const snap = await fb.f.getDocs(fb.f.collection(fb.db, 'alunos'));
-  return snap.docs
-    .map(d => ({ usuario: d.id, nome: d.data().perfil?.nome || '', respostas: (d.data().memoria || []).length }))
-    .sort((a, b) => a.usuario.localeCompare(b.usuario));
 }
 
 /**
@@ -647,4 +580,103 @@ export async function resetarMemoriaDoAluno(textoUsuario) {
     memoriaResetadaEm: resetEm, atualizadoEm: resetEm,
   });
   return { usuario: u, apagadas: (snap.data().memoria || []).length, resetEm };
+}
+
+/* ================================================================
+   Resumo de cada conta: resumos/{usuario}
+   Um documento pequeno com os números do aluno (questões, acertos, simulados, último
+   acesso, e-mail), gravado pelo próprio aluno ao entrar e, no máximo, a cada 10 minutos
+   de uso. É o que a lista de Usuários da Administração lê: assim ela não precisa baixar o
+   histórico inteiro de cada aluno (que pode ter milhares de respostas).
+   ================================================================ */
+
+let ultimoResumo = 0;
+const INTERVALO_RESUMO = 10 * 60 * 1000;
+
+/** Os números que vão no resumo, a partir dos dados completos do aluno. */
+function numerosDoResumo(dados) {
+  const memoria = Array.isArray(dados.memoria) ? dados.memoria : [];
+  const tentativas = dados.simulado?.tentativas || [];
+  return {
+    respostas: memoria.length,
+    acertos: memoria.filter(m => m.ok).length,
+    simulados: tentativas.length,
+    ultimaResposta: memoria.length ? memoria[memoria.length - 1].t || null : null,
+  };
+}
+
+function atualizarResumo(dados, forcar = false) {
+  if (!usuario || !fb) return;
+  const agora = Date.now();
+  if (!forcar && agora - ultimoResumo < INTERVALO_RESUMO) return;
+  ultimoResumo = agora;
+  const u = usuarioExibido(usuario);
+  fb.f.setDoc(fb.f.doc(fb.db, 'resumos', u), {
+    usuario: u,
+    uid: usuario.uid,
+    nome: dados.perfil?.nome || usuario.displayName || '',
+    email: temEmailReal(usuario) ? usuario.email : '',
+    criadoEm: Date.parse(usuario.metadata?.creationTime || '') || null,
+    ultimoAcesso: agora,
+    ...numerosDoResumo(dados),
+  }, { merge: true }).catch(() => { /* regras antigas ou offline: tenta de novo depois */ });
+}
+
+/* ---------------- Usuários (só administradores) ---------------- */
+
+/**
+ * Todas as contas, com plano, admin e os números do resumo. Lê só três coleções de
+ * documentos pequenos (resumos, planos e admins), então continua rápido com centenas de alunos.
+ * @returns {Promise<Object[]>}
+ */
+export async function listarUsuarios() {
+  const [resumos, planos, admins] = await Promise.all([
+    fb.f.getDocs(fb.f.collection(fb.db, 'resumos')),
+    fb.f.getDocs(fb.f.collection(fb.db, 'planos')),
+    fb.f.getDocs(fb.f.collection(fb.db, 'admins')),
+  ]);
+  const contas = new Map();
+  const pegar = u => { if (!contas.has(u)) contas.set(u, { usuario: u }); return contas.get(u); };
+  planos.docs.forEach(d => { const p = d.data(); Object.assign(pegar(d.id), { plano: p.plano, nome: p.nome || '', planoAlteradoEm: p.atualizadoEm || null, planoAlteradoPor: p.alteradoPor || null, temPlano: true }); });
+  resumos.docs.forEach(d => { const r = d.data(); const c = pegar(d.id); Object.assign(c, { ...r, nome: r.nome || c.nome || '', temResumo: true }); });
+  const adminPorUsuario = new Map(admins.docs.map(d => [d.data().usuario || d.id, d.id]));
+  adminPorUsuario.forEach((uid, u) => { const c = pegar(u); c.uid ||= uid; });
+  return [...contas.values()].map(c => ({
+    nome: '', email: '', plano: 'gratuito', respostas: null, acertos: null, simulados: null, ultimoAcesso: null, criadoEm: null,
+    ...c,
+    admin: adminPorUsuario.has(c.usuario),
+    adminUid: adminPorUsuario.get(c.usuario) || null,
+  })).sort((a, b) => a.usuario.localeCompare(b.usuario));
+}
+
+/**
+ * Manutenção (só administradores): lê os dados completos de todos os alunos uma vez e
+ * cria ou atualiza o resumo e o registro de plano de cada um. Serve para as contas que ainda
+ * não entraram desde que os resumos existem. Lê tudo: use de vez em quando, não todo dia.
+ * @returns {Promise<{ resumos: number, planos: number }>}
+ */
+export async function recalcularUsuarios() {
+  const [alunos, planos] = await Promise.all([
+    fb.f.getDocs(fb.f.collection(fb.db, 'alunos')),
+    fb.f.getDocs(fb.f.collection(fb.db, 'planos')),
+  ]);
+  const comPlano = new Set(planos.docs.map(d => d.id));
+  let nResumos = 0, nPlanos = 0;
+  for (const d of alunos.docs) {
+    const u = d.id, dados = d.data();
+    const reg = await fb.f.getDoc(docUsuario(u)).catch(() => null);
+    const r = reg?.exists() ? reg.data() : {};
+    await fb.f.setDoc(fb.f.doc(fb.db, 'resumos', u), {
+      usuario: u, nome: dados.perfil?.nome || '',
+      ...(r.uid ? { uid: r.uid } : {}),
+      ...(r.temEmail && r.email ? { email: r.email } : {}),
+      ...numerosDoResumo(dados),
+    }, { merge: true });
+    nResumos++;
+    if (!comPlano.has(u)) {
+      await fb.f.setDoc(fb.f.doc(fb.db, 'planos', u), { usuario: u, nome: dados.perfil?.nome || '', plano: 'gratuito', admin: false, atualizadoEm: Date.now(), alteradoPor: usuarioExibido(usuario) });
+      nPlanos++;
+    }
+  }
+  return { resumos: nResumos, planos: nPlanos };
 }
