@@ -104,6 +104,9 @@ const ICONES = {
   'check': `
     <polyline points="20 6 9 17 4 12"/>`,
 
+  'lock': `
+    <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>`,
+
   'bar-chart': `
     <line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="18" y1="20" x2="18" y2="4"/>`,
 

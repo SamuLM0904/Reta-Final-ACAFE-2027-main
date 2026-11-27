@@ -9,6 +9,7 @@
  * As obras ficam em dados/obras.js (window.OBRAS); não há download: tudo na tela.
  */
 
+import { temAcesso, abrirJanelaPlanos } from './acesso.js';
 import { icone } from './icones.js';
 import { escaparHtml } from './utils.js';
 
@@ -92,6 +93,7 @@ export function avisarObras(obras) {
       const alvo = e.target.closest('[data-acao], [data-capitulo]');
       if (!alvo) return;
       if (alvo.dataset.capitulo !== undefined) return capitulo(Number(alvo.dataset.capitulo));
+      if (alvo.dataset.acao === 'livro' && !temAcesso('leituras')) { abrirJanelaPlanos('leituras'); return; }
       if (alvo.dataset.acao === 'livro' || alvo.dataset.acao === 'sumario') return sumario();
       if (alvo.dataset.acao === 'comecar') dialogo.close();
     });

@@ -433,6 +433,20 @@ export async function lerQuestoes() {
 }
 
 /** O usuário logado é administrador? (existe admins/{UID da conta}) */
+/**
+ * Plano da conta em uso: 'ilimitado' para administradores; senão o de planos/<usuário>
+ * ('gratuito' se não houver registro). Só administradores podem mudar (firestore.rules).
+ * @returns {Promise<string>}
+ */
+export async function lerPlanoDaConta() {
+  if (!usuario || !fb) return 'gratuito';
+  if (await eAdmin()) return 'ilimitado';
+  try {
+    const snap = await fb.f.getDoc(fb.f.doc(fb.db, 'planos', usuarioExibido(usuario)));
+    return (snap.exists() && snap.data().plano) || 'gratuito';
+  } catch { return 'gratuito'; }
+}
+
 export async function eAdmin() {
   if (!usuario || !fb) return false;
   try {

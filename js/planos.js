@@ -11,7 +11,7 @@ import { icone } from './icones.js';
 import { PROVA } from './contagem.js';
 
 /** O que cada plano inclui (exemplo para discussão). */
-const PLANOS = [
+export const PLANOS = [
   { id: 'basico', nome: 'Básico', resumo: 'Para treinar com as provas da ACAFE.', recursos: [
     'Simulados com as provas anteriores da ACAFE',
     'Questões de estudo de outros vestibulares',
@@ -32,14 +32,14 @@ const PLANOS = [
 ];
 
 /** Preço mensal (R$) de cada plano por duração — FICTÍCIO. Quanto mais longo, mais barato o mês. */
-const DURACOES = [
+export const DURACOES = [
   { meses: 1,  precos: { basico: 39.9, pro: 59.9, ultra: 89.9 } },
   { meses: 3,  precos: { basico: 34.9, pro: 52.9, ultra: 79.9 } },
   { meses: 6,  precos: { basico: 29.9, pro: 44.9, ultra: 69.9 } },
   { meses: 12, precos: { basico: 24.9, pro: 37.9, ultra: 59.9 } },
 ];
 
-const reais = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+export const reais = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 /** Meses inteiros que faltam para a prova (0 se faltar menos de um mês). */
 function mesesAteAProva(agora = new Date()) {

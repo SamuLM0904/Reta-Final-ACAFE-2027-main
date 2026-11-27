@@ -17,6 +17,7 @@
  * Cálculos: guia-plano.js. Interpretação do chat: guia-chat.js. Dados: armazenamento.js (guia).
  */
 
+import { temAcesso, liberar, abrirJanelaPlanos } from './acesso.js';
 import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
 import { escaparHtml } from './utils.js';
@@ -487,6 +488,7 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
 
   // Simulado da semana e mini-simulado do dia: cria o simulado pronto e abre
   container.querySelectorAll('[data-gerar-simulado]').forEach(btn => btn.addEventListener('click', async () => {
+    if (btn.dataset.nome === 'Simulado do dia' && !liberar('simulado-do-dia')) return;
     if (lerSimulado().atual && !(await confirmar({
       titulo: 'Começar um novo simulado?',
       mensagem: 'Já existe um simulado em andamento. Começar este vai descartá-lo e apagar as marcações dele da sua memória de erros e acertos.',
@@ -569,7 +571,8 @@ function renderizarPainel(container, questoesProvas, questoesEstudo) {
     redesenhar();
   });
 
-  vincularChat(container, ctx, redesenhar);
+  container.querySelectorAll('[data-ver-planos]').forEach(btn => btn.addEventListener('click', () => abrirJanelaPlanos(btn.dataset.verPlanos)));
+  if (temAcesso('chat-guia')) vincularChat(container, ctx, redesenhar);
   atualizarResumoFeitos(container);
 }
 
@@ -1079,6 +1082,17 @@ function htmlMudancasAtivas(ctx) {
 const Reconhecimento = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
 
 function htmlChat() {
+  if (!temAcesso('chat-guia')) {
+    return `
+      <section class="simulado-card guia-chat guia-chat--bloqueado" aria-label="Converse com o guia">
+        <div class="simulado-card__corpo">
+          <h3 class="simulado-card__titulo">${icone('lock', 16)} Precisa mudar algo no cronograma?</h3>
+          <p class="simulado-card__info">No plano Ultra, você conversa com o guia ("vou viajar de sexta a domingo",
+            "dia 14 só consigo 2h") e ele ajusta o cronograma até a prova.</p>
+          <button type="button" class="btn btn-secundario" data-ver-planos="chat-guia">Ver os planos</button>
+        </div>
+      </section>`;
+  }
   return `
     <section class="simulado-card guia-chat" aria-label="Converse com o guia">
       <div class="simulado-card__corpo">

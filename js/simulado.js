@@ -21,6 +21,7 @@
  * regressivo (5 horas, a duração da ACAFE) e pausa quando se sai da tela.
  */
 
+import { temAcesso, liberar } from './acesso.js';
 import { cronometrarQuestao, tempoNaQuestao } from './cronometro-questao.js';
 import { icone } from './icones.js';
 import { confirmar } from './confirmar.js';
@@ -1091,7 +1092,10 @@ export function renderizarResultadoSimulado(container, questoesProvas, n) {
   const revisar = i => renderizarRevisao(container, questoes, tentativa, i,
     () => renderizarResultadoSimulado(container, questoesProvas, n), { indiceTentativa: n });
   container.querySelector('#btn-revisar').addEventListener('click', () => revisar(0));
-  container.querySelector('#btn-diagnosticar')?.addEventListener('click', (e) => revisar(Number(e.currentTarget.dataset.indice)));
+  container.querySelector('#btn-diagnosticar')?.addEventListener('click', (e) => {
+    if (!liberar('diagnostico')) return;
+    revisar(Number(e.currentTarget.dataset.indice));
+  });
   container.querySelector('#simulado-gabarito').addEventListener('click', (e) => {
     const btn = e.target.closest('.navegador-questoes__btn');
     if (btn) revisar(Number(btn.dataset.indice));
@@ -1108,7 +1112,7 @@ function renderizarRevisao(container, questoes, tentativa, indice, voltarAoResul
   const r = tentativa.respostas;
   const questao = questoes[indice];
   // só nas questões erradas, e quando se sabe de qual tentativa é (para gravar o motivo)
-  const diagnosticar = indiceTentativa !== undefined && r[questao.id] && r[questao.id] !== questao.gabarito;
+  const diagnosticar = indiceTentativa !== undefined && r[questao.id] && r[questao.id] !== questao.gabarito && temAcesso('diagnostico');
   const situacao = i => {
     const q = questoes[i];
     return !r[q.id] ? 'branco' : r[q.id] === q.gabarito ? 'certa' : 'errada';

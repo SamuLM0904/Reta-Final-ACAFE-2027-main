@@ -37,11 +37,12 @@ import { renderizarPlanos }       from './planos.js';
 import { htmlContagemCompacta, iniciarContagemCompacta } from './contagem.js';
 import { iniciarTemaAutomatico } from './tema.js';
 import { pararCronometro } from './cronometro-questao.js';
+import { definirPlano, temAcesso, abrirJanelaPlanos, planoEmUso, nomeDoPlano } from './acesso.js';
 import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
   nuvemAtiva, iniciarNuvem, usuarioAtual, usuarioExibido,
-  lerDadosAluno, agendarGravacaoAluno, eAdmin, enviarQuestoes, ouvirReset,
+  lerDadosAluno, agendarGravacaoAluno, eAdmin, enviarQuestoes, ouvirReset, lerPlanoDaConta,
 } from './nuvem.js';
 
 /* ================================================================
@@ -65,12 +66,23 @@ const htmlLogo = (tamanho = 36) => `
 /** Links do menu (as rotas continuam as mesmas). `ativo` diz quais hashes acendem o link. */
 const LINKS_MENU = [
   { href: '#/',        nome: 'Início',            ativo: h => h === '#/' || h === '' },
-  { href: '#/guia',    nome: 'Guia de estudos',   ativo: h => h === '#/guia' },
-  { href: '#/simulados', nome: 'Simulados',       ativo: h => h.startsWith('#/simulado') },
-  { href: '#/questoes', nome: 'Banco de questões', ativo: h => h === '#/questoes' || h.startsWith('#/questoes/') },
-  { href: '#/revisao', nome: 'Correção de erros', ativo: h => h === '#/revisao' },
-  { href: '#/em-breve/leituras-obrigatorias', nome: 'Leituras obrigatórias', ativo: h => h === '#/em-breve/leituras-obrigatorias' },
+  { href: '#/guia',    nome: 'Guia de estudos',   ativo: h => h === '#/guia', recurso: 'guia' },
+  { href: '#/simulados', nome: 'Simulados',       ativo: h => h.startsWith('#/simulado'), recurso: 'simulados' },
+  { href: '#/questoes', nome: 'Banco de questões', ativo: h => h === '#/questoes' || h.startsWith('#/questoes/'), recurso: 'banco-questoes' },
+  { href: '#/revisao', nome: 'Correção de erros', ativo: h => h === '#/revisao', recurso: 'revisao' },
+  { href: '#/em-breve/leituras-obrigatorias', nome: 'Leituras obrigatórias', ativo: h => h === '#/em-breve/leituras-obrigatorias', recurso: 'leituras' },
+  { href: '#/planos',  nome: 'Planos',            ativo: h => h === '#/planos' },
 ];
+
+/** Que recurso (js/acesso.js) cada tela exige; a tela sem recurso é livre. */
+function recursoDaRota(hash) {
+  if (hash === '#/guia') return 'guia';
+  if (hash === '#/revisao') return 'revisao';
+  if (hash.startsWith('#/simulado')) return 'simulados';
+  if (hash === '#/questoes' || hash.startsWith('#/questoes/')) return 'banco-questoes';
+  if (hash === '#/em-breve/leituras-obrigatorias') return 'leituras';
+  return null;
+}
 
 /**
  * Menu do site: lateral fixo no desktop (≥ 1024 px) e barra superior com botão de menu
@@ -97,11 +109,13 @@ function renderizarCabecalho() {
       </div>
       <div class="menu-site__painel" id="menu-navegacao">
         <nav class="menu-site__nav" aria-label="Navegação principal">
-          ${LINKS_MENU.map(l => `<a href="${l.href}" class="menu-site__link" data-menu-link>${l.nome}</a>`).join('')}
+          ${LINKS_MENU.map(l => `<a href="${l.href}" class="menu-site__link${l.recurso && !temAcesso(l.recurso) ? ' menu-site__link--bloqueado' : ''}" data-menu-link>
+            <span>${l.nome}</span>${l.recurso && !temAcesso(l.recurso) ? `<span class="menu-site__cadeado" title="Precisa de outro plano" aria-label="bloqueado">${icone('lock', 14)}</span>` : ''}</a>`).join('')}
           <button type="button" class="menu-site__link" id="btn-config">Configurações</button>
         </nav>
         <div class="menu-site__rodape">
-          ${user ? `<p class="menu-site__usuario" title="Usuário: ${usuarioExibido(user)}">${user.displayName || usuarioExibido(user)}</p>` : ''}
+          ${user ? `<p class="menu-site__usuario" title="Usuário: ${usuarioExibido(user)}">${user.displayName || usuarioExibido(user)}</p>
+          <a href="#/planos" class="menu-site__plano" data-menu-link-plano>Plano ${nomeDoPlano(planoEmUso())}</a>` : ''}
           ${htmlContagemCompacta()}
         </div>
       </div>
@@ -141,7 +155,18 @@ function roteador() {
   const todasQuestoes  = window.QUESTOES || [];          // estudo por matéria
   const questoesProvas = window.QUESTOES_PROVAS || [];   // provas anteriores (simulados)
 
-  const hash = window.location.hash || '#/';
+  let hash = window.location.hash || '#/';
+
+  // Tela que o plano não libera: fica na tela inicial e abre a janela de planos
+  let bloqueado = null;
+  if (!(nuvemAtiva() && !usuarioAtual())) {
+    const recurso = recursoDaRota(hash);
+    if (recurso && !temAcesso(recurso)) {
+      bloqueado = recurso;
+      history.replaceState(null, '', '#/');
+      hash = '#/';
+    }
+  }
 
   // Limpa o conteúdo anterior (e para o tempo da questão que estava na tela; a próxima tela retoma)
   pararCronometro();
@@ -165,6 +190,7 @@ function roteador() {
   if (hash === '#/' || hash === '') {
     document.title = 'Sapiens Med';
     renderizarDashboard(elApp, todasQuestoes, questoesProvas);
+    if (bloqueado) { marcarLinkAtivo(); abrirJanelaPlanos(bloqueado); }
     return;
   }
 
@@ -355,6 +381,7 @@ window.QUESTOES_ARQUIVOS = { estudo: window.QUESTOES || [], provas: window.QUEST
 async function aoMudarUsuario(user) {
   if (!user) {
     definirAluno(null);
+    definirPlano('gratuito');
     renderizarCabecalho();
     roteador();
     return;
@@ -363,6 +390,8 @@ async function aoMudarUsuario(user) {
   let dados = null;
   try { dados = await lerDadosAluno(); } catch (e) { console.warn('[Nuvem] Usando a cópia local:', e); }
   definirAluno(user.uid, dados, agendarGravacaoAluno);
+  // plano da conta: o que o site libera (administrador = ilimitado; conta nova = gratuito)
+  definirPlano(await lerPlanoDaConta());
   // se um administrador zerar esta conta com o site aberto, zera aqui também e recomeça
   ouvirReset(resetConhecido(), (resetEm) => { resetarMemoriaLocal(resetEm); location.reload(); });
 

@@ -82,6 +82,16 @@
         allow read, update: if admin();
       }
 
+      // Plano de cada aluno (gratuito, basico, pro, ultra): o aluno lê o dele; SÓ administradores
+      // criam ou mudam (enquanto não há pagamento automático, a troca é manual). Sem registro = gratuito.
+      match /planos/{usuario} {
+        allow get: if eDono(usuario) || admin();
+        allow list: if admin();
+        allow create, update: if admin()
+          && request.resource.data.plano in ['gratuito', 'basico', 'pro', 'ultra'];
+        allow delete: if admin();
+      }
+
       // Banco de questões: alunos logados leem; só administradores gravam
       match /questoes/{id} {
         allow read: if logado();

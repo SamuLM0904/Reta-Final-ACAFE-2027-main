@@ -15,6 +15,7 @@
  * As outras telas (guia, correção de erros, leituras) ficam no menu lateral.
  */
 
+import { temAcesso, liberar, abrirJanelaPlanos } from './acesso.js';
 import { icone } from './icones.js';
 import { escaparHtml } from './utils.js';
 import { htmlGraficoBarras, htmlLegenda, vincularDica, porDia, abrirGraficoAmpliado } from './grafico-questoes.js';
@@ -106,6 +107,21 @@ function htmlProximaAtividade(prox) {
       <div class="inicio-bloco__acoes">
         ${htmlBotaoDaAcao(prox.acao, prox.rotuloAcao)}
         <a href="#/guia" class="btn btn-secundario">Ver o dia todo</a>
+      </div>
+    </section>`;
+}
+
+/** Sem o plano do Guia: o card mostra o que o Guia faz e abre a janela de planos. */
+function htmlGuiaBloqueado() {
+  return `
+    <section class="inicio-bloco inicio-bloco--bloqueado" aria-labelledby="inicio-bloco-titulo">
+      <div class="inicio-bloco__texto">
+        <p class="inicio-bloco__rotulo">${icone('lock', 12)} Guia de estudos · plano Pro</p>
+        <h2 class="inicio-bloco__titulo" id="inicio-bloco-titulo">Abra o site e clique: o Guia diz o que estudar</h2>
+        <p class="inicio-bloco__descricao">Cronograma diário montado para você, com os blocos de estudo, a correção de erros e os simulados na medida certa até a prova.</p>
+      </div>
+      <div class="inicio-bloco__acoes">
+        <button type="button" class="btn btn-primario inicio-bloco__principal" data-ver-planos="guia">Ver os planos</button>
       </div>
     </section>`;
 }
@@ -246,7 +262,7 @@ function htmlMaterias(questoesProvas, questoesEstudo, memoria) {
 
 const MODULOS_INICIO = [
   { id: 'simulado-andamento', quando: () => Boolean(lerSimulado().atual), html: () => htmlSimuladoEmAndamento() },
-  { id: 'proxima-atividade',  quando: () => true, html: m => htmlProximaAtividade(m.prox) },
+  { id: 'proxima-atividade',  quando: () => true, html: m => (temAcesso('guia') ? htmlProximaAtividade(m.prox) : htmlGuiaBloqueado()) },
   { id: 'simulados', lado: true, quando: () => true, html: m => htmlSimulados(m.memoria) },
   { id: 'materias',  lado: true, quando: () => true, html: m => htmlMaterias(m.questoesProvas, m.todasQuestoes, m.memoria) },
 ];
@@ -294,7 +310,9 @@ export function renderizarDashboard(container, todasQuestoes, questoesProvas = [
     try { sessionStorage.setItem('acafe2027:revisao-limite', link.dataset.revisaoLimite); } catch { /* ignora */ }
   }));
   // Simulado do dia / mini-simulado: cria e abre
+  container.querySelectorAll('[data-ver-planos]').forEach(btn => btn.addEventListener('click', () => abrirJanelaPlanos(btn.dataset.verPlanos)));
   container.querySelectorAll('[data-criar-simulado]').forEach(btn => btn.addEventListener('click', async () => {
+    if (btn.dataset.nome === 'Simulado do dia' && !liberar('simulado-do-dia')) return;
     if (lerSimulado().atual && !(await confirmar({
       titulo: 'Começar um novo simulado?',
       mensagem: 'Já existe um simulado em andamento. Começar este vai descartá-lo e apagar as marcações dele da sua memória de erros e acertos.',

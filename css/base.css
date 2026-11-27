@@ -822,3 +822,52 @@ img, svg { max-width: 100%; display: block; }
 .dificuldade__etiqueta--dificil, .dificuldade__etiqueta--muito-dificil { background: var(--cor-errada-fundo); }
 .dificuldade__origem, .dificuldade__admin { font-weight: 500; color: var(--cor-texto-fraco); }
 .dificuldade__admin[hidden] { display: none; }
+
+/* Planos: cadeado no menu, plano no rodapé e janela de planos (js/acesso.js) */
+.menu-site__link { justify-content: space-between; gap: 8px; }
+.menu-site__link--bloqueado { color: var(--cor-texto-fraco); }
+.menu-site__cadeado { display: inline-flex; color: var(--cor-texto-fraco); }
+.menu-site__plano { padding-inline: 12px; font-size: var(--tamanho-xs); font-weight: 600; color: var(--cor-primaria); text-decoration: none; }
+.menu-site__plano:hover { text-decoration: underline; }
+
+.janela-planos { width: min(94vw, 1080px); }
+.janela-planos__caixa { align-items: stretch; gap: 16px; }
+.janela-planos__topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.janela-planos__sub { margin: 4px 0 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.janela-planos__duracoes { display: flex; flex-wrap: wrap; gap: 6px; }
+.janela-planos__duracoes [aria-checked="true"] { background: var(--cor-primaria); border-color: var(--cor-primaria); color: var(--cor-texto-sobre-primaria); }
+.janela-planos__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: center; padding-block: 12px; }
+.janela-plano {
+  position: relative;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 20px 18px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-fundo-card);
+  transition: transform var(--transicao);
+}
+.janela-plano--destaque { transform: scale(1.06); border: 2px solid var(--cor-primaria); background: var(--cor-dourado-suave); z-index: 1; }
+.janela-plano--atual { border-style: dashed; }
+.janela-plano__selo {
+  position: absolute; top: -12px; left: 16px;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--cor-primaria); color: var(--cor-texto-sobre-primaria);
+  font-size: 0.6875rem; font-weight: 700;
+}
+.janela-plano__selo--atual { background: var(--cor-verde-militar); color: var(--cor-texto); border: 1px solid var(--cor-verde-militar-borda); }
+.janela-plano__nome { margin: 0; font-family: var(--fonte-titulo); font-size: 1.25rem; }
+.janela-plano__resumo, .janela-plano__total { margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-suave); }
+.janela-plano__preco { margin: 4px 0 0; color: var(--cor-texto-suave); }
+.janela-plano__preco strong { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: 1.5rem; color: var(--cor-texto); }
+.janela-plano__recursos { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: var(--tamanho-sm); flex: 1; }
+.janela-plano__recursos li { display: flex; gap: 6px; align-items: flex-start; }
+.janela-plano__recursos svg { flex: none; margin-top: 3px; color: var(--cor-primaria); }
+.janela-planos__aviso { margin: 0; font-size: var(--tamanho-xs); color: var(--cor-texto-fraco); text-align: center; }
+@media (max-width: 760px) {
+  .janela-planos__grade { grid-template-columns: 1fr; }
+  .janela-plano--destaque { transform: none; }
+}
+
+/* Cards bloqueados (tela inicial e chat do Guia) */
+.inicio-bloco--bloqueado .inicio-bloco__rotulo { display: inline-flex; align-items: center; gap: 6px; }
+.guia-chat--bloqueado .simulado-card__titulo { display: inline-flex; align-items: center; gap: 8px; }

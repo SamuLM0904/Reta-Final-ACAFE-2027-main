@@ -10,6 +10,8 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 | Desde | Pergunta | Como está hoje |
 |---|---|---|
+| 27/11/2026 | Publicar o `firestore.rules` novo no Console do Firebase (coleção `planos`: o aluno lê o próprio plano e só administradores mudam). | Até publicar, todas as contas que não são de administrador ficam no plano Gratuito. |
+| 27/11/2026 | O plano Gratuito libera só a tela inicial, as Configurações e a tela de Planos (o resto aparece com cadeado). Quer liberar algo a mais no gratuito (ex.: algumas questões do banco)? | Como descrito; muda em `RECURSOS`, em `js/acesso.js`. |
 | 26/11/2026 | Gemini Flash no chat do Guia: criar a chave em aistudio.google.com, restringir ao endereço do site no Google Cloud Console e colocar em `js/ia-config.js` (ou me passar para eu colocar). | Código pronto; sem chave, o chat usa só as regras. |
 | 26/11/2026 | Data oficial da ACAFE Inverno 2027 (quando sair o edital). | **Data de teste:** 20/06/2027, 13h20 (portões 13h), em `js/contagem.js`, para o Guia funcionar. |
 
