@@ -546,7 +546,8 @@ img, svg { max-width: 100%; display: block; }
 }
 
 .configuracoes__subtitulo {
-  font-size: var(--tamanho-xs);
+  margin: 0;
+  font-size: 0.9375rem;   /* 15 px: títulos das seções (Aparência, Conta...) */
   font-weight: var(--peso-negrito);
   letter-spacing: 0.06em;
   text-transform: uppercase;
