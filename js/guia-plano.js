@@ -99,14 +99,21 @@ const DIA_MS = 86400000;
    Datas (sempre no horário de Brasília, como dia "AAAA-MM-DD")
    ================================================================ */
 
+/* O formatador é criado UMA vez: toLocaleDateString com timeZone monta um novo a cada
+   chamada e é muito lento (com um ano de respostas, a linha do tempo do Guia levava ~30 s). */
+const FORMATO_DIA = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' });
+
 /** Dia "AAAA-MM-DD" de uma data, no horário de Brasília. */
-export const chaveDia = (data = new Date()) =>
-  new Date(data).toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' });
+export const chaveDia = (data = new Date()) => FORMATO_DIA.format(new Date(data));
 
 /** Meio-dia (Brasília) do dia, para contas sem problema de fuso. */
 const meioDia = chave => new Date(`${chave}T12:00:00-03:00`);
 
-export const somarDias = (chave, n) => chaveDia(meioDia(chave).getTime() + n * DIA_MS);
+/** Dia somado de n dias (conta direta no calendário, sem fuso). */
+export const somarDias = (chave, n) => {
+  const [a, m, d] = chave.split('-').map(Number);
+  return new Date(Date.UTC(a, m - 1, d + n)).toISOString().slice(0, 10);
+};
 
 /** 0 = domingo … 6 = sábado. */
 export const diaDaSemana = chave => meioDia(chave).getUTCDay();
@@ -553,8 +560,10 @@ export function planejarPeriodo(guia, ctx) {
   const resultado = [];
   // questões a refazer em cada dia: no 1º dia, todas as já vencidas; depois, as que vencem naquele dia
   const fimDoDia = k => meioDia(k).getTime() + DIA_MS / 2;
-  const errosNoDia = dia => pendentes.filter(p => p.devidaEm <= fimDoDia(dia)
-    && (dia === de || p.devidaEm > fimDoDia(somarDias(dia, -1)))).length;
+  const errosNoDia = dia => {
+    const fim = fimDoDia(dia), inicio = dia === de ? -Infinity : fimDoDia(somarDias(dia, -1));   // uma vez por dia
+    return pendentes.filter(p => p.devidaEm <= fim && p.devidaEm > inicio).length;
+  };
   for (let dia = de; dia <= ate; dia = somarDias(dia, 1)) {
     let plano = planosFixos[dia];
     if (!plano) {
