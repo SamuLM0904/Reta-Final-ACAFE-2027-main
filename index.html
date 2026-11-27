@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Plataforma de estudos para o vestibular de Medicina da ACAFE 2027. QuestÃƒÂµes reais das provas anteriores de Biologia, QuÃƒÂ­mica, FÃƒÂ­sica, MatemÃƒÂ¡tica, PortuguÃƒÂªs, Literatura, HistÃƒÂ³ria, Geografia e Espanhol.">
+  <meta name="description" content="Plataforma de estudos para o vestibular de Medicina da ACAFE 2027. QuestÃƒÆ’Ã‚Âµes reais das provas anteriores de Biologia, QuÃƒÆ’Ã‚Â­mica, FÃƒÆ’Ã‚Â­sica, MatemÃƒÆ’Ã‚Â¡tica, PortuguÃƒÆ’Ã‚Âªs, Literatura, HistÃƒÆ’Ã‚Â³ria, Geografia e Espanhol.">
   <meta name="theme-color" content="#0E1116">
 
   <title>Sapiens Med</title>
 
-  <!-- Tema salvo (ConfiguraÃƒÂ§ÃƒÂµes Ã¢â€ â€™ AparÃƒÂªncia), aplicado antes de desenhar a pÃƒÂ¡gina Ã¢â‚¬â€ ver js/tema.js -->
+  <!-- Tema salvo (ConfiguraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ AparÃƒÆ’Ã‚Âªncia), aplicado antes de desenhar a pÃƒÆ’Ã‚Â¡gina ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ver js/tema.js -->
   <script>
     (function () {
       var barras = { escuro: '#0E1116', claro: '#F6F7F9' };
@@ -20,14 +20,14 @@
     })();
   </script>
 
-  <!-- Fontes: Space Grotesk (tÃƒÂ­tulos), Inter (texto), JetBrains Mono (nÃƒÂºmeros) Ã¢â‚¬â€ ver IDENTIDADE-VISUAL.md -->
+  <!-- Fontes: Space Grotesk (tÃƒÆ’Ã‚Â­tulos), Inter (texto), JetBrains Mono (nÃƒÆ’Ã‚Âºmeros) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ver IDENTIDADE-VISUAL.md -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
-  <!-- Estilos Ã¢â‚¬â€ ordem importa: variÃƒÂ¡veis Ã¢â€ â€™ base Ã¢â€ â€™ telas -->
+  <!-- Estilos ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ordem importa: variÃƒÆ’Ã‚Â¡veis ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ base ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ telas -->
   <link rel="stylesheet" href="css/variaveis.css?v=132">
-  <link rel="stylesheet" href="css/base.css?v=137">
+  <link rel="stylesheet" href="css/base.css?v=138">
   <link rel="stylesheet" href="css/dashboard.css?v=131">
   <link rel="stylesheet" href="css/questoes.css?v=135">
   <link rel="stylesheet" href="css/simulado.css?v=133">
@@ -36,24 +36,24 @@
   <link rel="stylesheet" href="css/login.css?v=129">
 
   <!--
-    Os dados sÃƒÂ£o scripts clÃƒÂ¡ssicos (sem type="module"), carregados antes do app:
-      dados/questoes.js          Ã¢â€ â€™ window.QUESTOES        (questÃƒÂµes de estudo por matÃƒÂ©ria)
-      dados/provas-anteriores.js Ã¢â€ â€™ window.QUESTOES_PROVAS (provas antigas Ã¢â‚¬â€ sÃƒÂ³ simulados)
-      dados/provas/*.js          Ã¢â€ â€™ uma prova por arquivo, acrescentadas a QUESTOES_PROVAS
-      dados/estudo/*.js          Ã¢â€ â€™ uma prova de outro vestibular por arquivo, acrescentadas a QUESTOES
+    Os dados sÃƒÆ’Ã‚Â£o scripts clÃƒÆ’Ã‚Â¡ssicos (sem type="module"), carregados antes do app:
+      dados/questoes.js          ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ window.QUESTOES        (questÃƒÆ’Ã‚Âµes de estudo por matÃƒÆ’Ã‚Â©ria)
+      dados/provas-anteriores.js ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ window.QUESTOES_PROVAS (provas antigas ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â sÃƒÆ’Ã‚Â³ simulados)
+      dados/provas/*.js          ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ uma prova por arquivo, acrescentadas a QUESTOES_PROVAS
+      dados/estudo/*.js          ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ uma prova de outro vestibular por arquivo, acrescentadas a QUESTOES
   -->
   <script src="dados/questoes.js?v=124"></script>
   <script src="dados/provas-anteriores.js?v=125"></script>
   <script src="dados/conteudos.js?v=134"></script>
   <script src="dados/obras.js?v=131"></script>
-  <!-- Uma linha por prova (cada arquivo acrescenta as suas questÃƒÂµes ao banco) -->
+  <!-- Uma linha por prova (cada arquivo acrescenta as suas questÃƒÆ’Ã‚Âµes ao banco) -->
   <script src="dados/provas/2026-inverno.js?v=130"></script>
   <script src="dados/provas/2026-verao.js?v=130"></script>
   <script src="dados/provas/2025-inverno.js?v=130"></script>
   <script src="dados/provas/2025-verao.js?v=130"></script>
   <script src="dados/provas/2024-inverno.js?v=130"></script>
   <script src="dados/provas/2024-verao.js?v=130"></script>
-  <!-- QuestÃƒÂµes de estudo: uma linha por prova de outro vestibular (acrescentadas a QUESTOES) -->
+  <!-- QuestÃƒÆ’Ã‚Âµes de estudo: uma linha por prova de outro vestibular (acrescentadas a QUESTOES) -->
   <script src="dados/estudo/enem-2025-d1.js?v=135"></script>
   <script src="dados/estudo/enem-2025-matematica.js?v=135"></script>
   <script src="dados/estudo/enem-2025-natureza.js?v=135"></script>
@@ -82,12 +82,12 @@
 
 <body>
 
-  <!-- CabeÃƒÂ§alho: preenchido pelo JS -->
+  <!-- CabeÃƒÆ’Ã‚Â§alho: preenchido pelo JS -->
   <div id="cabecalho"></div>
 
-  <!-- ConteÃƒÂºdo principal: trocado pelo roteador -->
+  <!-- ConteÃƒÆ’Ã‚Âºdo principal: trocado pelo roteador -->
   <main id="app" role="main">
-    <!-- Tela de carregamento inicial enquanto o JS nÃƒÂ£o inicializa -->
+    <!-- Tela de carregamento inicial enquanto o JS nÃƒÆ’Ã‚Â£o inicializa -->
     <div
       style="
         display: flex;
@@ -103,9 +103,9 @@
   </main>
 
   <!--
-    app.js ÃƒÂ© o ponto de entrada dos mÃƒÂ³dulos ES.
+    app.js ÃƒÆ’Ã‚Â© o ponto de entrada dos mÃƒÆ’Ã‚Â³dulos ES.
     type="module" garante que os imports funcionem e que o script
-    rode apÃƒÂ³s o DOM estar disponÃƒÂ­vel (defer implÃƒÂ­cito).
+    rode apÃƒÆ’Ã‚Â³s o DOM estar disponÃƒÆ’Ã‚Â­vel (defer implÃƒÆ’Ã‚Â­cito).
   -->
   <script type="module" src="js/app.js"></script>
 

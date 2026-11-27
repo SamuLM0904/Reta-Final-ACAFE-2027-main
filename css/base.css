@@ -396,7 +396,7 @@ img, svg { max-width: 100%; display: block; }
   margin: auto;
   height: fit-content;
   max-height: 90vh;
-  overflow: auto;
+  overflow: hidden;   /* quem rola é a caixa de dentro: a barra de rolagem fica dentro dos cantos arredondados */
   width: min(92vw, 440px);
   padding: 0;
   border: 1px solid var(--cor-borda);
@@ -418,6 +418,18 @@ img, svg { max-width: 100%; display: block; }
   align-items: flex-start;
   gap: var(--espaco-sm);
   padding: var(--espaco-lg);
+  max-height: calc(90vh - 2px);   /* 2px = bordas da janela */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cor-verde-militar-borda) transparent;
+}
+.confirmacao__caixa::-webkit-scrollbar { width: 10px; }
+.confirmacao__caixa::-webkit-scrollbar-track { background: transparent; margin-block: var(--raio-lg); }
+.confirmacao__caixa::-webkit-scrollbar-thumb {
+  background-color: var(--cor-verde-militar-borda);
+  border: 3px solid var(--cor-fundo-card);
+  border-radius: 999px;
 }
 
 .confirmacao__icone {
