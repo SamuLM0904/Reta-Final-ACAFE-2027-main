@@ -20,11 +20,7 @@ vale o que está na coluna "Como está hoje".
 
 | Prova | Questão | Dúvida | Como está hoje |
 |---|---|---|---|
-| 2026/Inverno | 41 | A tabela de combustão é uma imagem dentro do PDF. Transcrever os valores numa tabela de texto no site? | Print da imagem original. |
-| 2025/Inverno | 31 | A tabela de risco é texto no PDF. Quando ela foi cadastrada o site ainda não tinha tabelas; hoje tem (`tabela-prova`). Transcrever? | Recorte da página. |
-| 2025/Inverno | 05 | O enunciado diz "racionalização (linha 20)", mas na numeração do Texto 1 a palavra está na linha 21. | Mantidos o "linha 20" do enunciado e a numeração do PDF. |
 | 2025/Verão | 33 | A resolução oficial divide 4500 J por 9000 cal sem converter joule em caloria. Convertendo, dá cerca de 120–125 mg, valor que não está entre as alternativas. A questão é inconsistente. | Gabarito oficial **D** (500 mg), com um aviso na explicação. |
-| Todas | Anuladas | Questões anuladas pela ACAFE: deixar de fora ou cadastrar com o aviso "anulada"? (2021/Inv 14, 35, 48, 49 • 2021/Ver 12 • 2022/Ver 31, 32, 33 • 2023/Ver 04, 08, 53) | Ficam de fora. |
 
 ### Conteúdos do material ("TODOS OS CONTEÚDOS POR LIVRO.pdf")
 
@@ -108,6 +104,8 @@ PUCPR 113). Todas conferidas pelo `ferramentas/verificar-estudo.js` contra o gab
 ficaram com a letra oficial e estão aqui para você decidir.
 
 ### Gabaritos oficiais discutíveis (mantidos)
+
+> **Resolvido em 26/11/2026:** vale sempre o gabarito definitivo da banca. A lista abaixo é só registro.
 
 | Questão | Oficial | Por que é discutível |
 |---|---|---|

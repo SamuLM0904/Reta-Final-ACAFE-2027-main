@@ -340,7 +340,7 @@ export function renderizarTelaSimulados(container, questoesProvas) {
           <thead><tr><th>Matéria</th><th>Questões</th></tr></thead>
           <tbody>${linhas}</tbody>
         </table>
-        ${qs.length < 63 ? '<p class="simulado-card__info">Questões anuladas pela ACAFE não entram na prova.</p>' : ''}
+        ${qs.length < 63 ? `<p class="simulado-aviso">${63 - qs.length === 1 ? '1 questão desta prova foi anulada' : `${63 - qs.length} questões desta prova foram anuladas`} pela ACAFE e ${63 - qs.length === 1 ? 'ficou' : 'ficaram'} de fora: a prova terá ${qs.length} questões.</p>` : ''}
         ${feitas.length ? `<p class="simulado-aviso">Você já fez esta prova ${plural(feitas.length, 'vez', 'vezes')} (última em ${formatarData(feitas[feitas.length - 1].data)}).</p>` : ''}`;
     }
 

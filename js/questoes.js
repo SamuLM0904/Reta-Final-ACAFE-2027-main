@@ -14,7 +14,7 @@
 import { icone }          from './icones.js';
 import { confirmar } from './confirmar.js';
 import { slugify, escaparHtml } from './utils.js';
-import { conteudosDa, descreverConteudo, nomeConteudo, CAPITULOS } from './conteudos.js';
+import { conteudosDa, descreverConteudo, nomeConteudo } from './conteudos.js';
 import { htmlImagens, htmlAlternativa, vincularImagens, aplicarFeedback } from './render-questao.js';
 import { salvarResposta, lerRespostas, recomecarModulo, apagarRespostas, registrarNaMemoria, estatisticasModulo } from './armazenamento.js';
 
@@ -81,17 +81,8 @@ export function renderizarConteudosModulo(container, todasQuestoes, modulo) {
     if (!porConteudo.has(c)) porConteudo.set(c, []);
     porConteudo.get(c).push(q);
   }));
-  const itens = [...porConteudo].map(([chave, lista]) => ({ chave, lista, ...descreverConteudo(chave) }))
-    .sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome, 'pt-BR'));
+  const itens = [...porConteudo].map(([chave, lista]) => ({ chave, lista, ...descreverConteudo(chave), ...estatisticasModulo(lista) }));
 
-  // Agrupa por livro e frente, como no material; os conteúdos sem capítulo ficam juntos no fim
-  const grupos = [];
-  itens.forEach(item => {
-    const c = CAPITULOS.get(item.chave);
-    const titulo = !c ? 'Conteúdos' : c.extra ? 'Complementares' : `Livro ${c.livro} · ${c.frente}`;
-    if (grupos.at(-1)?.titulo !== titulo) grupos.push({ titulo, itens: [] });
-    grupos.at(-1).itens.push(item);
-  });
 
   container.innerHTML = `
     <div class="tela-questoes">
@@ -110,30 +101,63 @@ export function renderizarConteudosModulo(container, todasQuestoes, modulo) {
           ${htmlProgressoConteudo(estatisticasModulo(questoes))}
         </a>
 
-        ${grupos.map(g => `
-          <section class="conteudos-grupo">
-            <h3 class="conteudos-grupo__titulo">${escaparHtml(g.titulo)}</h3>
-            <ul class="conteudos-lista" role="list">
-              ${g.itens.map(item => `
-                <li>
-                  <a href="${hashModulo(modulo, item.chave)}" class="conteudo-item">
-                    <span class="conteudo-item__nome">${escaparHtml(rotuloNoGrupo(item))}</span>
-                    ${htmlProgressoConteudo(estatisticasModulo(item.lista))}
-                  </a>
-                </li>`).join('')}
-            </ul>
-          </section>`).join('')}
+        <div class="conteudos-ferramentas">
+          <label class="conteudos-busca">
+            ${icone('search', 18)}
+            <input type="search" id="conteudos-busca" placeholder="Buscar conteúdo" autocomplete="off" aria-label="Buscar conteúdo pelo nome">
+          </label>
+          <select id="conteudos-ordem" class="conteudos-ordem" aria-label="Ordenar conteúdos">
+            ${ORDENS.map(o => `<option value="${o.id}">${o.nome}</option>`).join('')}
+          </select>
+        </div>
+
+        <section class="conteudos-grupo">
+          <ul class="conteudos-lista" role="list" id="conteudos-lista"></ul>
+          <p class="conteudos-vazio" id="conteudos-vazio" hidden>Nenhum conteúdo com esse nome.</p>
+        </section>
       </div>
     </div>
   `;
+
+  const lista = container.querySelector('#conteudos-lista');
+  const busca = container.querySelector('#conteudos-busca');
+  const ordem = container.querySelector('#conteudos-ordem');
+  ordem.value = lerOrdem();
+
+  const desenhar = () => {
+    const termo = semAcentos(busca.value.trim());
+    const criterio = ORDENS.find(o => o.id === ordem.value) || ORDENS[0];
+    const visiveis = itens.filter(i => !termo || semAcentos(i.nome).includes(termo)).sort(criterio.comparar);
+    lista.innerHTML = visiveis.map(item => `
+      <li>
+        <a href="${hashModulo(modulo, item.chave)}" class="conteudo-item">
+          <span class="conteudo-item__nome">${escaparHtml(item.nome)}</span>
+          ${htmlProgressoConteudo(item)}
+        </a>
+      </li>`).join('');
+    container.querySelector('#conteudos-vazio').hidden = visiveis.length > 0;
+  };
+  busca.addEventListener('input', desenhar);
+  ordem.addEventListener('change', () => { guardarOrdem(ordem.value); desenhar(); });
+  desenhar();
 }
 
-/** Nome do conteúdo dentro do grupo (o livro e a frente já estão no título do grupo). */
-function rotuloNoGrupo(item) {
-  const c = CAPITULOS.get(item.chave);
-  if (!c) return item.nome;
-  if (c.extra) return c.nome;
-  return `Cap. ${c.capitulo}: ${c.nome}${c.tambem ? ` (também em ${c.tambem})` : ''}`;
+const semAcentos = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const porNome = (a, b) => a.nome.localeCompare(b.nome, 'pt-BR');
+
+/** Ordens da lista de conteúdos (a escolhida fica guardada neste navegador). */
+const ORDENS = [
+  { id: 'az',          nome: 'Nome (A–Z)',              comparar: porNome },
+  { id: 'za',          nome: 'Nome (Z–A)',              comparar: (a, b) => porNome(b, a) },
+  { id: 'feitas-mais', nome: 'Mais questões feitas',    comparar: (a, b) => b.respondidas - a.respondidas || porNome(a, b) },
+  { id: 'feitas-menos', nome: 'Menos questões feitas',  comparar: (a, b) => a.respondidas - b.respondidas || porNome(a, b) },
+];
+const CHAVE_ORDEM = 'acafe2027:ordem-conteudos';
+function lerOrdem() {
+  try { const v = localStorage.getItem(CHAVE_ORDEM); return ORDENS.some(o => o.id === v) ? v : 'az'; } catch { return 'az'; }
+}
+function guardarOrdem(v) {
+  try { localStorage.setItem(CHAVE_ORDEM, v); } catch { /* ignora */ }
 }
 
 /** Quantidade de questões, respondidas e acertos de um conteúdo. */

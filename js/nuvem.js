@@ -357,6 +357,20 @@ export async function lerDadosAluno() {
   return snap.exists() ? snap.data() : null;
 }
 
+/**
+ * Avisa quando um administrador zerar o progresso deste aluno com o site aberto
+ * (sem isso, a próxima gravação devolveria os dados antigos para a nuvem).
+ * @param {number} conhecido - memoriaResetadaEm que este navegador já conhece
+ * @param {(resetEm: number) => void} aoResetar
+ */
+export function ouvirReset(conhecido, aoResetar) {
+  if (!usuario || !fb) return;
+  fb.f.onSnapshot(docAluno(), snap => {
+    const resetEm = snap.data()?.memoriaResetadaEm || 0;
+    if (resetEm > conhecido) { conhecido = resetEm; pendente = null; clearTimeout(temporizador); aoResetar(resetEm); }
+  }, () => { /* sem permissão ou offline: ignora */ });
+}
+
 let pendente = null, temporizador = null;
 
 /**
@@ -479,9 +493,19 @@ export async function listarAlunos() {
 }
 
 /**
- * Zera a memória de erros e acertos de um aluno (só administradores podem).
- * Grava também `memoriaResetadaEm`, para que a cópia no navegador do aluno
- * descarte as marcações antigas quando ele entrar de novo (ver armazenamento.js).
+ * Memórias de erros e acertos de todos os alunos (só administradores podem).
+ * @returns {Promise<{ usuario: string, memoria: Object[] }[]>}
+ */
+export async function lerMemoriasAlunos() {
+  const snap = await fb.f.getDocs(fb.f.collection(fb.db, 'alunos'));
+  return snap.docs.map(d => ({ usuario: d.id, memoria: d.data().memoria || [] }));
+}
+
+/**
+ * Zera o progresso de um aluno (só administradores podem): questões respondidas, simulados,
+ * memória de erros e acertos e o Guia de Estudos. A conta (perfil, nome, login) fica.
+ * Grava também `memoriaResetadaEm`, para que a cópia no navegador do aluno seja
+ * descartada (ver armazenamento.js e ouvirReset).
  * @param {string} textoUsuario - nome de usuário (ou e-mail / nome e sobrenome)
  * @returns {Promise<{ usuario: string, apagadas: number, resetEm: number }>}
  */
@@ -491,6 +515,9 @@ export async function resetarMemoriaDoAluno(textoUsuario) {
   const snap = await fb.f.getDoc(ref);
   if (!snap.exists()) throw new Error(`Aluno "${u}" não encontrado.`);
   const resetEm = Date.now();
-  await fb.f.updateDoc(ref, { memoria: [], memoriaResetadaEm: resetEm, atualizadoEm: resetEm });
+  await fb.f.updateDoc(ref, {
+    respostas: {}, simulado: { atual: null, tentativas: [] }, memoria: [], guia: null,
+    memoriaResetadaEm: resetEm, atualizadoEm: resetEm,
+  });
   return { usuario: u, apagadas: (snap.data().memoria || []).length, resetEm };
 }

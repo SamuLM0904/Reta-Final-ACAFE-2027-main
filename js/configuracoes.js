@@ -20,7 +20,7 @@ import { resetarMemoriaLocal } from './armazenamento.js';
 import { htmlBotaoTema, vincularBotoesTema } from './tema.js';
 import {
   eAdmin, listarAdministradores, adicionarAdministrador, removerAdministrador,
-  listarAlunos, resetarMemoriaDoAluno, usuarioAtual, usuarioExibido, sair, trocarSenha,
+  listarAlunos, resetarMemoriaDoAluno, lerMemoriasAlunos, usuarioAtual, usuarioExibido, sair, trocarSenha,
   redefinirSenha, temEmailReal, cadastrarEmailRecuperacao, alterarNome, alterarUsuario,
 } from './nuvem.js';
 
@@ -144,11 +144,23 @@ function renderizarAreaAdmin(area) {
       <ul class="configuracoes__admins" id="config-lista-admins" aria-label="Administradores cadastrados"></ul>
     </section>
 
+    <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Dificuldade das questões">
+      <h3 class="configuracoes__subtitulo">Dificuldade das questões</h3>
+      <p class="configuracoes__info">Compara a dificuldade marcada em cada questão com o quanto os alunos acertam
+        (só a primeira resposta de cada aluno; questões com pelo menos 5 alunos). Esperado: Fácil
+        acima de 70% de acerto, Média de 40% a 70%, Difícil abaixo de 40%.</p>
+      <div class="configuracoes__linha">
+        <button type="button" class="btn btn-secundario" id="config-dificuldade">Conferir dificuldade</button>
+        <a href="#/planos" class="btn btn-secundario" id="config-planos">Ver tela de planos (teste)</a>
+      </div>
+      <div class="configuracoes__info" id="config-dificuldade-saida" role="status"></div>
+    </section>
+
     <section class="configuracoes__secao configuracoes__secao--admin" aria-label="Administração">
       <h3 class="configuracoes__subtitulo">Administração</h3>
       <p class="configuracoes__info"><strong>Resetar a memória de um aluno</strong><br>
-        Apaga os erros e acertos registrados do aluno (simulados e questões de estudo), que o Guia de Estudos
-        usa para montar o cronograma. O histórico de simulados não é apagado. Não dá para desfazer.</p>
+        Zera o perfil do aluno: questões feitas, simulados (inclusive o histórico), erros e acertos e o
+        Guia de Estudos. A conta e o login continuam. Não dá para desfazer.</p>
       <div class="configuracoes__linha">
         <input type="text" id="config-usuario" class="guia-texto" list="config-lista-alunos"
           placeholder="usuário do aluno (ex.: joao_silva)" autocomplete="off" aria-label="Usuário do aluno">
@@ -225,6 +237,17 @@ function renderizarAreaAdmin(area) {
     }
   });
 
+  area.querySelector('#config-planos').addEventListener('click', () => area.closest('dialog')?.close?.());
+  area.querySelector('#config-dificuldade').addEventListener('click', async () => {
+    const saida = area.querySelector('#config-dificuldade-saida');
+    saida.textContent = 'Lendo as respostas dos alunos...';
+    try {
+      saida.innerHTML = htmlConferenciaDificuldade(await lerMemoriasAlunos());
+    } catch (e) {
+      saida.textContent = 'Erro: ' + (e.code === 'permission-denied' ? 'sem permissão de administrador.' : e.message);
+    }
+  });
+
   listarAlunos()
     .then(alunos => {
       area.querySelector('#config-lista-alunos').innerHTML = alunos.map(a =>
@@ -240,19 +263,19 @@ function renderizarAreaAdmin(area) {
     const nome = escaparHtml(usuario);
     if (!(await confirmar({
       titulo: `Resetar a memória de ${nome}?`,
-      mensagem: 'Todos os erros e acertos registrados desse aluno serão apagados. O guia dele volta a começar do zero.',
+      mensagem: 'Tudo o que esse aluno fez será apagado: questões respondidas, simulados, erros e acertos e o Guia de Estudos. A conta continua.',
       textoConfirmar: 'Continuar', perigo: true,
     }))) return;
     if (!(await confirmar({
       titulo: 'Tem certeza? Não dá para desfazer.',
-      mensagem: `Confirme para apagar <strong>definitivamente</strong> a memória de erros e acertos de <strong>${nome}</strong>.`,
+      mensagem: `Confirme para apagar <strong>definitivamente</strong> todo o progresso de <strong>${nome}</strong>.`,
       textoConfirmar: 'Apagar a memória', perigo: true,
     }))) return;
     status.textContent = 'Apagando...';
     try {
       const r = await resetarMemoriaDoAluno(usuario);
       if (r.usuario === usuarioExibido(usuarioAtual())) resetarMemoriaLocal(r.resetEm);   // resetou a própria conta
-      status.textContent = `Memória de ${r.usuario} apagada (${r.apagadas} registros). Se o aluno estiver com o site aberto, ele precisa recarregar a página.`;
+      status.textContent = `Progresso de ${r.usuario} zerado (${r.apagadas} registros de erros e acertos). Se o aluno estiver com o site aberto, a página dele recomeça sozinha.`;
     } catch (e) {
       status.textContent = 'Erro: ' + (e.code === 'permission-denied'
         ? 'sem permissão. Confira se a sua conta está na coleção admins e se as regras novas foram publicadas.'
@@ -476,4 +499,45 @@ function vincularEdicaoInline(dialogo) {
       }
     });
   }));
+}
+
+/* ================================================================
+   Conferência da dificuldade com as respostas reais
+   ================================================================ */
+
+const MIN_RESPOSTAS = 5;
+const FAIXAS = { facil: [0.7, 1.01], media: [0.4, 0.7], dificil: [0, 0.4] };
+const NOMES_DIF = { facil: 'Fácil', media: 'Média', dificil: 'Difícil' };
+const sugerir = taxa => (taxa >= 0.7 ? 'facil' : taxa >= 0.4 ? 'media' : 'dificil');
+
+/** Tabela das questões cuja taxa de acerto não bate com a dificuldade marcada. */
+function htmlConferenciaDificuldade(alunos) {
+  const questoes = new Map([...(globalThis.QUESTOES_PROVAS || []), ...(globalThis.QUESTOES || [])].map(q => [q.id, q]));
+  const porQuestao = new Map();   // id → { n, acertos }
+  let comRespostas = 0;
+  alunos.forEach(({ memoria }) => {
+    const vistas = new Set();
+    if (memoria.length) comRespostas++;
+    [...memoria].sort((a, b) => a.t - b.t).forEach(m => {
+      if (vistas.has(m.q)) return;   // só a primeira resposta do aluno
+      vistas.add(m.q);
+      const r = porQuestao.get(m.q) || { n: 0, acertos: 0 };
+      r.n++; if (m.ok) r.acertos++;
+      porQuestao.set(m.q, r);
+    });
+  });
+  const avaliadas = [...porQuestao].filter(([id, r]) => r.n >= MIN_RESPOSTAS && FAIXAS[questoes.get(id)?.dificuldade]);
+  const fora = avaliadas.map(([id, r]) => ({ id, q: questoes.get(id), taxa: r.acertos / r.n, n: r.n }))
+    .filter(x => { const [min, max] = FAIXAS[x.q.dificuldade]; return x.taxa < min || x.taxa >= max; })
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const resumo = `${comRespostas} aluno(s) com respostas · ${avaliadas.length} questão(ões) com ${MIN_RESPOSTAS}+ alunos · ${fora.length} fora da faixa.`;
+  if (!avaliadas.length) return `<p>${resumo}</p><p>Ainda há poucas respostas para conferir. Tente de novo quando mais alunos tiverem respondido.</p>`;
+  if (!fora.length) return `<p>${resumo}</p><p>Todas as dificuldades batem com as respostas dos alunos.</p>`;
+  return `<p>${resumo}</p>
+    <div class="configuracoes__tabela"><table>
+      <thead><tr><th>Questão</th><th>Marcada</th><th>Acerto</th><th>Alunos</th><th>Sugerida</th></tr></thead>
+      <tbody>${fora.map(x => `<tr><td>${escaparHtml(x.id)}</td><td>${NOMES_DIF[x.q.dificuldade]}</td>
+        <td>${Math.round(x.taxa * 100)}%</td><td>${x.n}</td><td>${NOMES_DIF[sugerir(x.taxa)]}</td></tr>`).join('')}</tbody>
+    </table></div>
+    <p>Me mande esta lista (print) para eu ajustar as questões.</p>`;
 }

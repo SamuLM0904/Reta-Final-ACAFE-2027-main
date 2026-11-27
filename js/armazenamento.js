@@ -97,17 +97,15 @@ export function definirAluno(uid, dadosNuvem = null, enviar = null) {
     localStorage.removeItem(CHAVE_BASE);
   }
 
+  // O administrador zerou o progresso pela nuvem depois da última vez que este navegador
+  // soube disso: a cópia daqui é descartada (senão os dados antigos voltariam).
+  const resetEm = dadosNuvem?.memoriaResetadaEm || 0;
+  if (local && resetEm > (local.memoriaResetadaEm || 0)) local = null;
+
   const nuvem = dadosNuvem && (dadosNuvem.respostas || dadosNuvem.simulado) ? dadosNuvem : null;
   let usarLocal = local && (!nuvem || (local.atualizadoEm || 0) > (nuvem.atualizadoEm || 0));
   const dados = { ...vazio(), ...(dadosNuvem || {}), ...(usarLocal ? local : nuvem || {}) };
-
-  // O administrador zerou a memória pela nuvem depois da última vez que este navegador
-  // soube disso: descarta daqui as marcações anteriores ao reset (senão elas voltariam).
-  const resetEm = dadosNuvem?.memoriaResetadaEm || 0;
-  if (usarLocal && resetEm > (local.memoriaResetadaEm || 0)) {
-    dados.memoria = (dados.memoria || []).filter(m => m.t > resetEm);
-    dados.memoriaResetadaEm = resetEm;
-  }
+  if (!dados.guia) delete dados.guia;
   try { localStorage.setItem(chave, JSON.stringify(dados)); } catch { /* ignora */ }
 
   aoGravar = enviar;
@@ -325,16 +323,18 @@ export function removerDaMemoria(simuladoId, questaoId) {
 }
 
 /**
- * Zera a memória de erros e acertos neste navegador (usado quando o administrador
- * reseta a memória da própria conta; a dos outros alunos é zerada na nuvem).
+ * Zera o progresso neste navegador: respostas, simulados, memória e Guia (usado quando o
+ * administrador reseta a própria conta, ou quando a nuvem avisa que esta conta foi resetada).
+ * Não envia nada para a nuvem (lá já está zerado).
  * @param {number} resetEm - momento do reset (ms)
  */
 export function resetarMemoriaLocal(resetEm = Date.now()) {
-  const dados = lerTudo();
-  dados.memoria = [];
-  dados.memoriaResetadaEm = resetEm;
-  gravarTudo(dados);
+  const dados = { ...vazio(), memoriaResetadaEm: resetEm, atualizadoEm: resetEm };
+  try { localStorage.setItem(chave, JSON.stringify(dados)); } catch { /* ignora */ }
 }
+
+/** memoriaResetadaEm conhecido por este navegador (0 se nunca houve reset). */
+export const resetConhecido = () => lerTudo().memoriaResetadaEm || 0;
 
 /* ================================================================
    Guia de estudos

@@ -289,17 +289,26 @@
 .simulado-legenda__item--errada::before { background: var(--cor-errada-fundo); border: 1px solid var(--cor-errada-borda); }
 
 /* ---- Texto com linhas numeradas (como na prova; questões citam "linha N") ---- */
+/* Cada <li> é uma linha da prova, com as mesmas quebras do PDF. Para a contagem bater com a
+   prova, a linha nunca quebra: a letra (Arial, como na prova) acompanha a largura da tela,
+   e em telas muito estreitas o texto rola para o lado. */
 .texto-numerado {
   list-style: none;
   counter-reset: linha;
   margin: var(--espaco-sm) 0;
   padding: 0;
+  container-type: inline-size;
+  overflow-x: auto;
 }
 
 .texto-numerado li {
   counter-increment: linha;
   position: relative;
   padding-left: 2.5rem;
+  white-space: nowrap;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(11px, calc((100cqi - 2.5rem) / 56), 1rem);   /* na prova, a linha tem cerca de 54 vezes a altura da letra */
+  line-height: 1.6;
 }
 
 .texto-numerado li::before {

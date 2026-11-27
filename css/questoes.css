@@ -665,3 +665,45 @@
 .conteudo-item__info { font-size: var(--tamanho-xs); color: var(--cor-texto-suave); }
 .conteudo-item__barra { display: block; margin-top: auto; }
 .conteudo-item__barra .card-progresso__preenchimento { display: block; }
+
+/* Busca e ordem da lista de conteúdos */
+.conteudos-ferramentas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-lg);
+}
+.conteudos-busca {
+  flex: 1 1 16rem;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  min-height: 40px;
+  padding: 0 var(--espaco-sm);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto-suave);
+}
+.conteudos-busca:focus-within { border-color: var(--cor-primaria); }
+.conteudos-busca input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--cor-texto);
+  font: inherit;
+}
+.conteudos-ordem {
+  min-height: 40px;
+  padding: 0 var(--espaco-sm);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font: inherit;
+}
+.conteudos-ordem:focus { outline: none; border-color: var(--cor-primaria); }
+.conteudos-vazio { color: var(--cor-texto-suave); font-size: var(--tamanho-sm); }

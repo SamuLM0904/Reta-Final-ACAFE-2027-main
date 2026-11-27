@@ -14,6 +14,7 @@
  */
 
 import { somarDias, diaDaSemana, inicioDaSemana, chaveDia, DURACAO_SIMULADO, dataCurta, formatarHoras } from './guia-plano.js';
+import { GEMINI } from './ia-config.js';
 
 const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -361,4 +362,87 @@ function interpretarMaterias(t, hoje) {
 export function interpretarPedido(texto, hoje) {
   const t = semAcento(texto).replace(/\s+/g, ' ').trim();
   return interpretarMaterias(t, hoje) || interpretarDia(texto, hoje);
+}
+
+/* ================================================================
+   IA (Gemini Flash) — só quando as regras não entendem o pedido
+   ================================================================ */
+
+
+const MATERIAS_IA = ['portugues', 'literatura', 'lingua', 'matematica', 'fisica', 'quimica', 'biologia', 'historia', 'geografia'];
+const DATA_IA = /^\d{4}-\d{2}-\d{2}$/;
+const SEMANA_IA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+
+const instrucoesIA = (hoje) => `Você traduz pedidos de um aluno sobre o plano de estudos dele em mudanças, em JSON.
+Hoje é ${hoje} (${SEMANA_IA[diaDaSemana(hoje)]}). Datas sempre "AAAA-MM-DD"; durações em minutos.
+Matérias (use só estes ids): ${MATERIAS_IA.join(', ')} ("lingua" = Espanhol ou Inglês).
+
+Tipos de mudança:
+- {"tipo":"minutos","dias":[...],"minutos":N}           tempo total de estudo do dia (0 = não vai estudar)
+- {"tipo":"ajuste","dias":[...],"delta":N}              aumentar (+) ou diminuir (-) o tempo do dia
+- {"tipo":"restaurar","dias":[...]}                     voltar o dia ao normal
+- {"tipo":"simulado-externo","dia":"...","minutos":N}   simulado de cursinho/fora do site nesse dia (padrão 300)
+- {"tipo":"mover-simulado","para":"..."}                mudar o dia do simulado da semana
+- {"tipo":"mover-materia","materia":"id","de":"...","para":"..."}  passar a matéria de um dia para outro
+- {"tipo":"materia","dia":"...","op":"tempo|delta|remover|adicionar","materia":"id","minutos":N|null}
+    tempo = fixar os minutos da matéria; delta = somar/subtrair; remover = tirar do dia; adicionar = colocar no dia
+
+Responda só com JSON: {"mudancas":[...],"entendido":["frase curta em português para cada mudança"],"duvida":null}
+Se o pedido não for sobre o plano de estudos ou não der para entender:
+{"mudancas":[],"entendido":[],"duvida":"pergunta curta e gentil pedindo para o aluno explicar melhor"}`;
+
+/** Mantém só as mudanças bem formadas (quem confere se fazem sentido é o guia-plano.js). */
+function limparMudanca(m) {
+  if (!m || typeof m !== 'object') return null;
+  const dias = Array.isArray(m.dias) ? m.dias.filter(d => DATA_IA.test(d)).slice(0, 60) : [];
+  const n = v => (v !== null && v !== '' && Number.isFinite(Number(v)) ? Math.round(Number(v)) : null);
+  const limitar = (v, a, b) => Math.max(a, Math.min(b, v));
+  const materia = MATERIAS_IA.includes(m.materia) ? m.materia : null;
+  switch (m.tipo) {
+    case 'minutos': return dias.length && n(m.minutos) !== null ? { tipo: 'minutos', dias, minutos: limitar(n(m.minutos), 0, 960) } : null;
+    case 'ajuste': return dias.length && n(m.delta) ? { tipo: 'ajuste', dias, delta: limitar(n(m.delta), -960, 960) } : null;
+    case 'restaurar': return dias.length ? { tipo: 'restaurar', dias } : null;
+    case 'simulado-externo': return DATA_IA.test(m.dia) ? { tipo: 'simulado-externo', dia: m.dia, minutos: limitar(n(m.minutos) || DURACAO_SIMULADO, 30, 600) } : null;
+    case 'mover-simulado': return DATA_IA.test(m.para) ? { tipo: 'mover-simulado', para: m.para } : null;
+    case 'mover-materia': return materia && DATA_IA.test(m.de) && DATA_IA.test(m.para) ? { tipo: 'mover-materia', materia, de: m.de, para: m.para } : null;
+    case 'materia':
+      if (!materia || !DATA_IA.test(m.dia) || !['tempo', 'delta', 'remover', 'adicionar'].includes(m.op)) return null;
+      return { tipo: 'materia', dia: m.dia, op: m.op, materia, minutos: m.op === 'remover' ? null : n(m.minutos) };
+    default: return null;
+  }
+}
+
+const escaparIA = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/** A IA está configurada (há chave em ia-config.js)? */
+export const iaDisponivel = () => Boolean(GEMINI.chave);
+
+/**
+ * Pede ao Gemini para entender o pedido que as regras não entenderam. Mesmo formato de
+ * interpretarPedido. Devolve null se não houver chave, internet ou cota — aí vale a resposta das regras.
+ */
+export async function interpretarComIA(texto, hoje) {
+  if (!GEMINI.chave || !texto || texto.length > 500) return null;
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI.modelo}:generateContent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI.chave },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: instrucoesIA(hoje) }] },
+        contents: [{ role: 'user', parts: [{ text: texto }] }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0 },
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!r.ok) { console.warn('[IA] Gemini respondeu', r.status); return null; }
+    const dados = await r.json();
+    const bruto = JSON.parse(dados.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
+    const mudancas = (Array.isArray(bruto.mudancas) ? bruto.mudancas : []).map(limparMudanca).filter(Boolean).slice(0, 20);
+    if (!mudancas.length) return { mudancas, entendido: [], duvida: escaparIA(typeof bruto.duvida === 'string' && bruto.duvida ? bruto.duvida : 'Não entendi o pedido.') };
+    const entendido = (Array.isArray(bruto.entendido) ? bruto.entendido : []).filter(t => typeof t === 'string').slice(0, 20).map(escaparIA);
+    return { mudancas, entendido, duvida: null, ia: true };
+  } catch (e) {
+    console.warn('[IA] Sem resposta do Gemini:', e);
+    return null;
+  }
 }

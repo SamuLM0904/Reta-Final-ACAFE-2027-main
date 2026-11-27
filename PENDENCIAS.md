@@ -10,29 +10,21 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 | Desde | Pergunta | Como está hoje |
 |---|---|---|
-| 08/11/2026 | Conferir as dúvidas das questões de estudo (gabaritos oficiais discutíveis, classificações e exclusões) — seção "Questões de estudo" do [DUVIDAS.md](DUVIDAS.md). | Ficou o gabarito oficial; as 4 questões que dependiam de obra foram tiradas. |
-| 07/11/2026 | Conferir os 8 capítulos complementares que eu criei (Análise Dimensional, Bioquímica, Saúde Pública, Geografia de SC, Regionalização do Brasil, Geopolítica, História da Medicina e da Ciência, 1ª Revolução Industrial) — lista com as questões no [DUVIDAS.md](DUVIDAS.md). | Já em uso no filtro, como "Complementar". |
-| 07/11/2026 | Conferir a junção dos capítulos repetidos de Química ("Interações" + "Forças Intermoleculares"; os dois "Teorias Modernas Ácido-Base"). | Um conteúdo só para cada par. |
-| 11/11/2026 | Apagar o stash `stash@{0}` ("WIP on main: c052169 teste")? Tudo o que ele guardava já está nos commits 550ed8b e 75c45ed. | Guardado, por segurança. |
-| 06/11/2026 | Guardar no projeto o prompt de contexto para outra IA (ex.: `CONTEXTO-IA.md`)? | Ficou só no chat. |
-| 06/11/2026 | Itens em aberto do [DUVIDAS.md](DUVIDAS.md): tabelas da 2026/Inv Q41 e 2025/Inv Q31; "linha 20" da 2025/Inv Q05; 2025/Ver Q33 inconsistente; cadastrar ou não as anuladas. | Como descrito lá. |
-| 30/10/2026 | IA do chat do Guia: confirmar o Gemini Flash gratuito e criar a chave em aistudio.google.com. | O chat usa o interpretador por regras. |
-| 30/10/2026 | Acrescentar `* text=auto eol=lf` no `.gitattributes` para parar o aviso de fim de linha do Git? | Sem mudança. |
+| 26/11/2026 | Gemini Flash no chat do Guia: criar a chave em aistudio.google.com, restringir ao endereço do site no Google Cloud Console e colocar em `js/ia-config.js` (ou me passar para eu colocar). | Código pronto; sem chave, o chat usa só as regras. |
+| 26/11/2026 | A data da prova em `js/contagem.js` é 22/11/2026, que já passou. Qual é a próxima prova (data e nome)? | Contagem e Guia ainda usam 22/11/2026. |
 
 ## Depende de você (fora do código)
 
 
-- **Lista de conteúdos de Literatura, Espanhol e Inglês** (não estão no PDF do material). Até lá, essas questões usam o subtópico antigo.
-- **Marcar no Google Docs** os itens já feitos (eu só tenho acesso de leitura).
-- **Firebase:** republicar o `firestore.rules` no Console e criar `admins/<UID da sua conta>`.
-- **Avisar quando as contas dos alunos estiverem "valendo"**: aí eu confiro a dificuldade das questões com as respostas reais.
+- **Requisitos:** agora ficam na planilha [REQUISITOS.xlsx](REQUISITOS.xlsx), que eu atualizo.
+- **Dificuldade × respostas reais:** em Configurações (administrador), "Conferir dificuldade". Mande o print da lista para eu ajustar.
 
 ## Para fazer depois (já combinado)
 
-- Escrever os resumos das obras literárias (capítulos do livro das obras). Hoje cada capítulo mostra "em preparação".
+- Escrever os resumos das obras literárias (capítulos do livro das obras). Hoje cada capítulo mostra "em preparação". Adiado por você em 26/11/2026.
 - Cadastrar as provas de 2023 a 2021 (você adiou).
 - Questões de estudo de edições mais novas (ENEM 2026, Fuvest 2027, Unesp 2027, UDESC 2027, UFPR 2027 com gabarito definitivo) quando saírem.
-- Questões de somatória (UFSC/UEM) no estudo: criar o formato na tela de questões (várias afirmativas, nota parcial) e cadastrar essas provas (você adiou em 07/11/2026).
+- Questões de somatória (UFSC/UEM) no estudo: criar o formato na tela de questões (várias afirmativas, nota parcial) e cadastrar essas provas (adiado em 07/11 e de novo em 26/11/2026).
 - Pagamentos, planos Básico/Pro/Ultra e bloqueio de plano maior que o tempo até a prova: **não mexer** até você pedir.
 
 ## Decisões que eu tomei — confira se quiser
@@ -49,6 +41,24 @@ Dúvidas do cadastro das provas (gabaritos, questões com erro) ficam no [DUVIDA
 
 | Data | Item | Decisão |
 |---|---|---|
+| 26/11/2026 | 2025/Verão Q33 | Fica como está: gabarito D, com o aviso na explicação. |
+| 26/11/2026 | Conteúdos de Literatura, Espanhol e Inglês | Ficam com os subtópicos atuais. |
+| 26/11/2026 | Checklist dos sócios | Passou do Google Docs para a planilha REQUISITOS.xlsx. |
+| 26/11/2026 | Tela de planos | Tela temporária em #/planos (preços fictícios, sem pagamento), com link só para administradores em Configurações. |
+| 26/11/2026 | Reset da memória do aluno | Agora zera o perfil inteiro: questões feitas, simulados (com histórico), erros e acertos e o Guia. A conta fica. Se o aluno estiver com o site aberto, a página dele recomeça sozinha. |
+| 26/11/2026 | Lista de conteúdos | Busca por nome (lupa) e ordem: A–Z, Z–A, mais feitas e menos feitas. |
+| 26/11/2026 | Gabaritos discutíveis (questões de estudo) | Vale sempre o gabarito definitivo da banca. |
+| 26/11/2026 | Tabelas da 2026/Inv Q41 e 2025/Inv Q31 | Ficam como imagem do original. |
+| 26/11/2026 | 2025/Inv Q05 ("linha 20") | O site segue a prova linha por linha, e as linhas não quebram mais na tela (letra proporcional, Arial). No original a palavra também está na linha 21: o erro é do enunciado da ACAFE, mantido como na prova. |
+| 26/11/2026 | IA do chat do Guia | Sem IA externa por enquanto: o chat usa só o interpretador interno (regras). |
+| 26/11/2026 | Divisão por livros e frentes | Não usar mais. Os conteúdos aparecem só pelo nome (sem "Livro", "Frente" e "Cap."), e os divididos em partes (Genética I e II, Óptica, Reações Orgânicas I a IV etc.) viraram um só (`JUNCOES` em dados/conteudos.js). |
+| 26/11/2026 | 8 capítulos complementares | Aprovados ("pode deixar"). |
+| 26/11/2026 | Junção dos capítulos repetidos de Química | Fica junto (com o fim da divisão por livros, a pergunta perdeu o sentido). |
+| 26/11/2026 | Questões anuladas | Não cadastrar. O simulado de prova antiga avisa quantas ficaram de fora. |
+| 26/11/2026 | Stash `stash@{0}` | Apagado. |
+| 26/11/2026 | Contexto para outra IA | Salvo em [CONTEXTO-IA.md](CONTEXTO-IA.md). |
+| 26/11/2026 | `* text=auto eol=lf` no .gitattributes | Já estava lá; nada a fazer. |
+| 26/11/2026 | Firebase (rules e admin) | Rules atualizadas; admin "parcialmente resolvido", segundo você. |
 | 11/11/2026 | Commit das mudanças | Feito: 550ed8b (seu) + 75c45ed (os 664 arquivos novos que tinham ficado no stash), enviados ao GitHub. |
 | 07/11/2026 | Onde fica o botão de tema | Só em Configurações (botão de sol/lua). |
 | 06/11/2026 | Dificuldade das questões | Eu classifico agora; validar com alunos só quando você disser. |

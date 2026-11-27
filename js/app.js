@@ -9,6 +9,7 @@
  *   #/simulado/resultado/<n> → Resultado e revisão da tentativa n
  *   #/simulados/feitas → Questões feitas nos simulados aleatórios, por prova de origem
  *   #/guia          → Guia de Estudos (cronograma diário + chat de mudanças)
+ *   #/planos        → Planos (tela TEMPORÁRIA, preços fictícios, sem pagamento)
  *   #/em-breve/<id> → Tela "Em breve"
  *   #/admin         → Enviar as questões dos arquivos para o banco (só administradores)
  *
@@ -30,11 +31,13 @@ import { renderizarGuia }         from './guia.js';
 import { renderizarRevisao }      from './revisao.js';
 import { MODULOS }                from './modulos.js';
 import { icone }                  from './icones.js';
-import { abrirConfiguracoes }     from './configuracoes.js';import { definirAluno }           from './armazenamento.js';
+import { abrirConfiguracoes }     from './configuracoes.js';
+import { renderizarPlanos }       from './planos.js';
+import { definirAluno, resetarMemoriaLocal, resetConhecido } from './armazenamento.js';
 import { renderizarLogin, renderizarCarregando } from './login.js';
 import {
   nuvemAtiva, iniciarNuvem, usuarioAtual, usuarioExibido,
-  lerDadosAluno, agendarGravacaoAluno, eAdmin, enviarQuestoes,
+  lerDadosAluno, agendarGravacaoAluno, eAdmin, enviarQuestoes, ouvirReset,
 } from './nuvem.js';
 
 /* ================================================================
@@ -159,6 +162,13 @@ function roteador() {
   if (hash === '#/guia') {
     document.title = 'Guia de Estudos — Reta Final ACAFE 2027';
     renderizarGuia(elApp, questoesProvas, todasQuestoes);
+    return;
+  }
+
+  // Rota: planos (temporária)
+  if (hash === '#/planos') {
+    document.title = 'Planos — Reta Final ACAFE 2027';
+    renderizarPlanos(elApp);
     return;
   }
 
@@ -289,6 +299,8 @@ async function aoMudarUsuario(user) {
   let dados = null;
   try { dados = await lerDadosAluno(); } catch (e) { console.warn('[Nuvem] Usando a cópia local:', e); }
   definirAluno(user.uid, dados, agendarGravacaoAluno);
+  // se um administrador zerar esta conta com o site aberto, zera aqui também e recomeça
+  ouvirReset(resetConhecido(), (resetEm) => { resetarMemoriaLocal(resetEm); location.reload(); });
 
   // As questões vêm SEMPRE dos arquivos de dados/ (decisão de 30/10/2026): a cópia no
   // Firestore (#/admin) não é lida, para nunca ficar desatualizada em relação aos arquivos.

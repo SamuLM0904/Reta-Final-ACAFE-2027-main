@@ -1,0 +1,68 @@
+/* planos.css — Tela temporária de planos (#/planos), preços fictícios */
+.tela-planos { padding-block: var(--espaco-lg); }
+.tela-planos .container { display: flex; flex-direction: column; gap: var(--espaco-md); }
+
+.planos-aviso {
+  margin: 0;
+  padding: var(--espaco-sm) var(--espaco-md);
+  border: 1px dashed var(--cor-dourado-borda);
+  border-radius: var(--raio-md);
+  background: var(--cor-dourado-suave);
+  font-size: var(--tamanho-sm);
+}
+.planos-titulo { margin: 0; font-size: var(--tamanho-xl); }
+
+.planos-controles { display: flex; flex-wrap: wrap; gap: var(--espaco-md); align-items: end; justify-content: space-between; }
+.planos-duracoes { display: flex; flex-wrap: wrap; gap: var(--espaco-xs); }
+.planos-duracao {
+  min-height: 40px;
+  padding: 0 var(--espaco-md);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  font: inherit;
+  cursor: pointer;
+}
+.planos-duracao--ativa { border-color: var(--cor-primaria); color: var(--cor-primaria); font-weight: var(--peso-negrito); }
+.planos-duracao--longa { opacity: 0.6; text-decoration: line-through; }
+.planos-duracao:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+.planos-simulacao { display: flex; flex-direction: column; gap: var(--espaco-xs); font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.planos-tempo { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+
+.planos-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--espaco-md);
+}
+.plano {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  padding: var(--espaco-lg) var(--espaco-md);
+  background: var(--cor-fundo-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+}
+.plano--destaque { border-color: var(--cor-primaria); }
+.plano__selo {
+  position: absolute; top: calc(-1 * var(--espaco-sm)); left: var(--espaco-md);
+  padding: 2px var(--espaco-sm);
+  border-radius: var(--raio-md);
+  background: var(--cor-primaria);
+  color: var(--cor-texto-sobre-primaria);
+  font-size: var(--tamanho-xs);
+  font-weight: var(--peso-negrito);
+  letter-spacing: 0.03em;
+}
+.plano__nome { margin: 0; font-size: var(--tamanho-lg); }
+.plano__resumo, .plano__total { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }
+.plano__preco { margin: 0; color: var(--cor-texto-suave); }
+.plano__valor { font-size: var(--tamanho-xl); font-weight: var(--peso-negrito); color: var(--cor-texto); font-variant-numeric: tabular-nums; }
+.plano__recursos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--espaco-xs); font-size: var(--tamanho-sm); flex: 1; }
+.plano__recursos li { display: flex; gap: var(--espaco-xs); align-items: flex-start; }
+.plano__recursos svg { flex: none; margin-top: 2px; color: var(--cor-primaria); }
+.plano__bloqueio { margin: 0; display: flex; gap: var(--espaco-xs); font-size: var(--tamanho-sm); color: var(--cor-errada); }
+.plano__bloqueio svg { flex: none; margin-top: 2px; }
+.plano__teste { margin: 0; font-size: var(--tamanho-sm); color: var(--cor-texto-suave); }

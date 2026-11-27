@@ -8,6 +8,10 @@
 
 /** Mapa de nome → paths SVG internos */
 const ICONES = {
+  'search': `
+    <circle cx="11" cy="11" r="8"/>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"/>`,
+
   // Módulos
   'clipboard-list': `
     <line x1="8" y1="6" x2="21" y2="6"/>

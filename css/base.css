@@ -548,3 +548,8 @@ img, svg { max-width: 100%; display: block; }
 
 /* Botão de sol/lua que troca o tema (js/tema.js) */
 .botao-tema { display: inline-flex; align-items: center; justify-content: center; gap: var(--espaco-xs); }
+
+/* Tabela da conferência de dificuldade (Configurações › administrador) */
+.configuracoes__tabela { overflow-x: auto; margin-block: var(--espaco-sm); }
+.configuracoes__tabela table { border-collapse: collapse; font-size: var(--tamanho-xs); font-variant-numeric: tabular-nums; }
+.configuracoes__tabela th, .configuracoes__tabela td { padding: 4px 8px; border-bottom: 1px solid var(--cor-borda); text-align: left; white-space: nowrap; }

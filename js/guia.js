@@ -30,7 +30,7 @@ import {
   faseDaPreparacao, valeComoSimuladoDaSemana, errosPendentes,
 } from './guia-plano.js';
 import { criarSimuladoAleatorio } from './simulado.js';
-import { interpretarPedido } from './guia-chat.js';
+import { interpretarPedido, interpretarComIA, iaDisponivel } from './guia-chat.js';
 
 const DIA_PROVA = chaveDia(PROVA.inicio);
 const PASSO_AJUSTE = 30;              // minutos por clique em "mais/menos"
@@ -798,13 +798,21 @@ function vincularChat(container, ctx, redesenhar) {
     rolar();
   };
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const pedido = texto.value.trim();
     if (!pedido) return;
     texto.value = '';
     adicionar('aluno', escaparHtml(pedido));
-    const interpretacao = interpretarPedido(pedido, ctx.hoje);
+    let interpretacao = interpretarPedido(pedido, ctx.hoje);
+    // as regras não entenderam: pergunta ao Gemini (se houver chave); sem resposta, fica a dúvida das regras
+    if (interpretacao.duvida && iaDisponivel()) {
+      adicionar('guia', 'Deixa eu pensar...');
+      const pensando = caixa.lastElementChild;
+      const daIA = await interpretarComIA(pedido, ctx.hoje);
+      pensando?.remove(); conversa.pop();
+      interpretacao = daIA || interpretacao;
+    }
     if (interpretacao.duvida) { adicionar('guia', interpretacao.duvida); return; }
     const avaliacao = avaliarMudancas(lerGuia(), interpretacao.mudancas, contextoAtual());
     pedidos.push({ texto: pedido, interpretacao, avaliacao });
